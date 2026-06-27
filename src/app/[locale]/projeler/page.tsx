@@ -6,7 +6,8 @@ import { sanityFetch } from '@/sanity/lib/fetch';
 import { PROJECTS_QUERY } from '@/sanity/lib/queries';
 import { isLocale, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { PageHeader } from '@/components/ui';
+import { PageHero } from '@/components/sections/PageHero';
+import { ServiceIcon } from '@/components/ui/icons';
 import ProjectsExplorer from '@/components/sections/ProjectsExplorer';
 import type { ProjectCard } from '@/lib/projects';
 
@@ -42,15 +43,26 @@ export default async function ProjelerPage({
 
   const projects = await sanityFetch<ProjectCard[]>(PROJECTS_QUERY, {}, []);
 
-  const heading = locale === 'tr' ? 'Projeler' : 'Projects';
-  const description =
-    locale === 'tr'
-      ? 'Devam eden ve tamamlanan projelerimizi iş koluna göre filtreleyin.'
-      : 'Filter our ongoing and completed projects by business line.';
+  const isTr = locale === 'tr';
+  const heading = isTr ? 'Projeler' : 'Projects';
+  const description = isTr
+    ? 'Devam eden ve tamamlanan projelerimizi iş koluna göre filtreleyin.'
+    : 'Filter our ongoing and completed projects by business line.';
+
+  const chips = isTr
+    ? ['Devam Eden', 'Tamamlandı', 'Danışmanlık', 'Mühendislik', 'Yazılım']
+    : ['Ongoing', 'Completed', 'Consulting', 'Engineering', 'Software'];
 
   return (
     <>
-      <PageHeader baslik={heading} aciklama={description} />
+      <PageHero
+        eyebrow={isTr ? 'Projeler' : 'Projects'}
+        title={heading}
+        description={description}
+        accent="#e63950"
+        chips={chips}
+        glyph={<ServiceIcon name="building" className="h-[26rem] w-[26rem]" />}
+      />
       <ProjectsExplorer projects={projects} locale={locale} />
     </>
   );

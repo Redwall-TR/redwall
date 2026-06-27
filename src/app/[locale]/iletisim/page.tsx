@@ -4,8 +4,10 @@ import type { Metadata } from 'next';
 
 import { isLocale, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { PageHeader, Section } from '@/components/ui';
+import { Section } from '@/components/ui';
 import ContactForm from '@/components/sections/ContactForm';
+import { PageHero } from '@/components/sections/PageHero';
+import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -53,7 +55,14 @@ export default async function IletisimPage({
 
   return (
     <>
-      <PageHeader baslik={pageBaslik} aciklama={pageAciklama} />
+      <PageHero
+        eyebrow={isTr ? 'İletişim' : 'Contact'}
+        title={pageBaslik}
+        description={pageAciklama}
+        accent="#e63950"
+        chips={isTr ? ['İstanbul', 'info@redwall.com.tr'] : ['Istanbul', 'info@redwall.com.tr']}
+        glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
+      />
 
       <Section>
         <div className="grid gap-12 lg:grid-cols-2">

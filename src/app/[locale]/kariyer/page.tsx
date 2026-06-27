@@ -6,7 +6,10 @@ import { sanityFetch } from '@/sanity/lib/fetch';
 import { JOBS_QUERY } from '@/sanity/lib/queries';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { PageHeader, Section, Cta, Button } from '@/components/ui';
+import { Section, Cta, Button } from '@/components/ui';
+import { PageHero } from '@/components/sections/PageHero';
+import { IntroLead } from '@/components/sections/page-blocks';
+import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -102,19 +105,28 @@ export default async function KariyerPage({
   const ctaButon =
     loc === 'tr' ? 'Başvur' : 'Apply';
 
+  const chips = loc === 'tr'
+    ? ['Yazılım', 'Saha', 'Mühendislik']
+    : ['Software', 'Field', 'Engineering'];
+
   return (
     <>
-      <PageHeader baslik={heading} aciklama={description} />
+      <PageHero
+        eyebrow={loc === 'tr' ? 'Kariyer' : 'Careers'}
+        title={heading}
+        description={description}
+        accent="#e63950"
+        chips={chips}
+        glyph={<ServiceIcon name="hard-hat" className="h-[26rem] w-[26rem]" />}
+      />
 
       {/* Intro section */}
       <Section tone="muted">
-        <div className="max-w-3xl">
-          {introParagraphs.map((p, i) => (
-            <p key={i} className={`text-base leading-relaxed text-muted${i > 0 ? ' mt-4' : ''}`}>
-              {p}
-            </p>
-          ))}
-        </div>
+        <IntroLead
+          lead={introParagraphs[0]}
+          body={introParagraphs.slice(1)}
+          accent="#e63950"
+        />
       </Section>
 
       {/* Positions section */}

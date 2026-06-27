@@ -8,10 +8,12 @@ import { isLocale, pick, LOCALES } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PROJECT_QUERY, PROJECTS_QUERY } from '@/sanity/lib/queries';
-import { Section, Badge, Breadcrumb, Cta, PortableTextRenderer } from '@/components/ui';
+import { Section, Badge, Cta, PortableTextRenderer } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
 import { urlFor } from '@/sanity/lib/image';
 import { isKoluLabel } from '@/lib/labels';
+import { PageHero } from '@/components/sections/PageHero';
+import { ServiceIcon } from '@/components/ui/icons';
 import type { IsKolu, ProjeDurumu } from '@/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -126,27 +128,27 @@ export default async function ProjeDetayPage({
 
   const gorseller = (data.gorseller ?? []).filter(Boolean);
 
+  const durumChip = data.durum === 'devam-eden'
+    ? (isTr ? 'Devam Eden' : 'Ongoing')
+    : (isTr ? 'Tamamlandı' : 'Completed');
+
+  const heroChips = [
+    data.musteri,
+    durumChip,
+    data.yil ? String(data.yil) : undefined,
+    data.il,
+  ].filter((v): v is string => Boolean(v));
+
   return (
     <>
-      {/* Breadcrumb */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
-        <Breadcrumb
-          items={[
-            { etiket: isTr ? 'Projeler' : 'Projects', href: '/projeler' },
-            { etiket: baslik },
-          ]}
-        />
-      </div>
-
-      {/* Title */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-8 pb-4">
-        <h1 className="font-display text-4xl font-bold text-foreground sm:text-5xl">
-          {baslik}
-        </h1>
-        {ozet && (
-          <p className="mt-4 max-w-2xl text-lg text-muted leading-relaxed">{ozet}</p>
-        )}
-      </div>
+      <PageHero
+        eyebrow={isKoluLabel(data.isKolu, locale)}
+        title={baslik}
+        description={ozet}
+        accent="#e63950"
+        chips={heroChips}
+        glyph={<ServiceIcon name="building" className="h-[26rem] w-[26rem]" />}
+      />
 
       {/* Künye (spec sheet) */}
       <Section tone="muted">

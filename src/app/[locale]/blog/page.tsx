@@ -8,9 +8,11 @@ import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { POSTS_QUERY } from '@/sanity/lib/queries';
-import { PageHeader, Section } from '@/components/ui';
+import { Section } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
 import { urlFor } from '@/sanity/lib/image';
+import { PageHero } from '@/components/sections/PageHero';
+import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -68,7 +70,13 @@ export default async function BlogPage({
 
   return (
     <>
-      <PageHeader baslik={heading} aciklama={description} />
+      <PageHero
+        eyebrow="Blog"
+        title={heading}
+        description={description}
+        accent="#e63950"
+        glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
+      />
 
       {posts.length === 0 ? (
         <Section>

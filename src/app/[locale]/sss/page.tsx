@@ -6,8 +6,11 @@ import { sanityFetch } from '@/sanity/lib/fetch';
 import { FAQS_QUERY } from '@/sanity/lib/queries';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { PageHeader, Section, Cta } from '@/components/ui';
+import { Section, Cta } from '@/components/ui';
 import { Accordion } from '@/components/ui/Accordion';
+import { PageHero } from '@/components/sections/PageHero';
+import { SectionHeading } from '@/components/sections/page-blocks';
+import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -197,9 +200,20 @@ export default async function SssPage({
     : "If you couldn't find the answer here, reach out to our team directly.";
   const ctaButon = isTr ? 'Bize Ulaşın' : 'Contact Us';
 
+  const chips = isTr
+    ? ['Genel', 'Yazılım', 'Danışmanlık', 'Mühendislik']
+    : ['General', 'Software', 'Consulting', 'Engineering'];
+
   return (
     <>
-      <PageHeader baslik={pageBaslik} aciklama={pageAciklama} />
+      <PageHero
+        eyebrow={isTr ? 'Yardım' : 'Help'}
+        title={pageBaslik}
+        description={pageAciklama}
+        accent="#e63950"
+        chips={chips}
+        glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
+      />
 
       <Section>
         <div className="space-y-14">
@@ -213,7 +227,7 @@ export default async function SssPage({
             }));
             return (
               <div key={kat}>
-                <h2 className="mb-6 font-display text-xl font-bold sm:text-2xl">{label}</h2>
+                <SectionHeading title={label} accent="#e63950" />
                 <Accordion items={accordionItems} />
               </div>
             );

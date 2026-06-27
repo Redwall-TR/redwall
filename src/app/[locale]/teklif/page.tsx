@@ -4,8 +4,10 @@ import type { Metadata } from 'next';
 
 import { isLocale, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { PageHeader, Section } from '@/components/ui';
+import { Section } from '@/components/ui';
 import QuoteForm from '@/components/sections/QuoteForm';
+import { PageHero } from '@/components/sections/PageHero';
+import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -53,7 +55,14 @@ export default async function TeklifPage({
 
   return (
     <>
-      <PageHeader baslik={pageBaslik} aciklama={pageAciklama} />
+      <PageHero
+        eyebrow={isTr ? 'Teklif' : 'Quote'}
+        title={pageBaslik}
+        description={pageAciklama}
+        accent="#e63950"
+        chips={isTr ? ['Hızlı Yanıt', '1 İş Günü'] : ['Fast Response', '1 Business Day']}
+        glyph={<ServiceIcon name="gauge" className="h-[26rem] w-[26rem]" />}
+      />
 
       <Section>
         <div className="mx-auto max-w-2xl">

@@ -12,6 +12,8 @@ import { POST_QUERY, POSTS_QUERY } from '@/sanity/lib/queries';
 import { Section, Cta, PortableTextRenderer } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
 import { urlFor } from '@/sanity/lib/image';
+import { PageHero } from '@/components/sections/PageHero';
+import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -104,6 +106,14 @@ export default async function BlogDetayPage({
 
   return (
     <>
+      <PageHero
+        eyebrow="Blog"
+        title={baslik ?? ''}
+        accent="#e63950"
+        chips={tarihStr ? [tarihStr] : undefined}
+        glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
+      />
+
       {/* Back link */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-8">
         <Link
@@ -124,21 +134,6 @@ export default async function BlogDetayPage({
           </svg>
           {isTr ? 'Blog\'a Dön' : 'Back to Blog'}
         </Link>
-      </div>
-
-      {/* Title + date */}
-      <div className="mx-auto max-w-3xl px-4 sm:px-6 pt-8 pb-4">
-        {tarihStr && (
-          <time
-            dateTime={tarihStr}
-            className="block text-xs font-medium uppercase tracking-wider text-muted mb-4"
-          >
-            {tarihStr}
-          </time>
-        )}
-        <h1 className="font-display text-4xl font-bold text-foreground sm:text-5xl leading-tight">
-          {baslik}
-        </h1>
       </div>
 
       {/* Cover image */}

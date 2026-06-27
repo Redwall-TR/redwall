@@ -7,7 +7,9 @@ import { REFERENCES_QUERY } from '@/sanity/lib/queries';
 import { urlFor } from '@/sanity/lib/image';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { PageHeader, Section, LogoWall, Cta } from '@/components/ui';
+import { Section, LogoWall, Cta } from '@/components/ui';
+import { PageHero } from '@/components/sections/PageHero';
+import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -91,7 +93,13 @@ export default async function ReferanslarPage({
 
   return (
     <>
-      <PageHeader baslik={heading} aciklama={description} />
+      <PageHero
+        eyebrow={loc === 'tr' ? 'Referanslar' : 'References'}
+        title={heading}
+        description={description}
+        accent="#e63950"
+        glyph={<ServiceIcon name="building" className="h-[26rem] w-[26rem]" />}
+      />
 
       {/* Logo Wall */}
       <Section tone="muted">
@@ -115,9 +123,23 @@ export default async function ReferanslarPage({
               return (
                 <figure
                   key={ref.ad}
-                  className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-6"
+                  className="relative flex flex-col gap-4 rounded-xl border border-border bg-surface p-6 pl-8 overflow-hidden"
                 >
-                  <blockquote className="flex-1 text-base leading-relaxed text-foreground/80">
+                  {/* accent left-rule */}
+                  <span
+                    className="absolute left-0 top-0 h-full w-1 rounded-l-xl"
+                    style={{ backgroundColor: '#e63950' }}
+                    aria-hidden
+                  />
+                  {/* decorative quote mark */}
+                  <span
+                    className="absolute right-4 top-3 font-display text-7xl font-bold leading-none select-none"
+                    style={{ color: '#e63950', opacity: 0.12 }}
+                    aria-hidden
+                  >
+                    &ldquo;
+                  </span>
+                  <blockquote className="relative flex-1 text-base leading-relaxed text-foreground/80">
                     &ldquo;{metin}&rdquo;
                   </blockquote>
                   <figcaption className="border-t border-border pt-4">
