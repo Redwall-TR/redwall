@@ -68,14 +68,6 @@ export default async function Footer({ locale }: { locale: string }) {
                   {t('muhendislik')}
                 </Link>
               </li>
-              <li>
-                <Link
-                  href="/projeler"
-                  className="text-sm text-muted hover:text-primary transition-colors"
-                >
-                  {t('projeler')}
-                </Link>
-              </li>
             </ul>
           </div>
 

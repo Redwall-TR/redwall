@@ -48,7 +48,7 @@ function isKnownSlug(s: string): s is KnownSlug {
 // ── Feature icon mapping (index-based per product) ───────────────────────────
 
 const FEATURE_ICONS: Record<KnownSlug, string[]> = {
-  yanginpro: ['gauge', 'droplet', 'shield-check', 'document', 'clipboard', 'ruler'],
+  yanginpro: ['shield-check', 'building', 'ruler', 'document', 'key', 'gauge'],
   mekanikpro: ['gauge', 'ruler', 'droplet', 'wrench', 'document', 'refresh'],
 };
 
@@ -58,62 +58,62 @@ const FALLBACK: Record<KnownSlug, { ad: string; slogan: LocaleString; aciklama: 
   yanginpro: {
     ad: 'YangınPro',
     slogan: {
-      tr: 'Yangın Mühendisliğini Dijitalleştirin',
-      en: 'Digitise Fire Engineering',
+      tr: 'Bina Yangın Güvenliği Uyumluluğunu Otomatikleştirin',
+      en: 'Automate Building Fire-Safety Compliance',
     },
     aciklama: {
-      tr: 'YangınPro, sprinkler ve yangın dolapları gibi aktif söndürme sistemlerinin hidrolik hesaplarını, yönetmelik uygunluk kontrollerini ve proje raporlamalarını tek bir platformda bir araya getiren mühendislik yazılımıdır. Karmaşık hesapları dakikalar içinde tamamlayın; hatasız, mevzuata uygun raporlar üretin.',
-      en: 'YangınPro is an engineering software platform that consolidates hydraulic calculations for active suppression systems — sprinklers, fire cabinets, and hydrants — regulatory compliance checks, and project reporting. Complete complex calculations in minutes and produce error-free, code-compliant reports.',
+      tr: 'YangınPro, Türkiye yangın güvenliği yönetmelikleri (BYKHY 2007/2024) kapsamında bina, kat ve oda detayında yapı verisini değerlendiren bir uyumluluk ve denetim platformudur. Kural motoru uyumsuzlukları otomatik tespit eder, raporlar ve takip eder; belediyeler ve kurumlar tüm denetim süreçlerini tek bir bulut tabanlı sistemde yönetir. SaaS olarak veya kendi sunucunuzda (self-hosted) çalışır.',
+      en: 'YangınPro is a compliance and inspection platform that evaluates structural data at the building, floor, and room level under Turkey\'s fire-safety regulations (BYKHY 2007/2024). Its rule engine automatically detects, reports, and tracks non-compliances, letting municipalities and institutions manage the entire inspection process in one cloud-based system. Runs as SaaS or self-hosted on your own servers.',
     },
     ozellikler: [
       {
-        baslik: { tr: 'Sprinkler Hidrolik Hesabı', en: 'Sprinkler Hydraulic Calculation' },
+        baslik: { tr: 'Kural Motoru ile Otomatik Denetim', en: 'Automated Inspection via Rule Engine' },
         aciklama: {
-          tr: 'NFPA 13 ve TS EN 12845 standartlarına uygun otomatik sprinkler ağı hidrolik hesabı; boru çapı ve pompa seçimi dahil.',
-          en: 'Automatic sprinkler network hydraulic calculation compliant with NFPA 13 and TS EN 12845; includes pipe sizing and pump selection.',
+          tr: 'Binayı yürürlükteki yangın güvenliği yönetmeliğiyle (BYKHY 2007/2024) otomatik karşılaştırır; uyumsuzlukları madde bazında tespit eder ve düzeltme önerileri sunar.',
+          en: 'Automatically compares the building against the current fire-safety regulation (BYKHY 2007/2024), detecting non-compliances article by article and offering remediation recommendations.',
         },
       },
       {
-        baslik: { tr: 'Yangın Dolabı & Hidrant Hesabı', en: 'Fire Hose Cabinet & Hydrant Calculation' },
+        baslik: { tr: 'Bina · Kat · Oda Yapı Modeli', en: 'Building · Floor · Room Data Model' },
         aciklama: {
-          tr: 'Yangın dolapları ve dış hidrant ağlarının basınç ve debi hesapları; eksik noktaları otomatik olarak tespit eder.',
-          en: 'Pressure and flow calculations for fire hose cabinets and external hydrant networks; automatically identifies deficient points.',
+          tr: 'Yapı verisini bina, kat ve oda hiyerarşisinde detaylı girin; kullanım amacı, alan ve ekipman bilgileriyle her mekânı eksiksiz tanımlayın.',
+          en: 'Enter structural data in a building–floor–room hierarchy; fully define each space with its usage, area, and equipment details.',
         },
       },
       {
-        baslik: { tr: 'Yönetmelik Uygunluk Kontrolü', en: 'Regulatory Compliance Check' },
+        baslik: { tr: '3B Bina Görselleştirme', en: '3D Building Visualisation' },
         aciklama: {
-          tr: 'Türk ve uluslararası yangın güvenliği yönetmeliklerine göre anlık uygunluk analizi; uyumsuzluk noktalarını renkli uyarılarla işaretler.',
-          en: 'Real-time compliance analysis against Turkish and international fire-safety regulations; flags non-conformant points with colour-coded warnings.',
+          tr: 'Girilen yapı verisini etkileşimli 3B modelle önizleyin; katları ve mekânları görsel olarak inceleyerek hataları erken yakalayın.',
+          en: 'Preview the entered structural data as an interactive 3D model; review floors and spaces visually to catch errors early.',
         },
       },
       {
-        baslik: { tr: 'Otomatik Rapor Üretimi', en: 'Automatic Report Generation' },
+        baslik: { tr: 'Otomatik Rapor & PDF Export', en: 'Automated Reporting & PDF Export' },
         aciklama: {
-          tr: 'Hesap raporu, malzeme listesi ve teknik şartname belgelerini tek tıkla PDF / Word formatında üretir; itfaiye başvurularına hazır çıktılar.',
-          en: 'Generates calculation reports, material lists, and technical specification documents in PDF / Word format with a single click — outputs ready for fire-department submissions.',
+          tr: 'Uygunluk raporlarını, eksiklik listelerini ve denetim çıktılarını tek tıkla PDF olarak üretin; başvuru ve arşiv için hazır belgeler.',
+          en: 'Generate compliance reports, deficiency lists, and inspection outputs as PDFs with one click — documents ready for submissions and archiving.',
         },
       },
       {
-        baslik: { tr: 'Proje Yönetimi', en: 'Project Management' },
+        baslik: { tr: 'Çok Kiracılı Kurum Yönetimi', en: 'Multi-Tenant Institution Management' },
         aciklama: {
-          tr: 'Birden fazla projeyi tek platformdan yönetin; sürüm takibi, ekip işbirliği ve revizyon geçmişi özellikleriyle proje süreçlerinizi düzenleyin.',
-          en: 'Manage multiple projects from a single platform; organise your project workflows with version tracking, team collaboration, and revision history.',
+          tr: 'Kurum hiyerarşisi, rol bazlı yetkilendirme ve abonelik yönetimiyle birden fazla kurumu ve kullanıcıyı güvenle yönetin.',
+          en: 'Manage multiple institutions and users securely with institution hierarchy, role-based access control, and subscription management.',
         },
       },
       {
-        baslik: { tr: 'CAD Entegrasyonu', en: 'CAD Integration' },
+        baslik: { tr: 'Gerçek Zamanlı Bildirim & Takip', en: 'Real-Time Notifications & Tracking' },
         aciklama: {
-          tr: 'Hesap sonuçlarını DWG/DXF formatına aktararak AutoCAD ve benzeri CAD yazılımlarına entegre edin; hesap ve çizim arasındaki köprüyü ortadan kaldırın.',
-          en: 'Export calculation results to DWG/DXF format for integration with AutoCAD and similar CAD software, eliminating the gap between calculation and drawing.',
+          tr: 'Analiz tamamlandığında anlık bildirim alın; denetim durumunu, geçmişi ve aktiviteleri tek panelden gerçek zamanlı takip edin.',
+          en: 'Receive instant notifications when analysis completes; track inspection status, history, and activity in real time from a single panel.',
         },
       },
     ],
     hedefKitle: [
-      { tr: 'Yangın güvenliği mühendisleri ve tasarımcıları', en: 'Fire-safety engineers and designers' },
-      { tr: 'Bağımsız yangın danışmanları', en: 'Independent fire consulting firms' },
-      { tr: 'Aktif söndürme sistemi müteahhitleri', en: 'Active suppression system contractors' },
-      { tr: 'Tesis yöneticileri ve bakım ekipleri', en: 'Facility managers and maintenance teams' },
+      { tr: 'Belediye yangın denetim birimleri', en: 'Municipal fire-inspection units' },
+      { tr: 'Bina yöneticileri', en: 'Building managers' },
+      { tr: 'AVM ve otel işletmecileri', en: 'Shopping-mall and hotel operators' },
+      { tr: 'Mühendislik ve danışmanlık firmaları', en: 'Engineering and consulting firms' },
     ],
   },
   mekanikpro: {
@@ -344,8 +344,8 @@ export default async function UrunDetayPage({
   const featuresEyebrow = isTr ? 'Özellikler' : 'Features';
   const featuresBaslik = isTr ? `${ad} Yetenekleri` : `${ad} Capabilities`;
   const featuresAciklama = isTr
-    ? `${ad}'ın temel mühendislik yetenekleri`
-    : `Core engineering capabilities of ${ad}`;
+    ? `${ad}'ın öne çıkan yetenekleri`
+    : `Key capabilities of ${ad}`;
 
   const audienceTitle = isTr ? 'Kimler İçin?' : 'Who Is It For?';
   const audienceSubtitle = isTr
