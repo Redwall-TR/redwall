@@ -9,6 +9,7 @@ import { Button } from '@/components/ui';
 import ThemeToggle from '@/components/layout/ThemeToggle';
 import LocaleSwitcher from '@/components/layout/LocaleSwitcher';
 import { PRIMARY } from '@/components/layout/nav-config';
+import MobileNav from '@/components/layout/MobileNav';
 
 // Typed representations of the nav config
 type NavChild = { readonly key: string; readonly href: string; readonly label?: string };
@@ -187,9 +188,7 @@ export default function Header({ locale }: { locale: string }) {
         </div>
       </div>
 
-      {/* Mobile menu panel placeholder — Task 3.2 will render the full panel here */}
-      {/* id="mobile-menu" is referenced by aria-controls above */}
-      <div id="mobile-menu" />
+      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} locale={locale} />
     </header>
   );
 }
