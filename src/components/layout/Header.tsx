@@ -133,12 +133,20 @@ export default function Header({ locale }: { locale: string }) {
         {/* Logo */}
         <Link href="/" className="flex-shrink-0 flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
           <Image
-            src="/redwall-logo.svg"
+            src="/redwall-logo-light.svg"
             alt="Redwall"
-            width={140}
+            width={111}
             height={36}
             priority
-            className="h-9 w-auto"
+            className="h-9 w-auto block dark:hidden"
+          />
+          <Image
+            src="/redwall-logo-dark.svg"
+            alt="Redwall"
+            width={111}
+            height={36}
+            priority
+            className="h-9 w-auto hidden dark:block"
           />
         </Link>
 

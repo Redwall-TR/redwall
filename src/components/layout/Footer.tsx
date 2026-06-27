@@ -19,11 +19,18 @@ export default async function Footer({ locale }: { locale: string }) {
               className="inline-flex focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md"
             >
               <Image
-                src="/redwall-logo.svg"
+                src="/redwall-logo-footer-light.svg"
                 alt="Redwall"
                 width={130}
-                height={34}
-                className="h-8 w-auto"
+                height={42}
+                className="h-10 w-auto block dark:hidden"
+              />
+              <Image
+                src="/redwall-logo-footer-dark.svg"
+                alt="Redwall"
+                width={130}
+                height={42}
+                className="h-10 w-auto hidden dark:block"
               />
             </Link>
             <p className="text-sm text-muted leading-relaxed">
