@@ -26,12 +26,8 @@ function getChildLabel(
 ): string {
   // Children with a hardcoded label (e.g. YangınPro, MekanikPro) use it directly
   if (child.label) return child.label;
-  // Otherwise use the translation key
-  try {
-    return t(child.key as Parameters<typeof t>[0]);
-  } catch {
-    return child.key;
-  }
+  // Otherwise use the translation key directly (all keys exist in messages/*.json)
+  return t(child.key as Parameters<typeof t>[0]);
 }
 
 // Individual dropdown item component
@@ -78,7 +74,7 @@ function DropdownItem({
       <button
         type="button"
         aria-expanded={open}
-        aria-haspopup="true"
+        aria-haspopup="menu"
         onClick={() => setOpen((v) => !v)}
         onKeyDown={(e) => {
           if (e.key === 'Escape') setOpen(false);
