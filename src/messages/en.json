@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "yazilim": "Software", "danismanlik": "Consulting", "muhendislik": "Engineering",
+    "projeler": "Projects", "kurumsal": "Company", "hakkimizda": "About",
+    "vizyonMisyon": "Vision & Mission", "kaliteBelgeler": "Quality & Certificates",
+    "dahaFazla": "More", "referanslar": "References", "sss": "FAQ",
+    "blog": "Blog", "kariyer": "Careers", "iletisim": "Contact", "teklifIste": "Get a Quote"
+  },
+  "common": {
+    "detayliBilgi": "Learn more", "tumProjeler": "All projects",
+    "teklifAl": "Get a Quote", "demoTalep": "Request a Demo", "gonder": "Send",
+    "yukleniyor": "Loading...", "bosVeri": "No content added yet.",
+    "tema": "Theme", "dil": "Language"
+  },
+  "form": {
+    "ad": "Full Name", "kurum": "Company", "email": "Email", "telefon": "Phone",
+    "mesaj": "Message", "isKolu": "Related Service", "il": "City", "metrekare": "Building m²",
+    "zorunlu": "This field is required", "gecersizEmail": "Enter a valid email",
+    "basarili": "Your request has been received. We'll get back to you shortly."
+  }
+}

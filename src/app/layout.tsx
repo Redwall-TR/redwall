@@ -1,41 +1,22 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { Geist } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
+import './globals.css';
+import { ThemeProvider } from '@/components/layout/ThemeProvider';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const sans = Geist({ variable: '--font-sans', subsets: ['latin'] });
+const display = Space_Grotesk({ variable: '--font-display', subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: "Redwall | Yangın Danışmanlık, Mühendislik ve Uygulama",
-  description: "Redwall Yangın Danışmanlık, Mühendislik ve Uygulama - 20 yılı aşkın tecrübemizle yangın güvenliği konusunda A'dan Z'ye tüm süreçlerde yanınızdayız.",
-  keywords: ["yangın güvenliği", "yangın danışmanlık", "yangın mühendisliği", "sprinkler", "yangın algılama", "yangın söndürme", "redwall"],
-  authors: [{ name: "Redwall" }],
-  openGraph: {
-    title: "Redwall | Yangın Danışmanlık, Mühendislik ve Uygulama",
-    description: "20 yılı aşkın tecrübemizle yangın güvenliği konusunda A'dan Z'ye tüm süreçlerde yanınızdayız.",
-    type: "website",
-    locale: "tr_TR",
-  },
+  title: { default: 'Redwall', template: '%s | Redwall' },
+  description: 'Redwall Yangın Danışmanlık, Yazılım ve Mühendislik Hizmetleri',
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="tr">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
+    <html lang="tr" suppressHydrationWarning>
+      <body className={`${sans.variable} ${display.variable} font-sans antialiased`}>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );

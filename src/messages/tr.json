@@ -1,0 +1,21 @@
+{
+  "nav": {
+    "yazilim": "Yazılım", "danismanlik": "Danışmanlık", "muhendislik": "Mühendislik",
+    "projeler": "Projeler", "kurumsal": "Kurumsal", "hakkimizda": "Hakkımızda",
+    "vizyonMisyon": "Vizyon & Misyon", "kaliteBelgeler": "Kalite & Belgeler",
+    "dahaFazla": "Daha Fazla", "referanslar": "Referanslar", "sss": "S.S.S.",
+    "blog": "Blog", "kariyer": "Kariyer", "iletisim": "İletişim", "teklifIste": "Teklif İste"
+  },
+  "common": {
+    "detayliBilgi": "Detaylı bilgi", "tumProjeler": "Tüm projeler",
+    "teklifAl": "Teklif Al", "demoTalep": "Demo Talep Et", "gonder": "Gönder",
+    "yukleniyor": "Yükleniyor...", "bosVeri": "Henüz içerik eklenmedi.",
+    "tema": "Tema", "dil": "Dil"
+  },
+  "form": {
+    "ad": "Ad Soyad", "kurum": "Kurum", "email": "E-posta", "telefon": "Telefon",
+    "mesaj": "Mesaj", "isKolu": "İlgili Hizmet", "il": "İl", "metrekare": "Bina m²",
+    "zorunlu": "Bu alan zorunludur", "gecersizEmail": "Geçerli bir e-posta girin",
+    "basarili": "Talebiniz alındı. En kısa sürede dönüş yapacağız."
+  }
+}
