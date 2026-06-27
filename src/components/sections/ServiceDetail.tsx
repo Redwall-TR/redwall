@@ -1,7 +1,10 @@
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { SERVICE_QUERY } from '@/sanity/lib/queries';
 import { pick, type Locale } from '@/lib/locales';
-import { PageHeader, Section, Cta, PortableTextRenderer } from '@/components/ui';
+import { Section, Cta, PortableTextRenderer } from '@/components/ui';
+import { ServiceIcon } from '@/components/ui/icons';
+import { PageHero } from '@/components/sections/PageHero';
+import { SectionHeading, FeatureCard, ProcessTimeline, IntroLead } from '@/components/sections/page-blocks';
 import type { PortableTextBlock } from '@portabletext/react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -16,6 +19,7 @@ interface LocaleString {
 interface AltHizmet {
   baslik?: LocaleString;
   aciklama?: LocaleString;
+  icon?: string;
 }
 
 interface ServiceData {
@@ -35,6 +39,12 @@ interface ServiceDetailProps {
 // ── Fallback content ──────────────────────────────────────────────────────────
 
 const DANISMANLIK_FALLBACK = {
+  accent: '#38bdf8',
+  eyebrow: { tr: 'Danışmanlık', en: 'Consulting' },
+  chips: {
+    tr: ['İtfaiye Onayı', 'Mevzuat Uygunluğu', 'Projelendirme', 'Denetim Desteği'],
+    en: ['Fire-Dept Approval', 'Compliance', 'Project Design', 'Inspection Support'],
+  },
   baslik: {
     tr: 'Yangın Danışmanlığı',
     en: 'Fire Consulting',
@@ -55,6 +65,7 @@ const DANISMANLIK_FALLBACK = {
   },
   altHizmetler: [
     {
+      icon: 'shield-check',
       baslik: { tr: 'İtfaiye Onay Danışmanlığı', en: 'Fire-Department Approval Consulting' },
       aciklama: {
         tr: 'İtfaiye raporu sürecini uçtan uca yönetiyor; eksik evrakları tamamlıyor, teknik itirazları yanıtlıyor ve olumlu raporu almanızı hızlandırıyoruz.',
@@ -62,6 +73,7 @@ const DANISMANLIK_FALLBACK = {
       },
     },
     {
+      icon: 'clipboard',
       baslik: { tr: 'Mevzuat Uygunluk Analizi', en: 'Regulatory Compliance Analysis' },
       aciklama: {
         tr: 'Binanızı veya projenizi geçerli yangın güvenliği yönetmeliklerine göre değerlendiriyor, uyumsuzluk noktalarını tespit ediyor ve çözüm yollarını raporluyoruz.',
@@ -69,6 +81,7 @@ const DANISMANLIK_FALLBACK = {
       },
     },
     {
+      icon: 'ruler',
       baslik: { tr: 'Projelendirme Hizmetleri', en: 'Project Design Services' },
       aciklama: {
         tr: 'Yangın algılama, söndürme ve tahliye sistemleri için yönetmeliğe uygun teknik projeler hazırlıyor; uygulama çizimlerini ve hesap raporlarını sunuyoruz.',
@@ -76,6 +89,7 @@ const DANISMANLIK_FALLBACK = {
       },
     },
     {
+      icon: 'hard-hat',
       baslik: { tr: 'Müteahhit Desteği', en: 'Contractor Support' },
       aciklama: {
         tr: 'Yapım sürecinde ortaya çıkan yangın güvenliği sorunlarını hızla çözüyor; müteahhitlerin teslim takvimine uymasına yardımcı oluyoruz.',
@@ -83,6 +97,7 @@ const DANISMANLIK_FALLBACK = {
       },
     },
     {
+      icon: 'key',
       baslik: { tr: 'Mal Sahibi Danışmanlığı', en: 'Property Owner Consulting' },
       aciklama: {
         tr: 'Yeni yapı veya mevcut bina sahiplerine; denetim öncesi hazırlık, eksiklik giderme ve belge yönetimi konularında kapsamlı rehberlik sağlıyoruz.',
@@ -90,6 +105,7 @@ const DANISMANLIK_FALLBACK = {
       },
     },
     {
+      icon: 'building',
       baslik: { tr: 'Kurum Danışmanlığı', en: 'Institutional Consulting' },
       aciklama: {
         tr: 'Hastane, okul, AVM ve sanayi tesisleri gibi büyük kurumlara; mevzuat takibi, periyodik denetim desteği ve acil müdahale planlaması konularında uzman danışmanlık sunuyoruz.',
@@ -142,6 +158,12 @@ const DANISMANLIK_FALLBACK = {
 };
 
 const MUHENDISLIK_FALLBACK = {
+  accent: '#f59e0b',
+  eyebrow: { tr: 'Mühendislik & Uygulama', en: 'Engineering & Application' },
+  chips: {
+    tr: ['Aktif Söndürme', 'Pasif Önleme', 'Mekanik Tesisat', 'Periyodik Bakım'],
+    en: ['Active Suppression', 'Passive Prevention', 'Mechanical', 'Maintenance'],
+  },
   baslik: {
     tr: 'Mühendislik & Uygulama',
     en: 'Engineering & Application',
@@ -162,6 +184,7 @@ const MUHENDISLIK_FALLBACK = {
   },
   altHizmetler: [
     {
+      icon: 'droplet',
       baslik: { tr: 'Aktif Söndürme Sistemleri', en: 'Active Suppression Systems' },
       aciklama: {
         tr: 'Sprinkler, köpüklü söndürme, gazlı söndürme ve su sisi sistemlerinin proje tasarımı, temin ve sahasına kurulumunu gerçekleştiriyoruz.',
@@ -169,6 +192,7 @@ const MUHENDISLIK_FALLBACK = {
       },
     },
     {
+      icon: 'wall',
       baslik: { tr: 'Pasif Önleme Sistemleri', en: 'Passive Prevention Systems' },
       aciklama: {
         tr: 'Yangın kapıları, yangın barikatları, duman yönetim sistemleri ve yangına dayanıklı sızdırmazlık uygulamalarında tasarım ve montaj hizmetleri sunuyoruz.',
@@ -176,6 +200,7 @@ const MUHENDISLIK_FALLBACK = {
       },
     },
     {
+      icon: 'hard-hat',
       baslik: { tr: 'Saha Uygulama & Taahhüt', en: 'Field Application & Contracting' },
       aciklama: {
         tr: 'Tüm yangın güvenliği sistemlerinin anahtar teslim kurulumunu üstleniyor; uygulama planlamasından kabul testine kadar projeyi taahhüt altında tamamlıyoruz.',
@@ -183,6 +208,7 @@ const MUHENDISLIK_FALLBACK = {
       },
     },
     {
+      icon: 'wrench',
       baslik: { tr: 'Sıhhi & Kalorifer Tesisat', en: 'Plumbing & Heating Installation' },
       aciklama: {
         tr: 'Yangın güvenliği projelerinin ayrılmaz parçası olan sıhhi tesisat ve kalorifer sistemleri tasarım, temin ve montaj hizmetlerini profesyonelce yürütüyoruz.',
@@ -190,6 +216,7 @@ const MUHENDISLIK_FALLBACK = {
       },
     },
     {
+      icon: 'refresh',
       baslik: { tr: 'Periyodik Bakım', en: 'Periodic Maintenance' },
       aciklama: {
         tr: 'Kurulu yangın güvenliği sistemlerinizin etkinliğini korumak için düzenli bakım, test ve raporlama hizmetleri sunuyor; yönetmelik uyumluluğunuzu sürdürüyoruz.',
@@ -241,250 +268,128 @@ const MUHENDISLIK_FALLBACK = {
   ],
 };
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
-function AltHizmetCard({ baslik, aciklama }: { baslik: string; aciklama: string }) {
-  return (
-    <div className="rounded-2xl border border-border bg-surface p-6 flex flex-col gap-3">
-      <h3 className="font-display text-base font-bold text-foreground">{baslik}</h3>
-      <p className="text-sm leading-relaxed text-muted flex-1">{aciklama}</p>
-    </div>
-  );
-}
-
-function SurecAdim({ adim, baslik, aciklama }: { adim: number; baslik: string; aciklama: string }) {
-  return (
-    <div className="flex gap-4">
-      <div className="flex-shrink-0 flex h-9 w-9 items-center justify-center rounded-full bg-amber/10 text-amber font-bold text-sm ring-1 ring-amber/30">
-        {adim}
-      </div>
-      <div className="flex flex-col gap-1">
-        <h4 className="font-display text-sm font-bold text-foreground">{baslik}</h4>
-        <p className="text-sm leading-relaxed text-muted">{aciklama}</p>
-      </div>
-    </div>
-  );
-}
-
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default async function ServiceDetail({ isKolu, locale }: ServiceDetailProps) {
   const data = await sanityFetch<ServiceData | null>(SERVICE_QUERY, { isKolu }, null);
 
-  // ── Danışmanlık ────────────────────────────────────────────────────────────
-  if (isKolu === 'danismanlik') {
-    const fb = DANISMANLIK_FALLBACK;
-    const baslik =
-      (data?.baslik ? pick(data.baslik, locale) : undefined) ??
-      fb.baslik[locale];
-    const ozet =
-      (data?.ozet ? pick(data.ozet, locale) : undefined) ??
-      fb.ozet[locale];
+  if (isKolu === 'danismanlik' || isKolu === 'muhendislik') {
+    const fb = isKolu === 'danismanlik' ? DANISMANLIK_FALLBACK : MUHENDISLIK_FALLBACK;
+    const accent = data?.imzaRengi && /^#/.test(data.imzaRengi) ? data.imzaRengi : fb.accent;
+
+    const baslik = (data?.baslik ? pick(data.baslik, locale) : undefined) ?? fb.baslik[locale];
+    const ozet = (data?.ozet ? pick(data.ozet, locale) : undefined) ?? fb.ozet[locale];
 
     const altHizmetler: AltHizmet[] =
-      data?.altHizmetler && data.altHizmetler.length > 0
-        ? data.altHizmetler
-        : fb.altHizmetler;
+      data?.altHizmetler && data.altHizmetler.length > 0 ? data.altHizmetler : fb.altHizmetler;
+
+    const hizmetlerBaslik =
+      isKolu === 'danismanlik'
+        ? locale === 'tr'
+          ? 'Danışmanlık Hizmetlerimiz'
+          : 'Our Consulting Services'
+        : locale === 'tr'
+          ? 'Uygulama Alanlarımız'
+          : 'Our Service Areas';
+
+    const surecBaslik =
+      isKolu === 'danismanlik'
+        ? locale === 'tr'
+          ? 'Danışmanlık Sürecimiz'
+          : 'Our Consulting Process'
+        : locale === 'tr'
+          ? 'Uygulama Sürecimiz'
+          : 'Our Application Process';
+
+    const surecAciklama =
+      isKolu === 'danismanlik'
+        ? locale === 'tr'
+          ? 'İtfaiye onayına giden yolu adım adım birlikte yürüyoruz.'
+          : 'We walk the path to fire-department approval together, step by step.'
+        : locale === 'tr'
+          ? 'Keşiften devreye almaya kadar her adımda yanınızdayız.'
+          : 'We are with you at every step, from survey to commissioning.';
 
     return (
       <>
-        <PageHeader
-          ust={locale === 'tr' ? 'Danışmanlık' : 'Consulting'}
-          baslik={baslik}
-          aciklama={ozet}
+        <PageHero
+          eyebrow={fb.eyebrow[locale]}
+          title={baslik}
+          description={ozet}
+          accent={accent}
+          chips={fb.chips[locale]}
+          glyph={<ServiceIcon name={isKolu === 'danismanlik' ? 'shield-check' : 'wrench'} className="h-[26rem] w-[26rem]" />}
         />
 
-        {/* Intro / icerik */}
+        {/* Intro */}
         <Section>
           {data?.icerik && data.icerik.length > 0 ? (
-            <PortableTextRenderer value={data.icerik} />
-          ) : (
-            <div className="mx-auto max-w-3xl space-y-4 text-base leading-relaxed text-muted">
-              {fb.intro[locale].map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
+            <div className="mx-auto max-w-3xl">
+              <PortableTextRenderer value={data.icerik} />
             </div>
+          ) : (
+            <IntroLead lead={fb.intro[locale][0]} body={fb.intro[locale].slice(1)} accent={accent} />
           )}
         </Section>
 
-        {/* Alt hizmetler grid */}
+        {/* Hizmetler grid */}
         <Section tone="muted">
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              {locale === 'tr' ? 'Danışmanlık Hizmetlerimiz' : 'Our Consulting Services'}
-            </h2>
-          </div>
+          <SectionHeading
+            eyebrow={locale === 'tr' ? 'Ne Yapıyoruz' : 'What We Do'}
+            title={hizmetlerBaslik}
+            accent={accent}
+          />
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {altHizmetler.map((h, i) => (
-              <AltHizmetCard
+              <FeatureCard
                 key={i}
-                baslik={
-                  (h.baslik ? pick(h.baslik, locale) : undefined) ??
-                  h.baslik?.tr ??
-                  ''
-                }
-                aciklama={
-                  (h.aciklama ? pick(h.aciklama, locale) : undefined) ??
-                  h.aciklama?.tr ??
-                  ''
-                }
+                icon={h.icon}
+                accent={accent}
+                title={(h.baslik ? pick(h.baslik, locale) : undefined) ?? h.baslik?.tr ?? ''}
+                description={(h.aciklama ? pick(h.aciklama, locale) : undefined) ?? h.aciklama?.tr ?? ''}
               />
             ))}
           </div>
         </Section>
 
-        {/* Süreç adımları */}
+        {/* Süreç */}
         <Section>
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              {locale === 'tr' ? 'Danışmanlık Sürecimiz' : 'Our Consulting Process'}
-            </h2>
-            <p className="mt-3 text-muted max-w-xl mx-auto text-sm">
-              {locale === 'tr'
-                ? 'İtfaiye onayına giden yolu adım adım birlikte yürüyoruz.'
-                : 'We walk the path to fire-department approval together, step by step.'}
-            </p>
-          </div>
-          <div className="mx-auto max-w-2xl flex flex-col gap-8">
-            {fb.surec.map((s) => (
-              <SurecAdim
-                key={s.adim}
-                adim={s.adim}
-                baslik={pick(s.baslik, locale) ?? s.baslik.tr}
-                aciklama={pick(s.aciklama, locale) ?? s.aciklama.tr}
-              />
-            ))}
-          </div>
+          <SectionHeading
+            eyebrow={locale === 'tr' ? 'Nasıl Çalışıyoruz' : 'How We Work'}
+            title={surecBaslik}
+            description={surecAciklama}
+            accent={accent}
+          />
+          <ProcessTimeline
+            steps={fb.surec.map((s) => ({
+              num: s.adim,
+              title: pick(s.baslik, locale) ?? s.baslik.tr,
+              description: pick(s.aciklama, locale) ?? s.aciklama.tr,
+            }))}
+            accent={accent}
+          />
         </Section>
 
-        {/* CTA */}
         <Cta
           baslik={
-            locale === 'tr'
-              ? 'Olumlu itfaiye raporu için bizimle çalışın'
-              : 'Work with us for a positive fire-department report'
+            isKolu === 'danismanlik'
+              ? locale === 'tr'
+                ? 'Olumlu itfaiye raporu için bizimle çalışın'
+                : 'Work with us for a positive fire-department report'
+              : locale === 'tr'
+                ? 'Yangın güvenliği sistemleri için teklif alın'
+                : 'Get a quote for fire-safety systems'
           }
           aciklama={
-            locale === 'tr'
-              ? 'Projenizin ihtiyaçlarını değerlendiriyor ve size en hızlı çözüm yolunu sunuyoruz.'
-              : 'We assess your project needs and present you with the fastest route to approval.'
+            isKolu === 'danismanlik'
+              ? locale === 'tr'
+                ? 'Projenizin ihtiyaçlarını değerlendiriyor ve size en hızlı çözüm yolunu sunuyoruz.'
+                : 'We assess your project needs and present you with the fastest route to approval.'
+              : locale === 'tr'
+                ? 'Projenizin kapsamına göre anahtar teslim çözümler sunuyoruz. Ekibimizle hemen iletişime geçin.'
+                : 'We deliver turnkey solutions tailored to your project scope. Contact our team today.'
           }
-          buton={{
-            etiket: locale === 'tr' ? 'Teklif İste' : 'Request a Quote',
-            href: '/teklif',
-          }}
-        />
-      </>
-    );
-  }
-
-  // ── Mühendislik ────────────────────────────────────────────────────────────
-  if (isKolu === 'muhendislik') {
-    const fb = MUHENDISLIK_FALLBACK;
-    const baslik =
-      (data?.baslik ? pick(data.baslik, locale) : undefined) ??
-      fb.baslik[locale];
-    const ozet =
-      (data?.ozet ? pick(data.ozet, locale) : undefined) ??
-      fb.ozet[locale];
-
-    const altHizmetler: AltHizmet[] =
-      data?.altHizmetler && data.altHizmetler.length > 0
-        ? data.altHizmetler
-        : fb.altHizmetler;
-
-    return (
-      <>
-        <PageHeader
-          ust={locale === 'tr' ? 'Mühendislik & Uygulama' : 'Engineering & Application'}
-          baslik={baslik}
-          aciklama={ozet}
-        />
-
-        {/* Intro / icerik */}
-        <Section>
-          {data?.icerik && data.icerik.length > 0 ? (
-            <PortableTextRenderer value={data.icerik} />
-          ) : (
-            <div className="mx-auto max-w-3xl space-y-4 text-base leading-relaxed text-muted">
-              {fb.intro[locale].map((p, i) => (
-                <p key={i}>{p}</p>
-              ))}
-            </div>
-          )}
-        </Section>
-
-        {/* Alt hizmetler */}
-        <Section tone="muted">
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              {locale === 'tr' ? 'Uygulama Alanlarımız' : 'Our Service Areas'}
-            </h2>
-            <p className="mt-3 text-muted max-w-xl mx-auto text-sm">
-              {locale === 'tr'
-                ? 'Beş ana alanda uçtan uca mühendislik ve taahhüt hizmetleri sunuyoruz.'
-                : 'We provide end-to-end engineering and contracting services across five core areas.'}
-            </p>
-          </div>
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {altHizmetler.map((h, i) => (
-              <AltHizmetCard
-                key={i}
-                baslik={
-                  (h.baslik ? pick(h.baslik, locale) : undefined) ??
-                  h.baslik?.tr ??
-                  ''
-                }
-                aciklama={
-                  (h.aciklama ? pick(h.aciklama, locale) : undefined) ??
-                  h.aciklama?.tr ??
-                  ''
-                }
-              />
-            ))}
-          </div>
-        </Section>
-
-        {/* Süreç adımları */}
-        <Section>
-          <div className="mb-10 text-center">
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              {locale === 'tr' ? 'Uygulama Sürecimiz' : 'Our Application Process'}
-            </h2>
-            <p className="mt-3 text-muted max-w-xl mx-auto text-sm">
-              {locale === 'tr'
-                ? 'Keşiften devreye almaya kadar her adımda yanınızdayız.'
-                : 'We are with you at every step, from survey to commissioning.'}
-            </p>
-          </div>
-          <div className="mx-auto max-w-2xl flex flex-col gap-8">
-            {fb.surec.map((s) => (
-              <SurecAdim
-                key={s.adim}
-                adim={s.adim}
-                baslik={pick(s.baslik, locale) ?? s.baslik.tr}
-                aciklama={pick(s.aciklama, locale) ?? s.aciklama.tr}
-              />
-            ))}
-          </div>
-        </Section>
-
-        {/* CTA */}
-        <Cta
-          baslik={
-            locale === 'tr'
-              ? 'Yangın güvenliği sistemleri için teklif alın'
-              : 'Get a quote for fire-safety systems'
-          }
-          aciklama={
-            locale === 'tr'
-              ? 'Projenizin kapsamına göre anahtar teslim çözümler sunuyoruz. Ekibimizle hemen iletişime geçin.'
-              : 'We deliver turnkey solutions tailored to your project scope. Contact our team today.'
-          }
-          buton={{
-            etiket: locale === 'tr' ? 'Teklif İste' : 'Request a Quote',
-            href: '/teklif',
-          }}
+          buton={{ etiket: locale === 'tr' ? 'Teklif İste' : 'Request a Quote', href: '/teklif' }}
         />
       </>
     );
@@ -493,18 +398,20 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
   // ── Yazılım veya bilinmeyen ────────────────────────────────────────────────
   return (
     <>
-      <PageHeader
-        baslik={
+      <PageHero
+        eyebrow={data?.baslik ? undefined : locale === 'tr' ? 'Hizmet' : 'Service'}
+        title={
           (data?.baslik ? pick(data.baslik, locale) : undefined) ??
           (locale === 'tr' ? 'Hizmetlerimiz' : 'Our Services')
         }
-        aciklama={
-          (data?.ozet ? pick(data.ozet, locale) : undefined) ?? undefined
-        }
+        description={(data?.ozet ? pick(data.ozet, locale) : undefined) ?? undefined}
+        glyph={<ServiceIcon name="flame" className="h-[26rem] w-[26rem]" />}
       />
       {data?.icerik && data.icerik.length > 0 && (
         <Section>
-          <PortableTextRenderer value={data.icerik} />
+          <div className="mx-auto max-w-3xl">
+            <PortableTextRenderer value={data.icerik} />
+          </div>
         </Section>
       )}
     </>
