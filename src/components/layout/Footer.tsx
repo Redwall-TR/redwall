@@ -1,10 +1,24 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
+import { sanityFetch } from '@/sanity/lib/fetch';
+import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { pick, type Locale } from '@/lib/locales';
+
+interface SiteSettings {
+  iletisim?: { tel?: string; email?: string; adres?: { tr: string; en: string } };
+}
 
 export default async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'nav' });
   const tf = await getTranslations({ locale, namespace: 'footer' });
+
+  const loc: Locale = locale === 'en' ? 'en' : 'tr';
+  const settings = await sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null);
+  const email = settings?.iletisim?.email ?? 'info@redwall.com.tr';
+  const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
+  const adres =
+    (settings?.iletisim?.adres ? pick(settings.iletisim.adres, loc) : undefined) ?? 'İstanbul, Türkiye';
 
   return (
     <footer className="border-t border-border bg-surface">
@@ -160,18 +174,18 @@ export default async function Footer({ locale }: { locale: string }) {
                 {t('iletisim')}
               </h3>
               <a
-                href="mailto:info@redwall.com.tr"
+                href={`mailto:${email}`}
                 className="text-sm text-muted hover:text-primary transition-colors"
               >
-                info@redwall.com.tr
+                {email}
               </a>
               <a
-                href="tel:+900000000000"
+                href={`tel:${tel.replace(/[^0-9+]/g, '')}`}
                 className="text-sm text-muted hover:text-primary transition-colors"
               >
-                +90 (XXX) XXX XX XX
+                {tel}
               </a>
-              <span className="text-sm text-muted">İstanbul, Türkiye</span>
+              <span className="text-sm text-muted">{adres}</span>
             </div>
           </div>
 

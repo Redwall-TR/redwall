@@ -2,12 +2,19 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-import { isLocale, type Locale } from '@/lib/locales';
+import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
+import { sanityFetch } from '@/sanity/lib/fetch';
+import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
 import { Section } from '@/components/ui';
 import ContactForm from '@/components/sections/ContactForm';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+
+interface SiteSettings {
+  iletisim?: { tel?: string; email?: string; adres?: { tr: string; en: string } };
+  calismaSaatleri?: { tr: string; en: string };
+}
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -48,6 +55,15 @@ export default async function IletisimPage({
   const loc: Locale = locale;
   const isTr = loc === 'tr';
 
+  const settings = await sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null);
+  const email = settings?.iletisim?.email ?? 'info@redwall.com.tr';
+  const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
+  const adres =
+    (settings?.iletisim?.adres ? pick(settings.iletisim.adres, loc) : undefined) ?? 'İstanbul, Türkiye';
+  const calismaSaatleri =
+    (settings?.calismaSaatleri ? pick(settings.calismaSaatleri, loc) : undefined) ??
+    (isTr ? 'Pazartesi–Cuma 09:00–18:00' : 'Monday–Friday 09:00–18:00');
+
   const pageBaslik = isTr ? 'İletişim' : 'Contact';
   const pageAciklama = isTr
     ? 'Sorularınız, projeleriniz ve teklifleriniz için aşağıdaki formu doldurun veya doğrudan ulaşın.'
@@ -60,7 +76,7 @@ export default async function IletisimPage({
         title={pageBaslik}
         description={pageAciklama}
         accent="#e63950"
-        chips={isTr ? ['İstanbul', 'info@redwall.com.tr'] : ['Istanbul', 'info@redwall.com.tr']}
+        chips={[adres, email]}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />
 
@@ -88,10 +104,10 @@ export default async function IletisimPage({
                   <div>
                     <p className="font-medium">{isTr ? 'E-posta' : 'Email'}</p>
                     <a
-                      href="mailto:info@redwall.com.tr"
+                      href={`mailto:${email}`}
                       className="text-muted hover:text-primary transition-colors"
                     >
-                      info@redwall.com.tr
+                      {email}
                     </a>
                   </div>
                 </li>
@@ -102,10 +118,10 @@ export default async function IletisimPage({
                   <div>
                     <p className="font-medium">{isTr ? 'Telefon' : 'Phone'}</p>
                     <a
-                      href="tel:+90XXXXXXXXXX"
+                      href={`tel:${tel.replace(/[^0-9+]/g, '')}`}
                       className="text-muted hover:text-primary transition-colors"
                     >
-                      +90 (XXX) XXX XX XX
+                      {tel}
                     </a>
                   </div>
                 </li>
@@ -115,7 +131,7 @@ export default async function IletisimPage({
                   <span className="mt-0.5 text-primary" aria-hidden="true">⌖</span>
                   <div>
                     <p className="font-medium">{isTr ? 'Adres' : 'Address'}</p>
-                    <p className="text-muted">İstanbul, Türkiye</p>
+                    <p className="text-muted">{adres}</p>
                   </div>
                 </li>
 
@@ -124,9 +140,7 @@ export default async function IletisimPage({
                   <span className="mt-0.5 text-primary" aria-hidden="true">◷</span>
                   <div>
                     <p className="font-medium">{isTr ? 'Çalışma Saatleri' : 'Working Hours'}</p>
-                    <p className="text-muted">
-                      {isTr ? 'Pazartesi–Cuma 09:00–18:00' : 'Monday–Friday 09:00–18:00'}
-                    </p>
+                    <p className="text-muted">{calismaSaatleri}</p>
                   </div>
                 </li>
               </ul>
