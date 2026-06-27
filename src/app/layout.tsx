@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import { Space_Grotesk } from 'next/font/google';
+import { getLocale } from 'next-intl/server';
 import './globals.css';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
 
@@ -12,9 +13,10 @@ export const metadata: Metadata = {
   description: 'Redwall Yangın Danışmanlık, Yazılım ve Mühendislik Hizmetleri',
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const locale = await getLocale();
   return (
-    <html lang="tr" suppressHydrationWarning>
+    <html lang={locale} suppressHydrationWarning>
       <body className={`${sans.variable} ${display.variable} font-sans antialiased`}>
         <ThemeProvider>{children}</ThemeProvider>
       </body>
