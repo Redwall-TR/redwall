@@ -1,50 +1,39 @@
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: #fafafa;
-  --foreground: #1a1a1a;
-  --primary: #c41e3a;
-  --primary-light: #e63950;
-  --primary-dark: #9a1830;
-  --secondary: #2c3e50;
-  --accent: #e74c3c;
-  --muted: #6b7280;
+  --background: #fafafa;  --foreground: #1a1a1a;
+  --surface: #ffffff;     --border: #e5e7eb;     --muted: #6b7280;
+  --primary: #c41e3a;     --primary-light: #e63950; --primary-dark: #9a1830;
+  --amber: #f59e0b;       --navy: #1e2a3a;
+}
+.dark {
+  --background: #0e0e10;  --foreground: #ededf0;
+  --surface: #18181b;     --border: #27272a;     --muted: #a1a1aa;
+  --primary: #e63950;     --primary-light: #f0566c; --primary-dark: #c41e3a;
+  --amber: #fbbf24;       --navy: #cbd5e1;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background); --color-foreground: var(--foreground);
+  --color-surface: var(--surface); --color-border: var(--border);
+  --color-muted: var(--muted); --color-primary: var(--primary);
+  --color-primary-light: var(--primary-light); --color-primary-dark: var(--primary-dark);
+  --color-amber: var(--amber); --color-navy: var(--navy);
+  --font-sans: var(--font-sans); --font-display: var(--font-display);
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
-}
+html { scroll-behavior: smooth; }
+body { background: var(--background); color: var(--foreground); }
 
-/* Smooth scroll */
-html {
-  scroll-behavior: smooth;
+/* Blueprint çizgi dokusu (mühendislik motifi) */
+.blueprint-grid {
+  background-image:
+    linear-gradient(var(--border) 1px, transparent 1px),
+    linear-gradient(90deg, var(--border) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
-
-/* Section divider */
-.section-divider {
-  height: 4px;
-  background: linear-gradient(90deg, transparent, var(--primary), transparent);
-  opacity: 0.3;
-}
-
-/* Subtle pattern background */
-.pattern-bg {
-  background-image: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23c41e3a' fill-opacity='0.03'%3E%3Cpath d='M20 20h20v20H20zM0 0h20v20H0z'/%3E%3C/g%3E%3C/svg%3E");
-}
-
-/* Gradient text */
 .text-gradient {
-  background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  background: linear-gradient(135deg, var(--primary), var(--amber));
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
