@@ -6,7 +6,10 @@ import { isLocale, pick, LOCALES } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PRODUCT_QUERY, PRODUCTS_QUERY } from '@/sanity/lib/queries';
-import { Section, Cta, Breadcrumb, Badge, Button } from '@/components/ui';
+import { Section, Cta } from '@/components/ui';
+import { ServiceIcon } from '@/components/ui/icons';
+import { PageHero } from '@/components/sections/PageHero';
+import { SectionHeading, FeatureCard } from '@/components/sections/page-blocks';
 import ProductFeatures, { type Feature } from '@/components/sections/ProductFeatures';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -29,6 +32,10 @@ interface ProductsListItem {
   slug: string;
 }
 
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+const ACCENT = '#e63950';
+
 // ── Known product slugs (always prerender) ────────────────────────────────────
 
 const KNOWN_SLUGS = ['yanginpro', 'mekanikpro'] as const;
@@ -37,6 +44,13 @@ type KnownSlug = (typeof KNOWN_SLUGS)[number];
 function isKnownSlug(s: string): s is KnownSlug {
   return (KNOWN_SLUGS as readonly string[]).includes(s);
 }
+
+// ── Feature icon mapping (index-based per product) ───────────────────────────
+
+const FEATURE_ICONS: Record<KnownSlug, string[]> = {
+  yanginpro: ['gauge', 'droplet', 'shield-check', 'document', 'clipboard', 'ruler'],
+  mekanikpro: ['gauge', 'ruler', 'droplet', 'wrench', 'document', 'refresh'],
+};
 
 // ── Fallback content ──────────────────────────────────────────────────────────
 
@@ -318,42 +332,37 @@ export default async function UrunDetayPage({
 
   const isTr = locale === 'tr';
 
-  // Breadcrumb labels
-  const yazilimLabel = isTr ? 'Yazılım' : 'Software';
+  // Hero chips — first feature titles (up to 4)
+  const heroChips = features.slice(0, 4).map(
+    (f) => pick(f.baslik, locale) ?? f.baslik.tr
+  );
+
+  // Icon list for features
+  const iconList = isKnownSlug(urun) ? FEATURE_ICONS[urun] : [];
+
+  // Section labels
+  const featuresEyebrow = isTr ? 'Özellikler' : 'Features';
+  const featuresBaslik = isTr ? `${ad} Yetenekleri` : `${ad} Capabilities`;
+  const featuresAciklama = isTr
+    ? `${ad}'ın temel mühendislik yetenekleri`
+    : `Core engineering capabilities of ${ad}`;
+
+  const audienceTitle = isTr ? 'Kimler İçin?' : 'Who Is It For?';
+  const audienceSubtitle = isTr
+    ? `${ad} şu kullanıcı gruplarına hitap etmektedir:`
+    : `${ad} is designed for the following user groups:`;
 
   return (
     <>
-      {/* Breadcrumb */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
-        <Breadcrumb
-          items={[
-            { etiket: yazilimLabel, href: '/yazilim' },
-            { etiket: ad },
-          ]}
-        />
-      </div>
-
       {/* Hero */}
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-10 pb-12">
-        <div className="inline-flex mb-4">
-          <Badge tone="primary">{isTr ? 'Yazılım Ürünü' : 'Software Product'}</Badge>
-        </div>
-        <h1 className="font-display text-4xl font-bold text-foreground sm:text-5xl">{ad}</h1>
-        {slogan && (
-          <p className="mt-3 text-xl font-medium text-primary">{slogan}</p>
-        )}
-        {aciklama && (
-          <p className="mt-4 max-w-2xl text-lg text-muted leading-relaxed">{aciklama}</p>
-        )}
-        <div className="mt-8 flex flex-wrap gap-4">
-          <Button href="/iletisim">
-            {isTr ? 'Demo Talep Et' : 'Request a Demo'}
-          </Button>
-          <Button href="/teklif" variant="secondary">
-            {isTr ? 'Teklif Al' : 'Get a Quote'}
-          </Button>
-        </div>
-      </div>
+      <PageHero
+        eyebrow={isTr ? 'Yazılım Ürünü' : 'Software Product'}
+        title={ad}
+        description={aciklama ?? slogan}
+        accent={ACCENT}
+        chips={heroChips.length > 0 ? heroChips : undefined}
+        glyph={<ServiceIcon name="gauge" className="h-[26rem] w-[26rem]" />}
+      />
 
       {/* Interface mockup */}
       <Section tone="dark">
@@ -365,17 +374,27 @@ export default async function UrunDetayPage({
       {/* Features */}
       {features.length > 0 && (
         <Section>
-          <div className="mb-10">
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              {isTr ? 'Özellikler' : 'Features'}
-            </h2>
-            <p className="mt-2 text-muted text-sm max-w-xl">
-              {isTr
-                ? `${ad}'ın temel mühendislik yetenekleri`
-                : `Core engineering capabilities of ${ad}`}
-            </p>
-          </div>
-          <ProductFeatures features={features} locale={locale} />
+          <SectionHeading
+            eyebrow={featuresEyebrow}
+            title={featuresBaslik}
+            description={featuresAciklama}
+            accent={ACCENT}
+          />
+          {iconList.length > 0 ? (
+            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {features.map((feature, i) => (
+                <FeatureCard
+                  key={i}
+                  icon={iconList[i] ?? 'gauge'}
+                  accent={ACCENT}
+                  title={pick(feature.baslik, locale) ?? feature.baslik.tr}
+                  description={pick(feature.aciklama, locale) ?? feature.aciklama.tr}
+                />
+              ))}
+            </div>
+          ) : (
+            <ProductFeatures features={features} locale={locale} />
+          )}
         </Section>
       )}
 
@@ -384,12 +403,10 @@ export default async function UrunDetayPage({
         <Section tone="muted">
           <div className="mb-10 text-center">
             <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
-              {isTr ? 'Kimler İçin?' : 'Who Is It For?'}
+              {audienceTitle}
             </h2>
             <p className="mt-2 text-muted text-sm max-w-xl mx-auto">
-              {isTr
-                ? `${ad} şu kullanıcı gruplarına hitap etmektedir:`
-                : `${ad} is designed for the following user groups:`}
+              {audienceSubtitle}
             </p>
           </div>
           <ul className="mx-auto max-w-2xl grid gap-3 sm:grid-cols-2">
@@ -400,7 +417,10 @@ export default async function UrunDetayPage({
                   key={i}
                   className="flex items-start gap-3 rounded-xl border border-border bg-background px-5 py-4"
                 >
-                  <span className="mt-0.5 flex-shrink-0 inline-flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 text-primary">
+                  <span
+                    className="mt-0.5 flex-shrink-0 inline-flex h-5 w-5 items-center justify-center rounded-full"
+                    style={{ backgroundColor: `${ACCENT}1a`, color: ACCENT }}
+                  >
                     <svg
                       className="h-3 w-3"
                       viewBox="0 0 24 24"

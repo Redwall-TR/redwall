@@ -83,16 +83,6 @@ export default function ProductGrid({ products, locale }: ProductGridProps) {
 
   const badgeLabel = locale === 'tr' ? 'Yazılım' : 'Software';
   const detailsLabel = locale === 'tr' ? 'İncele' : 'View Details';
-  const emptyLabel =
-    locale === 'tr'
-      ? 'Ürün bulunamadı.'
-      : 'No products found.';
-
-  if (cards.length === 0) {
-    return (
-      <p className="text-center text-muted py-12">{emptyLabel}</p>
-    );
-  }
 
   return (
     <div className="grid gap-6 sm:grid-cols-2">
