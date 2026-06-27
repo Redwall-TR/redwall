@@ -1,5 +1,6 @@
 import { type Locale } from '@/lib/locales';
-import { cn } from '@/lib/utils';
+import { urlFor } from '@/sanity/lib/image';
+import { LogoWall } from '@/components/ui';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -13,35 +14,42 @@ interface ReferenceStripProps {
   locale: Locale;
 }
 
+const ACCENT = '#e63950';
+
 // ── Component ────────────────────────────────────────────────────────────────
 
 export default function ReferenceStrip({ references, locale }: ReferenceStripProps) {
   if (references.length === 0) return null;
 
-  const label =
-    locale === 'tr' ? 'Bize Güvenen Kurumlar' : 'Trusted By';
+  const isTr = locale === 'tr';
+  const eyebrow = isTr ? 'Referanslar' : 'References';
+  const baslik = isTr ? 'Bize Güvenen Kurumlar' : 'Trusted by Leading Organizations';
+
+  const logos = references.map((ref) => ({
+    ad: ref.ad,
+    src: ref.logo
+      ? urlFor(ref.logo as Parameters<typeof urlFor>[0]).width(240).height(120).fit('max').url()
+      : undefined,
+  }));
 
   return (
-    <section className="py-14 bg-surface border-y border-border">
+    <section className="border-y border-border bg-surface py-16">
       <div className="mx-auto max-w-6xl px-4 sm:px-6">
-        <p className="mb-8 text-center text-xs font-semibold uppercase tracking-widest text-muted">
-          {label}
-        </p>
-
-        <div className="flex flex-wrap items-center justify-center gap-3">
-          {references.map((ref) => (
+        <div className="mb-10 text-center">
+          <div className="mb-3 flex items-center justify-center gap-3">
+            <span className="h-px w-8" style={{ backgroundColor: ACCENT }} aria-hidden />
             <span
-              key={ref.ad}
-              className={cn(
-                'inline-flex items-center rounded-full border border-border bg-background',
-                'px-4 py-2 text-sm font-medium text-foreground/80',
-                'transition-colors hover:border-primary/40 hover:text-foreground',
-              )}
+              className="text-xs font-semibold uppercase tracking-[0.22em]"
+              style={{ color: ACCENT }}
             >
-              {ref.ad}
+              {eyebrow}
             </span>
-          ))}
+            <span className="h-px w-8" style={{ backgroundColor: ACCENT }} aria-hidden />
+          </div>
+          <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">{baslik}</h2>
         </div>
+
+        <LogoWall logos={logos} />
       </div>
     </section>
   );
