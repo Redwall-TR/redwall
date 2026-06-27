@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PROJECTS_QUERY } from '@/sanity/lib/queries';
 import { isLocale, type Locale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { PageHeader } from '@/components/ui';
 import ProjectsExplorer from '@/components/sections/ProjectsExplorer';
 import type { ProjectCard } from '@/lib/projects';
@@ -19,16 +20,13 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  return {
-    title:
-      loc === 'tr'
-        ? 'Projeler — Redwall'
-        : 'Projects — Redwall',
-    description:
-      loc === 'tr'
-        ? 'Redwall\'ın tamamlanan ve devam eden projelerini iş koluna göre filtreleyin.'
-        : 'Browse Redwall\'s completed and ongoing projects, filtered by business line.',
-  };
+  const baslik = loc === 'tr' ? 'Projeler — Redwall' : 'Projects — Redwall';
+  const aciklama =
+    loc === 'tr'
+      ? 'Redwall\'ın tamamlanan ve devam eden projelerini iş koluna göre filtreleyin.'
+      : 'Browse Redwall\'s completed and ongoing projects, filtered by business line.';
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/projeler' });
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────

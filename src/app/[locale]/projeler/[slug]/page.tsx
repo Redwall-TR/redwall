@@ -5,6 +5,7 @@ import type { PortableTextBlock } from '@portabletext/react';
 import Image from 'next/image';
 
 import { isLocale, pick, LOCALES } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PROJECT_QUERY, PROJECTS_QUERY } from '@/sanity/lib/queries';
 import { Section, Badge, Breadcrumb, Cta, PortableTextRenderer } from '@/components/ui';
@@ -67,16 +68,20 @@ export async function generateMetadata({
   const data = await sanityFetch<ProjectData | null>(PROJECT_QUERY, { slug }, null);
 
   if (!data) {
-    return { title: 'Proje | Redwall' };
+    return buildMetadata({
+      baslik: 'Proje | Redwall',
+      aciklama: loc === 'tr' ? 'Redwall projesi.' : 'Redwall project.',
+      locale: loc,
+      path: `/projeler/${slug}`,
+    });
   }
 
   const title = pick(data.baslik, loc) ?? data.baslik.tr;
-  const description = data.ozet ? (pick(data.ozet, loc) ?? undefined) : undefined;
+  const description =
+    (data.ozet ? (pick(data.ozet, loc) ?? undefined) : undefined) ??
+    (loc === 'tr' ? 'Redwall projesi.' : 'Redwall project.');
 
-  return {
-    title: `${title} | Redwall`,
-    description,
-  };
+  return buildMetadata({ baslik: `${title} | Redwall`, aciklama: description, locale: loc, path: `/projeler/${slug}` });
 }
 
 // ── Durum badge ───────────────────────────────────────────────────────────────

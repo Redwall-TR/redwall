@@ -5,6 +5,7 @@ import type { Metadata } from 'next';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { FAQS_QUERY } from '@/sanity/lib/queries';
 import { isLocale, pick, type Locale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { PageHeader, Section, Cta } from '@/components/ui';
 import { Accordion } from '@/components/ui/Accordion';
 
@@ -142,13 +143,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isTr = !isLocale(locale) || locale === 'tr';
+  const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  return {
-    title: isTr ? 'S.S.S. | Redwall' : 'FAQ | Redwall',
-    description: isTr
-      ? 'Redwall hizmetleri hakkında sık sorulan sorular ve yanıtları.'
-      : 'Frequently asked questions and answers about Redwall services.',
-  };
+  const baslik = isTr ? 'S.S.S. | Redwall' : 'FAQ | Redwall';
+  const aciklama = isTr
+    ? 'Redwall hizmetleri hakkında sık sorulan sorular ve yanıtları.'
+    : 'Frequently asked questions and answers about Redwall services.';
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/sss' });
 }
 
 // ── Static params ─────────────────────────────────────────────────────────────

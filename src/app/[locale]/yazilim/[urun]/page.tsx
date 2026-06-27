@@ -3,6 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 import { isLocale, pick, LOCALES } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PRODUCT_QUERY, PRODUCTS_QUERY } from '@/sanity/lib/queries';
 import { PageHeader, Section, Cta, Breadcrumb, Badge, Button } from '@/components/ui';
@@ -203,10 +204,10 @@ export async function generateMetadata({
     slogan = pick(fb.slogan, loc) ?? undefined;
   }
 
-  return {
-    title: `${ad} | Redwall`,
-    description: slogan,
-  };
+  const baslik = `${ad} | Redwall`;
+  const aciklama = slogan ?? (loc === 'tr' ? `${ad} — Redwall yazılım ürünü.` : `${ad} — Redwall software product.`);
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: `/yazilim/${urun}` });
 }
 
 // ── Decorative mockup ─────────────────────────────────────────────────────────

@@ -1,0 +1,37 @@
+import type { Metadata } from 'next';
+import { LOCALES, type Locale } from '@/lib/locales';
+
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.com.tr';
+
+export function buildMetadata({
+  baslik,
+  aciklama,
+  locale,
+  path = '',
+}: {
+  baslik: string;
+  aciklama: string;
+  locale: Locale;
+  path?: string;
+}): Metadata {
+  const languages: Record<string, string> = {};
+  for (const l of LOCALES) {
+    languages[l] = `${SITE_URL}/${l}${path}`;
+  }
+
+  return {
+    title: baslik,
+    description: aciklama,
+    alternates: {
+      canonical: `${SITE_URL}/${locale}${path}`,
+      languages,
+    },
+    openGraph: {
+      title: baslik,
+      description: aciklama,
+      url: `${SITE_URL}/${locale}${path}`,
+      locale,
+      type: 'website',
+    },
+  };
+}

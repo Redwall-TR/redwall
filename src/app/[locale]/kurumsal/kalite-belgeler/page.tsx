@@ -3,6 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 import { isLocale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import PageContent from '@/components/sections/PageContent';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
@@ -14,13 +15,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isTr = !isLocale(locale) || locale === 'tr';
+  const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  return {
-    title: isTr ? 'Kalite & Belgeler | Redwall' : 'Quality & Certificates | Redwall',
-    description: isTr
-      ? 'Redwall kalite yönetim yaklaşımı, uyduğumuz ulusal ve uluslararası standartlar ile sertifikalarımız.'
-      : 'Redwall\'s quality management approach, the national and international standards we comply with, and our certificates.',
-  };
+  const baslik = isTr ? 'Kalite & Belgeler | Redwall' : 'Quality & Certificates | Redwall';
+  const aciklama = isTr
+    ? 'Redwall kalite yönetim yaklaşımı, uyduğumuz ulusal ve uluslararası standartlar ile sertifikalarımız.'
+    : 'Redwall\'s quality management approach, the national and international standards we comply with, and our certificates.';
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/kurumsal/kalite-belgeler' });
 }
 
 // ── Static params ─────────────────────────────────────────────────────────────

@@ -6,6 +6,7 @@ import type { SanityImageSource } from '@sanity/image-url';
 import Image from 'next/image';
 
 import { isLocale, pick, LOCALES, type Locale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { POST_QUERY, POSTS_QUERY } from '@/sanity/lib/queries';
 import { Section, Cta, PortableTextRenderer } from '@/components/ui';
@@ -60,20 +61,19 @@ export async function generateMetadata({
   const data = await sanityFetch<PostData | null>(POST_QUERY, { slug }, null);
 
   if (!data) {
-    return {
-      title: loc === 'tr' ? 'Blog Yazısı | Redwall' : 'Blog Post | Redwall',
-    };
+    const fallbackBaslik = loc === 'tr' ? 'Blog Yazısı | Redwall' : 'Blog Post | Redwall';
+    const fallbackAciklama =
+      loc === 'tr' ? 'Redwall blog yazısı.' : 'Redwall blog post.';
+    return buildMetadata({ baslik: fallbackBaslik, aciklama: fallbackAciklama, locale: loc, path: `/blog/${slug}` });
   }
 
-  const baslik = pick(data.baslik, loc) ?? data.baslik.tr;
+  const baslik = (pick(data.baslik, loc) ?? data.baslik.tr) + ' | Redwall';
+  const aciklama =
+    loc === 'tr'
+      ? 'Redwall blog yazısı — sektörden görüşler ve haberler.'
+      : 'Redwall blog post — industry insights and news.';
 
-  return {
-    title: `${baslik} | Redwall`,
-    description:
-      loc === 'tr'
-        ? 'Redwall blog yazısı — sektörden görüşler ve haberler.'
-        : 'Redwall blog post — industry insights and news.',
-  };
+  return buildMetadata({ baslik, aciklama, locale: loc, path: `/blog/${slug}` });
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────

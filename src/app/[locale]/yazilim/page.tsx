@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { isLocale, pick } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PRODUCTS_QUERY, SERVICE_QUERY } from '@/sanity/lib/queries';
 import { PageHeader, Section, Cta } from '@/components/ui';
@@ -30,13 +31,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isTr = !isLocale(locale) || locale === 'tr';
+  const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  return {
-    title: isTr ? 'Yazılım | Redwall' : 'Software | Redwall',
-    description: isTr
-      ? 'Fikri mülkiyeti Redwall\'a ait YangınPro ve MekanikPro yazılımları ile yangın ve mekanik mühendislik süreçlerinizi dijitalleştirin.'
-      : 'Digitise your fire and mechanical engineering workflows with YangınPro and MekanikPro — proprietary software developed and owned by Redwall.',
-  };
+  const baslik = isTr ? 'Yazılım | Redwall' : 'Software | Redwall';
+  const aciklama = isTr
+    ? 'Fikri mülkiyeti Redwall\'a ait YangınPro ve MekanikPro yazılımları ile yangın ve mekanik mühendislik süreçlerinizi dijitalleştirin.'
+    : 'Digitise your fire and mechanical engineering workflows with YangınPro and MekanikPro — proprietary software developed and owned by Redwall.';
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/yazilim' });
 }
 
 // ── Static params ─────────────────────────────────────────────────────────────

@@ -3,6 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 import { isLocale, type Locale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { PageHeader, Section } from '@/components/ui';
 import QuoteForm from '@/components/sections/QuoteForm';
 
@@ -15,12 +16,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isTr = !isLocale(locale) || locale === 'tr';
-  return {
-    title: isTr ? 'Teklif İste | Redwall' : 'Get a Quote | Redwall',
-    description: isTr
-      ? 'İhtiyacınıza özel teklif almak için formu doldurun. Kısa sürede size dönüş yapıyoruz.'
-      : 'Fill in the form to get a custom quote tailored to your needs. We respond promptly.',
-  };
+  const loc = isTr ? ('tr' as const) : ('en' as const);
+
+  const baslik = isTr ? 'Teklif İste | Redwall' : 'Get a Quote | Redwall';
+  const aciklama = isTr
+    ? 'İhtiyacınıza özel teklif almak için formu doldurun. Kısa sürede size dönüş yapıyoruz.'
+    : 'Fill in the form to get a custom quote tailored to your needs. We respond promptly.';
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/teklif' });
 }
 
 // ── Static params ─────────────────────────────────────────────────────────────

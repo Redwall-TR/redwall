@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { isLocale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import ServiceDetail from '@/components/sections/ServiceDetail';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
@@ -13,15 +14,14 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { locale } = await params;
   const isTr = !isLocale(locale) || locale === 'tr';
+  const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  return {
-    title: isTr
-      ? 'Yangın Danışmanlığı | Redwall'
-      : 'Fire Consulting | Redwall',
-    description: isTr
-      ? 'İtfaiyeden olumlu rapor almak, mevzuata tam uyum sağlamak ve yangın güvenliği projelerinizi doğru şekilde yönetmek için profesyonel danışmanlık hizmetleri.'
-      : 'Professional consulting services to obtain a positive fire-department report, achieve full regulatory compliance, and correctly manage your fire-safety projects.',
-  };
+  const baslik = isTr ? 'Yangın Danışmanlığı | Redwall' : 'Fire Consulting | Redwall';
+  const aciklama = isTr
+    ? 'İtfaiyeden olumlu rapor almak, mevzuata tam uyum sağlamak ve yangın güvenliği projelerinizi doğru şekilde yönetmek için profesyonel danışmanlık hizmetleri.'
+    : 'Professional consulting services to obtain a positive fire-department report, achieve full regulatory compliance, and correctly manage your fire-safety projects.';
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/danismanlik' });
 }
 
 // ── Static params ─────────────────────────────────────────────────────────────

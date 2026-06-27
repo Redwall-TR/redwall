@@ -5,6 +5,7 @@ import Image from 'next/image';
 import type { SanityImageSource } from '@sanity/image-url';
 
 import { isLocale, pick, type Locale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { POSTS_QUERY } from '@/sanity/lib/queries';
 import { PageHeader, Section } from '@/components/ui';
@@ -36,13 +37,13 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  return {
-    title: loc === 'tr' ? 'Blog & Haberler | Redwall' : 'Blog & News | Redwall',
-    description:
-      loc === 'tr'
-        ? 'Redwall\'ın sektör görüşleri, proje haberleri ve teknik makaleleri.'
-        : 'Industry insights, project news, and technical articles from Redwall.',
-  };
+  const baslik = loc === 'tr' ? 'Blog & Haberler | Redwall' : 'Blog & News | Redwall';
+  const aciklama =
+    loc === 'tr'
+      ? 'Redwall\'ın sektör görüşleri, proje haberleri ve teknik makaleleri.'
+      : 'Industry insights, project news, and technical articles from Redwall.';
+
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/blog' });
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────

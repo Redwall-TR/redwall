@@ -11,6 +11,7 @@ import {
   SITE_SETTINGS_QUERY,
 } from '@/sanity/lib/queries';
 import { pick, isLocale, type Locale } from '@/lib/locales';
+import { buildMetadata } from '@/lib/metadata';
 import { Button, Section, Stat } from '@/components/ui';
 
 import Hero from '@/components/sections/Hero';
@@ -83,7 +84,7 @@ export async function generateMetadata({
       ? 'Yangın güvenliğinde yazılım, danışmanlık ve mühendislik hizmetleriyle uçtan uca çözümler.'
       : 'End-to-end fire safety solutions covering software, consulting, and engineering.');
 
-  return { title, description };
+  return buildMetadata({ baslik: title, aciklama: description, locale: loc, path: '' });
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
