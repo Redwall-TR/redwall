@@ -30,6 +30,11 @@ bilgi mimarisi, içerik ve görsel dil baştan kurgulanır.
 - **Çoklu dil:** **Türkçe (varsayılan) + İngilizce**, **`/tr` ve `/en` ön ekli
   URL** yapısı, **next-intl** kütüphanesi ile. Hemen kapsam içinde.
 - **Tema:** **Koyu + Açık tema** desteği, kullanıcı tercihiyle değiştirilebilir.
+- **CMS:** **Sanity (hosted, headless)**, `/studio` rotasında gömülü Studio ile.
+  Kapsam: **neredeyse tüm içerik** CMS'ten yönetilir (sayfa metinleri, hizmetler,
+  ürünler, projeler, referanslar, blog, kariyer, SSS, kurumsal/vizyon-misyon).
+  Yalnızca arayüz çentiği (buton/menü/form etiketleri, validasyon mesajları)
+  `next-intl`'de kalır. Hemen kapsam içinde.
 - **İletişim/kurumsal veriler:** Şimdilik placeholder; `ICERIK-TODO.md` ile listelenecek.
 - **Görsel yön:** Belirgin & özgün kurumsal (şablon hissinden uzak).
 
@@ -77,8 +82,9 @@ Footer tüm sayfaları açıkça, sütunlara ayrılmış olarak listeler.
 ## 3. Teknik Mimari
 
 - **Stack:** Next.js 16 (App Router), React 19, Tailwind v4, TypeScript.
-  Eklenen kütüphaneler: **next-intl** (çoklu dil), tema için **next-themes**
-  (veya eşdeğeri hafif çözüm). Bunun dışında yeni runtime bağımlılığı eklenmez.
+  Eklenen kütüphaneler: **next-intl** (çoklu dil), **next-themes** (tema),
+  **Sanity** (`sanity`, `next-sanity`, `@sanity/client`, `@sanity/image-url`,
+  `@sanity/vision`). Bunun dışında yeni runtime bağımlılığı eklenmez.
 - **Çoklu dil (next-intl):**
   - Rotalar `src/app/[locale]/...` altında; `locale` = `tr` | `en`, varsayılan `tr`.
   - Çeviriler `src/messages/tr.json` ve `src/messages/en.json` (UI metinleri, sayfa
@@ -88,17 +94,27 @@ Footer tüm sayfaları açıkça, sütunlara ayrılmış olarak listeler.
 - **Tema (koyu/açık):** `next-themes` ile `class` tabanlı; Tailwind v4 `dark:`
   varyantları. Kök layout'ta `ThemeProvider` + Header'da tema değiştirici (sistem
   tercihini de saygılar). Renk token'ları açık/koyu için `globals.css`'te tanımlı.
-- **İçerik = veri:** Yapısal listeler `src/data/` altında tipli TS dosyalarında;
-  iki dilli alanlar `{ tr: string; en: string }` (veya `Record<Locale, string>`)
-  biçiminde tutulur. Saf UI metinleri `messages/*.json`'da, yapısal kayıtlar
-  `data/`'da yaşar:
-  - `company.ts` — şirket bilgisi, iletişim, sosyal, istatistikler (placeholder).
-  - `services.ts` — üç iş kolu ve alt hizmetler (iki dilli).
-  - `products.ts` — YangınPro, MekanikPro (özellik listeleri, slug, iki dilli).
-  - `projects.ts` — projeler (başlık, müşteri, iş kolu, durum, yıl, il, kapsam, görsel).
-  - `references.ts` — referans kurumlar (logo placeholder) + görüşler.
-  - `faqs.ts`, `posts.ts`, `jobs.ts` — SSS, blog, kariyer kayıtları (boş-durum hazır).
-  - `nav.ts` — navigasyon ve footer link yapısı (tek kaynak).
+- **İçerik = Sanity CMS:** İçerik kod içi `data/` dosyalarında değil, **Sanity**'de
+  yaşar. Sunucu bileşenleri **GROQ** sorgularıyla içeriği çeker.
+  - **Studio:** `src/app/studio/[[...tool]]/page.tsx` ile gömülü Sanity Studio
+    (`/studio`). Şemalar `src/sanity/schemaTypes/` altında TypeScript ile tanımlı.
+  - **İstemci & sorgular:** `src/sanity/lib/` (client, image-url, GROQ sorguları,
+    tipli `fetch` sarmalayıcı). Tipler şemalardan türetilir.
+  - **i18n (alan-bazlı yerelleştirme):** Çevrilebilir alanlar `localeString` /
+    `localeText` / `localePortableText` gibi `{ tr, en }` nesne tipleriyle modellenir;
+    sunucu tarafında aktif locale'e göre düzleştirilir.
+  - **Şema tipleri (doküman):** `siteSettings` (şirket bilgisi, iletişim, sosyal,
+    istatistik), `homePage`, `service` (üç iş kolu + alt hizmetler), `product`
+    (YangınPro, MekanikPro), `project` (müşteri, iş kolu, durum, yıl, il, kapsam,
+    görseller), `reference` (logo + görüş), `faq`, `post` (blog), `jobPosting`
+    (kariyer), `page` (kurumsal/vizyon-misyon/kalite vb. esnek sayfa içeriği),
+    `navigation` (menü/footer yapısı).
+  - **Görseller:** Sanity asset pipeline + `@sanity/image-url` (responsive,
+    optimize). Placeholder logolar/görseller seed ile gelir.
+- **UI çentiği = next-intl:** Buton/menü/form etiketleri, validasyon ve durum
+  mesajları `messages/tr.json` + `messages/en.json`'da kalır (CMS'e taşınmaz).
+- **Kod içi kalan minimal veri:** Yalnızca CMS gerektirmeyen sabitler
+  (`src/lib/` içinde locale listesi, rota slug haritası gibi) kodda durur.
 - **Tipler:** `src/types/` veya ilgili veri dosyası içinde `type`/`interface` tanımları.
 - **Yeniden kullanılabilir UI** (`src/components/ui/`): `Button`, `Section`,
   `PageHeader`, `Card`, `ServiceCard`, `ProductFeature`, `Stat`, `Badge`,
@@ -129,9 +145,16 @@ src/
 ├── messages/
 │   ├── tr.json
 │   └── en.json
+├── sanity/
+│   ├── schemaTypes/               (doküman + nesne şemaları, localeString vb.)
+│   ├── lib/                       (client, image, GROQ sorguları, tipli fetch)
+│   ├── structure.ts               (Studio masası yapısı)
+│   └── env.ts                     (projectId, dataset, apiVersion)
+├── sanity.config.ts               (Studio yapılandırması, eklentiler)
 ├── app/
 │   ├── layout.tsx                 (kök: ThemeProvider, fontlar)
 │   ├── globals.css, sitemap.ts, robots.ts
+│   ├── studio/[[...tool]]/page.tsx (gömülü Sanity Studio → /studio)
 │   └── [locale]/
 │       ├── layout.tsx             (NextIntlClientProvider, Header, Footer)
 │       ├── page.tsx               (Ana sayfa)
@@ -156,9 +179,12 @@ src/
 │   ├── ui/        (yeniden kullanılabilir temel bileşenler)
 │   ├── layout/    (Header, Footer, ThemeToggle, LocaleSwitcher)
 │   └── sections/  (sayfaya özel bölümler)
-├── data/
-└── types/
+├── lib/           (locale sabitleri, slug haritası, yardımcılar)
+└── types/         (paylaşılan tipler; Sanity tipleri sanity/lib altında)
 ```
+
+> `sanity/` ve `app/studio` şema/araç kodudur. İçerik kayıtları repo'da değil,
+> Sanity projesinde tutulur; ilk içerik **seed (NDJSON)** ile import edilir.
 
 ---
 
@@ -202,7 +228,7 @@ referans logo şeridi → kısa "yaklaşımımız/süreç" → kapanış CTA (Te
 
 ### Ürün sayfaları (`/yazilim/yanginpro`, `/yazilim/mekanikpro`)
 Ürün hero + arayüz mockup → özellik gridi → "kimler için" → (varsa) modül/akış →
-demo/CTA. İçerik `products.ts`'ten gelir; iki sayfa aynı şablonu paylaşır.
+demo/CTA. İçerik Sanity `product` dokümanından gelir; iki sayfa aynı şablonu paylaşır.
 
 ### Danışmanlık (`/danismanlik`)
 İtfaiye onay süreci, yönetmeliğe uygunluk, projelendirme → kimlere hitap eder
@@ -226,13 +252,13 @@ Referans kurum logo duvarı (placeholder) + müşteri görüşleri (testimonial)
 - **Kalite & Belgeler:** TSE vb. belgeler ve kalite yaklaşımı (placeholder).
 
 ### SSS (`/sss`)
-Kategorize akordeon (danışmanlık, yazılım, mühendislik). `faqs.ts`'ten beslenir.
+Kategorize akordeon (danışmanlık, yazılım, mühendislik). Sanity `faq` dokümanlarından beslenir.
 
 ### Blog / Haberler (`/blog`, `/blog/[slug]`)
-Yazı listesi + detay. `posts.ts` boş-durum hazır (yazı yoksa zarif boş durum).
+Yazı listesi + detay. Sanity `post` dokümanları; yazı yoksa zarif boş durum.
 
 ### Kariyer (`/kariyer`)
-Açık pozisyonlar listesi + genel başvuru çağrısı. `jobs.ts` boş-durum hazır.
+Açık pozisyonlar listesi + genel başvuru çağrısı. Sanity `jobPosting` dokümanları; boş-durum hazır.
 
 ### Teklif İste (`/teklif`)
 Yapılandırılmış form: iş kolu seçimi, proje/hizmet tipi, bina/proje bilgisi (m², il),
@@ -245,33 +271,39 @@ Genel iletişim formu + placeholder iletişim bilgileri + harita placeholder +
 
 ---
 
-## 6. Veri Modelleri (özet)
+## 6. İçerik Modeli (Sanity Şemaları — özet)
 
-```ts
-type IsKolu = 'yazilim' | 'danismanlik' | 'muhendislik';
-type ProjeDurumu = 'devam-eden' | 'tamamlandi';
+Çevrilebilir alanlar `localeString` / `localeText` / `localePortableText` nesne
+tipleridir (`{ tr, en }`). Aşağıda kavramsal alanlar verilmiştir.
 
-interface Proje {
-  slug: string; baslik: string; musteri: string; isKolu: IsKolu;
-  durum: ProjeDurumu; yil: number; il: string; kapsam: string;
-  ozet: string; aciklama: string; gorseller: string[]; oneCikan?: boolean;
-}
+```
+siteSettings (singleton)  — şirket adı, iletişim (tel/e-posta/adres), sosyal,
+                            çalışma saatleri, istatistikler, varsayılan SEO.
+navigation (singleton)    — header menüsü + footer sütunları (link yapısı).
+homePage (singleton)      — hero, öne çıkan iş kolları/ürün/projeler, CTA blokları.
 
-interface Urun {
-  slug: 'yanginpro' | 'mekanikpro'; ad: string; sloganTr: string;
-  aciklama: string; ozellikler: { baslik: string; aciklama: string }[];
-  hedefKitle: string[];
-}
-
-interface Hizmet { baslik: string; aciklama: string; altHizmetler?: string[]; }
-interface Referans { ad: string; logo: string; gorus?: { metin: string; kisi: string } }
-interface SSS { kategori: IsKolu | 'genel'; soru: string; cevap: string; }
-interface Yazi { slug: string; baslik: string; tarih: string; ozet: string; icerik: string; }
-interface Pozisyon { baslik: string; lokasyon: string; tip: string; aciklama: string; }
+service                   — slug ('yazilim'|'danismanlik'|'muhendislik'),
+                            baslik(L), ozet(L), icerik(L, portable text),
+                            altHizmetler[{ baslik(L), aciklama(L) }], imzaRengi, sira.
+product                   — slug ('yanginpro'|'mekanikpro'), ad, slogan(L),
+                            aciklama(L), ozellikler[{ baslik(L), aciklama(L) }],
+                            hedefKitle(L[]), ekranGorselleri[image], sira.
+project                   — slug, baslik(L), musteri, isKolu(ref/enum),
+                            durum('devam-eden'|'tamamlandi'), yil, il, kapsam(L),
+                            ozet(L), aciklama(L, portable text), gorseller[image],
+                            oneCikan(bool).
+reference                 — ad, logo(image), gorus{ metin(L), kisi, unvan(L) }?.
+faq                       — kategori(isKolu|'genel'), soru(L), cevap(L), sira.
+post (blog)               — slug, baslik(L), tarih, kapak(image), ozet(L),
+                            icerik(L, portable text), etiketler[].
+jobPosting (kariyer)      — slug, baslik(L), lokasyon, tip, aciklama(L), aktif(bool).
+page (esnek kurumsal)     — slug (hakkimizda|vizyon-misyon|kalite-belgeler),
+                            baslik(L), bloklar[] (portable text + bölüm blokları).
 ```
 
-Placeholder veriler gerçekçi ama açıkça örnek olacak; `ICERIK-TODO.md` neyin
-güncelleneceğini listeler.
+(L) = locale nesnesi (`{ tr, en }`). Enum/`isKolu` tek kaynaktan beslenir.
+İlk içerik gerçekçi ama açıkça örnek (taslak) seed olarak gelir; `ICERIK-TODO.md`
+neyin güncelleneceğini listeler.
 
 ---
 
@@ -298,12 +330,23 @@ güncelleneceğini listeler.
 
 ## 9. Teslimatlar
 
-- Çalışan, derlenebilir çok sayfalı site (yukarıdaki tüm rotalar).
-- Tipli içerik veri katmanı (`src/data/`).
-- Yeniden kullanılabilir UI bileşen kütüphanesi.
-- Kök dizinde `ICERIK-TODO.md` — doldurulacak gerçek bilgiler listesi
+- Çalışan, derlenebilir çok sayfalı, iki dilli (TR/EN) site (tüm rotalar).
+- **Sanity entegrasyonu:** şemalar (`src/sanity/schemaTypes/`), GROQ sorguları,
+  tipli fetch katmanı, `/studio` gömülü editör.
+- **Seed içeriği** (NDJSON) — TR/EN taslak içeriği import etmek için
+  (`sanity dataset import`), gerçekçi örnek projeler/ürünler/yazılar dahil.
+- Yeniden kullanılabilir UI bileşen kütüphanesi; koyu/açık tema.
+- `.env.local.example` — gerekli Sanity ortam değişkenleri
+  (`NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `SANITY_API_VERSION`).
+- Kök dizinde `ICERIK-TODO.md` — adım adım: (1) Sanity projesi oluşturma,
+  (2) env doldurma, (3) seed import, (4) doldurulacak gerçek bilgiler
   (iletişim, vergi/ticaret bilgileri, gerçek referanslar/logolar, proje görselleri,
   ürün ekran görüntüleri, kalite belgeleri).
+
+### Bağımlılık (kullanıcı tarafı)
+Site Sanity içeriği olmadan çalışır durumda derlenir, ancak içerik göstermesi için
+kullanıcının bir **Sanity projesi oluşturup** env değerlerini girmesi ve seed'i
+import etmesi gerekir. Bu adımlar `ICERIK-TODO.md`'de belgelenir.
 
 ---
 
@@ -311,7 +354,7 @@ güncelleneceğini listeler.
 
 - **Backend / form e-posta gönderimi** — sonraki adımda Server Action / Resend.
   Formlar şimdilik client-side validasyonlu, gönderim TODO.
-- **CMS entegrasyonu** — içerik şimdilik kod içi veri (`data/` + `messages/`).
+  (CMS artık kapsam **içinde** — bkz. Bölüm 3 ve 6.)
 
 ## 11. Kapsam Dışı (Kalıcı — Gerekmiyor)
 
