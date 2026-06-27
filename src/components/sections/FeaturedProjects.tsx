@@ -2,6 +2,8 @@ import { pick, type Locale } from '@/lib/locales';
 import { Link } from '@/i18n/navigation';
 import { Badge } from '@/components/ui';
 import { cn } from '@/lib/utils';
+import { isKoluLabel } from '@/lib/labels';
+import type { IsKolu } from '@/types';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -14,7 +16,7 @@ export interface FeaturedProject {
   slug: string;
   baslik: LocaleString;
   musteri?: string;
-  isKolu?: string;
+  isKolu?: IsKolu;
   durum?: string;
   gorsel?: { asset?: unknown };
 }
@@ -123,7 +125,7 @@ export default function FeaturedProjects({ projects, locale }: FeaturedProjectsP
                       <Badge tone={durumInfo?.tone ?? 'primary'}>{durumLabel}</Badge>
                     )}
                     {project.isKolu && (
-                      <Badge tone="navy">{project.isKolu}</Badge>
+                      <Badge tone="navy">{isKoluLabel(project.isKolu, locale)}</Badge>
                     )}
                   </div>
 
