@@ -1,4 +1,5 @@
 import { defineType, defineField } from 'sanity';
+import { ICON_OPTIONS } from '../iconOptions';
 
 export const product = defineType({
   name: 'product', title: 'Ürün', type: 'document',
@@ -17,9 +18,11 @@ export const product = defineType({
       of: [{
         type: 'object',
         fields: [
+          { name: 'icon', title: 'İkon', type: 'string', options: { list: ICON_OPTIONS } },
           { name: 'baslik', title: 'Başlık', type: 'localeString' },
           { name: 'aciklama', title: 'Açıklama', type: 'localeText' },
         ],
+        preview: { select: { title: 'baslik.tr' } },
       }],
     }),
     defineField({

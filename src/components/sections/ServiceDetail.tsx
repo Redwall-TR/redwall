@@ -1,11 +1,10 @@
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { SERVICE_QUERY } from '@/sanity/lib/queries';
 import { pick, type Locale } from '@/lib/locales';
-import { Section, Cta, PortableTextRenderer } from '@/components/ui';
+import { Section, Cta } from '@/components/ui';
 import { ServiceIcon } from '@/components/ui/icons';
 import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading, FeatureCard, ProcessTimeline, IntroLead } from '@/components/sections/page-blocks';
-import type { PortableTextBlock } from '@portabletext/react';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -22,13 +21,20 @@ interface AltHizmet {
   icon?: string;
 }
 
+interface SurecAdim {
+  baslik?: LocaleString;
+  aciklama?: LocaleString;
+}
+
 interface ServiceData {
   isKolu: string;
   baslik?: LocaleString;
   ozet?: LocaleString;
-  icerik?: PortableTextBlock[];
+  chips?: LocaleString[];
+  girisLead?: LocaleString;
+  girisParagraflar?: LocaleString[];
   altHizmetler?: AltHizmet[];
-  imzaRengi?: string;
+  surec?: SurecAdim[];
 }
 
 interface ServiceDetailProps {
@@ -275,13 +281,41 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
 
   if (isKolu === 'danismanlik' || isKolu === 'muhendislik') {
     const fb = isKolu === 'danismanlik' ? DANISMANLIK_FALLBACK : MUHENDISLIK_FALLBACK;
-    const accent = data?.imzaRengi && /^#/.test(data.imzaRengi) ? data.imzaRengi : fb.accent;
+    const accent = fb.accent; // design: code-derived per iş kolu
 
     const baslik = (data?.baslik ? pick(data.baslik, locale) : undefined) ?? fb.baslik[locale];
     const ozet = (data?.ozet ? pick(data.ozet, locale) : undefined) ?? fb.ozet[locale];
 
+    // chips — Sanity varsa onu kullan, yoksa fallback
+    const chips =
+      data?.chips && data.chips.length > 0
+        ? data.chips.map((c) => pick(c, locale) ?? c.tr)
+        : fb.chips[locale];
+
+    // intro (lead + paragraflar)
+    const introLead =
+      (data?.girisLead ? pick(data.girisLead, locale) : undefined) ?? fb.intro[locale][0];
+    const introBody =
+      data?.girisParagraflar && data.girisParagraflar.length > 0
+        ? data.girisParagraflar.map((p) => pick(p, locale) ?? p.tr)
+        : fb.intro[locale].slice(1);
+
     const altHizmetler: AltHizmet[] =
       data?.altHizmetler && data.altHizmetler.length > 0 ? data.altHizmetler : fb.altHizmetler;
+
+    // süreç adımları — Sanity'de 'adim' yok, sıra index'ten gelir
+    const surecSteps =
+      data?.surec && data.surec.length > 0
+        ? data.surec.map((s, i) => ({
+            num: i + 1,
+            title: (s.baslik ? pick(s.baslik, locale) : undefined) ?? s.baslik?.tr ?? '',
+            description: (s.aciklama ? pick(s.aciklama, locale) : undefined) ?? s.aciklama?.tr ?? '',
+          }))
+        : fb.surec.map((s) => ({
+            num: s.adim,
+            title: pick(s.baslik, locale) ?? s.baslik.tr,
+            description: pick(s.aciklama, locale) ?? s.aciklama.tr,
+          }));
 
     const hizmetlerBaslik =
       isKolu === 'danismanlik'
@@ -317,19 +351,13 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
           title={baslik}
           description={ozet}
           accent={accent}
-          chips={fb.chips[locale]}
+          chips={chips}
           glyph={<ServiceIcon name={isKolu === 'danismanlik' ? 'shield-check' : 'wrench'} className="h-[26rem] w-[26rem]" />}
         />
 
         {/* Intro */}
         <Section>
-          {data?.icerik && data.icerik.length > 0 ? (
-            <div className="mx-auto max-w-3xl">
-              <PortableTextRenderer value={data.icerik} />
-            </div>
-          ) : (
-            <IntroLead lead={fb.intro[locale][0]} body={fb.intro[locale].slice(1)} accent={accent} />
-          )}
+          <IntroLead lead={introLead} body={introBody} accent={accent} />
         </Section>
 
         {/* Hizmetler grid */}
@@ -360,14 +388,7 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
             description={surecAciklama}
             accent={accent}
           />
-          <ProcessTimeline
-            steps={fb.surec.map((s) => ({
-              num: s.adim,
-              title: pick(s.baslik, locale) ?? s.baslik.tr,
-              description: pick(s.aciklama, locale) ?? s.aciklama.tr,
-            }))}
-            accent={accent}
-          />
+          <ProcessTimeline steps={surecSteps} accent={accent} />
         </Section>
 
         <Cta
@@ -395,25 +416,16 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
     );
   }
 
-  // ── Yazılım veya bilinmeyen ────────────────────────────────────────────────
+  // ── Yazılım veya bilinmeyen (ServiceDetail yalnızca danışmanlık/mühendislik için kullanılır) ──
   return (
-    <>
-      <PageHero
-        eyebrow={data?.baslik ? undefined : locale === 'tr' ? 'Hizmet' : 'Service'}
-        title={
-          (data?.baslik ? pick(data.baslik, locale) : undefined) ??
-          (locale === 'tr' ? 'Hizmetlerimiz' : 'Our Services')
-        }
-        description={(data?.ozet ? pick(data.ozet, locale) : undefined) ?? undefined}
-        glyph={<ServiceIcon name="flame" className="h-[26rem] w-[26rem]" />}
-      />
-      {data?.icerik && data.icerik.length > 0 && (
-        <Section>
-          <div className="mx-auto max-w-3xl">
-            <PortableTextRenderer value={data.icerik} />
-          </div>
-        </Section>
-      )}
-    </>
+    <PageHero
+      eyebrow={data?.baslik ? undefined : locale === 'tr' ? 'Hizmet' : 'Service'}
+      title={
+        (data?.baslik ? pick(data.baslik, locale) : undefined) ??
+        (locale === 'tr' ? 'Hizmetlerimiz' : 'Our Services')
+      }
+      description={(data?.ozet ? pick(data.ozet, locale) : undefined) ?? undefined}
+      glyph={<ServiceIcon name="flame" className="h-[26rem] w-[26rem]" />}
+    />
   );
 }

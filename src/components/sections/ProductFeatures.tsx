@@ -5,6 +5,7 @@ import { pick, type Locale } from '@/lib/locales';
 export interface Feature {
   baslik: { tr: string; en: string };
   aciklama: { tr: string; en: string };
+  icon?: string;
 }
 
 interface ProductFeaturesProps {

@@ -23,7 +23,7 @@ interface ProductData {
   ad: string;
   slogan?: LocaleString;
   aciklama?: LocaleString;
-  ozellikler?: Array<{ baslik?: LocaleString; aciklama?: LocaleString }>;
+  ozellikler?: Array<{ baslik?: LocaleString; aciklama?: LocaleString; icon?: string }>;
   hedefKitle?: LocaleString[];
   ekranGorselleri?: unknown[];
 }
@@ -468,7 +468,7 @@ export default async function UrunDetayPage({
               {features.map((feature, i) => (
                 <FeatureCard
                   key={i}
-                  icon={iconList[i] ?? 'gauge'}
+                  icon={feature.icon ?? iconList[i] ?? 'gauge'}
                   accent={ACCENT}
                   title={pick(feature.baslik, locale) ?? feature.baslik.tr}
                   description={pick(feature.aciklama, locale) ?? feature.aciklama.tr}

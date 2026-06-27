@@ -1,9 +1,8 @@
 import type { CSSProperties } from 'react';
-import type { PortableTextBlock } from '@portabletext/react';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PAGE_QUERY } from '@/sanity/lib/queries';
 import { pick, type Locale } from '@/lib/locales';
-import { Section, Cta, PortableTextRenderer } from '@/components/ui';
+import { Section, Cta } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
 import {
   SectionHeading,
@@ -15,10 +14,28 @@ import { ServiceIcon } from '@/components/ui/icons';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 type Slug = 'hakkimizda' | 'vizyon-misyon' | 'kalite-belgeler';
+type LocaleString = { tr: string; en: string };
+
+interface PageCard {
+  icon?: string;
+  baslik?: LocaleString;
+  aciklama?: LocaleString;
+}
 
 interface PageData {
-  baslik?: { tr: string; en: string };
-  icerik?: { tr: PortableTextBlock[]; en: PortableTextBlock[] };
+  baslik?: LocaleString;
+  altBaslik?: LocaleString;
+  chips?: LocaleString[];
+  girisLead?: LocaleString;
+  girisParagraflar?: LocaleString[];
+  vizyonBaslik?: LocaleString;
+  vizyonMetin?: LocaleString;
+  misyonBaslik?: LocaleString;
+  misyonMetin?: LocaleString;
+  kartlarEyebrow?: LocaleString;
+  kartlarBaslik?: LocaleString;
+  kartlarAciklama?: LocaleString;
+  kartlar?: PageCard[];
 }
 
 // ── Shared accent ─────────────────────────────────────────────────────────────
@@ -366,6 +383,92 @@ function KaliteBelgelerFallback({ locale }: { locale: Locale }) {
   );
 }
 
+// ── Structured body (Sanity-driven) ───────────────────────────────────────────
+
+function StructuredBody({ data, locale }: { data: PageData; locale: Locale }) {
+  const isTr = locale === 'tr';
+  const p = (f?: LocaleString) => (f ? pick(f, locale) ?? f.tr : undefined);
+
+  const hasVizyonMisyon = !!(data.vizyonBaslik || data.misyonBaslik);
+  const hasGiris = !!data.girisLead;
+  const hasKartlar = !!(data.kartlar && data.kartlar.length > 0);
+
+  return (
+    <>
+      {hasVizyonMisyon && (
+        <Section>
+          <div className="grid gap-8 lg:grid-cols-2">
+            <div
+              className="rounded-2xl border p-8 lg:p-10"
+              style={
+                {
+                  borderColor: `${ACCENT}33`,
+                  background: `linear-gradient(135deg, ${ACCENT}08 0%, transparent 60%)`,
+                } as CSSProperties
+              }
+            >
+              <div className="mb-4 flex items-center gap-3">
+                <span className="h-px w-6" style={{ backgroundColor: ACCENT }} aria-hidden />
+                <span className="text-xs font-bold uppercase tracking-[0.25em]" style={{ color: ACCENT }}>
+                  {isTr ? 'VİZYON' : 'VISION'}
+                </span>
+              </div>
+              <p className="font-display text-2xl font-bold leading-snug text-foreground sm:text-3xl">
+                {p(data.vizyonBaslik)}
+              </p>
+              <p className="mt-5 text-base leading-relaxed text-muted">{p(data.vizyonMetin)}</p>
+            </div>
+            <div className="rounded-2xl border border-border bg-surface p-8 lg:p-10">
+              <div className="mb-4 flex items-center gap-3">
+                <span className="h-px w-6 bg-foreground/30" aria-hidden />
+                <span className="text-xs font-bold uppercase tracking-[0.25em] text-muted">
+                  {isTr ? 'MİSYON' : 'MISSION'}
+                </span>
+              </div>
+              <p className="font-display text-2xl font-bold leading-snug text-foreground sm:text-3xl">
+                {p(data.misyonBaslik)}
+              </p>
+              <p className="mt-5 text-base leading-relaxed text-muted">{p(data.misyonMetin)}</p>
+            </div>
+          </div>
+        </Section>
+      )}
+
+      {hasGiris && (
+        <Section>
+          <IntroLead
+            lead={p(data.girisLead) ?? ''}
+            body={(data.girisParagraflar ?? []).map((x) => p(x) ?? '')}
+            accent={ACCENT}
+          />
+        </Section>
+      )}
+
+      {hasKartlar && (
+        <Section tone="muted">
+          <SectionHeading
+            eyebrow={p(data.kartlarEyebrow) ?? ''}
+            title={p(data.kartlarBaslik) ?? ''}
+            description={p(data.kartlarAciklama)}
+            accent={ACCENT}
+          />
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {data.kartlar!.map((k, i) => (
+              <FeatureCard
+                key={i}
+                icon={k.icon}
+                title={p(k.baslik) ?? ''}
+                description={p(k.aciklama) ?? ''}
+                accent={ACCENT}
+              />
+            ))}
+          </div>
+        </Section>
+      )}
+    </>
+  );
+}
+
 // ── Main Component ────────────────────────────────────────────────────────────
 
 export default async function PageContent({
@@ -381,11 +484,15 @@ export default async function PageContent({
     (data?.baslik ? pick(data.baslik, locale) : undefined) ??
     FALLBACK_TITLES[slug][locale];
 
-  const subtitle = FALLBACK_SUBTITLES[slug][locale];
+  const subtitle =
+    (data?.altBaslik ? pick(data.altBaslik, locale) : undefined) ??
+    FALLBACK_SUBTITLES[slug][locale];
 
-  const hasContent =
-    data?.icerik &&
-    (pick(data.icerik, locale)?.length ?? 0) > 0;
+  // Sanity'de yapısal içerik var mı? Varsa CMS'ten render et, yoksa cilalı fallback.
+  const hasStructured = !!(
+    data &&
+    (data.girisLead || data.vizyonBaslik || (data.kartlar && data.kartlar.length > 0))
+  );
 
   const isTr = locale === 'tr';
 
@@ -434,11 +541,16 @@ export default async function PageContent({
     },
   };
 
-  const heroChips: Record<Slug, string[]> = {
+  const fallbackChips: Record<Slug, string[]> = {
     'hakkimizda': ['Yazılım', 'Danışmanlık', 'Mühendislik', '20+ Yıl'],
     'vizyon-misyon': ['Vizyon', 'Misyon', 'Değerler'],
     'kalite-belgeler': ['ISO 9001', 'TS EN 12845', 'NFPA 13', 'TS EN 54'],
   };
+
+  const chips =
+    data?.chips && data.chips.length > 0
+      ? data.chips.map((c) => pick(c, locale) ?? c.tr)
+      : fallbackChips[slug];
 
   const heroGlyphs: Record<Slug, string> = {
     'hakkimizda': 'building',
@@ -455,7 +567,7 @@ export default async function PageContent({
         title={title}
         description={subtitle}
         accent={ACCENT}
-        chips={heroChips[slug]}
+        chips={chips}
         glyph={
           <ServiceIcon
             name={heroGlyphs[slug]}
@@ -464,10 +576,8 @@ export default async function PageContent({
         }
       />
 
-      {hasContent ? (
-        <Section>
-          <PortableTextRenderer value={pick(data!.icerik!, locale)} />
-        </Section>
+      {hasStructured ? (
+        <StructuredBody data={data!} locale={locale} />
       ) : (
         <>
           {slug === 'hakkimizda' && <HakkimizdaFallback locale={locale} />}
