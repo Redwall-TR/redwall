@@ -107,12 +107,12 @@ export default async function ReferanslarPage({
             {loc === 'tr' ? 'Müşteri Görüşleri' : 'Client Testimonials'}
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {testimonials.map((ref, i) => {
+            {testimonials.map((ref) => {
               const metin = pick(ref.gorus!.metin, loc) ?? '';
               const unvan = pick(ref.gorus!.unvan, loc) ?? '';
               return (
                 <figure
-                  key={i}
+                  key={ref.ad}
                   className="flex flex-col gap-4 rounded-xl border border-border bg-surface p-6"
                 >
                   <blockquote className="flex-1 text-base leading-relaxed text-foreground/80">
@@ -136,7 +136,7 @@ export default async function ReferanslarPage({
       <Cta
         baslik={ctaBaslik}
         aciklama={ctaAciklama}
-        buton={{ etiket: ctaButon, href: `/${loc}/teklif` }}
+        buton={{ etiket: ctaButon, href: '/teklif' }}
       />
     </>
   );
