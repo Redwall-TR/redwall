@@ -23,14 +23,14 @@ export default async function Footer({ locale }: { locale: string }) {
                 alt="Redwall"
                 width={130}
                 height={42}
-                className="h-20 w-auto block dark:hidden"
+                className="h-28 w-auto block dark:hidden"
               />
               <Image
                 src="/redwall-logo-footer-dark.svg"
                 alt="Redwall"
                 width={130}
                 height={42}
-                className="h-20 w-auto hidden dark:block"
+                className="h-28 w-auto hidden dark:block"
               />
             </Link>
             <p className="text-sm text-muted leading-relaxed">
