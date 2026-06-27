@@ -17,5 +17,17 @@
     "mesaj": "Message", "isKolu": "Related Service", "il": "City", "metrekare": "Building m²",
     "zorunlu": "This field is required", "gecersizEmail": "Enter a valid email",
     "basarili": "Your request has been received. We'll get back to you shortly."
+  },
+  "footer": {
+    "isKollarimiz": "Our Services",
+    "tagline": "Your trusted partner delivering software, consulting, and engineering solutions in fire safety.",
+    "haklar": "All rights reserved."
+  },
+  "a11y": {
+    "anaMenu": "Main menu",
+    "menuAc": "Open menu",
+    "menuKapat": "Close menu",
+    "temaDegistir": "Toggle theme",
+    "mobilMenu": "Mobile menu"
   }
 }

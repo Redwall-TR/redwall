@@ -102,6 +102,7 @@ export default function MobileNav({
   locale: string;
 }) {
   const t = useTranslations('nav');
+  const ta = useTranslations('a11y');
 
   // Close on Escape key
   useEffect(() => {
@@ -121,7 +122,7 @@ export default function MobileNav({
       aria-hidden={!open}
     >
       <div className="border-t border-border bg-background px-4 py-4 space-y-1">
-        <nav aria-label="Mobil menü">
+        <nav aria-label={ta('mobilMenu')}>
           {(PRIMARY as readonly NavItem[]).map((item) => (
             <MobileNavItem key={item.key} item={item} t={t} onClose={onClose} />
           ))}

@@ -123,6 +123,7 @@ function DropdownItem({
 
 export default function Header({ locale }: { locale: string }) {
   const t = useTranslations('nav');
+  const ta = useTranslations('a11y');
   // TODO (Task 3.2): lift this state to control the mobile panel
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -142,7 +143,7 @@ export default function Header({ locale }: { locale: string }) {
         </Link>
 
         {/* Desktop nav */}
-        <nav className="hidden lg:flex items-center gap-1" aria-label="Ana menü">
+        <nav className="hidden lg:flex items-center gap-1" aria-label={ta('anaMenu')}>
           {(PRIMARY as readonly NavItem[]).map((item) => (
             <DropdownItem key={item.key} item={item} t={t} />
           ))}
@@ -161,7 +162,7 @@ export default function Header({ locale }: { locale: string }) {
           {/* Mobile hamburger — panel implemented in Task 3.2 */}
           <button
             type="button"
-            aria-label="Menüyü aç"
+            aria-label={mobileOpen ? ta('menuKapat') : ta('menuAc')}
             aria-expanded={mobileOpen}
             aria-controls="mobile-menu"
             onClick={() => setMobileOpen((v) => !v)}

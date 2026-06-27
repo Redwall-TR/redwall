@@ -4,6 +4,7 @@ import { Link } from '@/i18n/navigation';
 
 export default async function Footer({ locale }: { locale: string }) {
   const t = await getTranslations({ locale, namespace: 'nav' });
+  const tf = await getTranslations({ locale, namespace: 'footer' });
 
   return (
     <footer className="border-t border-border bg-surface">
@@ -26,15 +27,14 @@ export default async function Footer({ locale }: { locale: string }) {
               />
             </Link>
             <p className="text-sm text-muted leading-relaxed">
-              Yangın güvenliği alanında yazılım, danışmanlık ve mühendislik
-              hizmetleri sunan güvenilir çözüm ortağınız.
+              {tf('tagline')}
             </p>
           </div>
 
           {/* İş Kollarımız */}
           <div className="flex flex-col gap-3">
             <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
-              İş Kollarımız
+              {tf('isKollarimiz')}
             </h3>
             <ul className="flex flex-col gap-2">
               <li>
@@ -109,7 +109,7 @@ export default async function Footer({ locale }: { locale: string }) {
           <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-3">
               <h3 className="text-sm font-semibold text-foreground uppercase tracking-wider">
-                Daha Fazla
+                {t('dahaFazla')}
               </h3>
               <ul className="flex flex-col gap-2">
                 <li>
@@ -183,7 +183,7 @@ export default async function Footer({ locale }: { locale: string }) {
       <div className="border-t border-border">
         <div className="container mx-auto px-4 py-4">
           <p className="text-center text-xs text-muted">
-            © 2026 Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri LTD. Şti. Tüm hakları saklıdır.
+            © 2026 Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri LTD. Şti. {tf('haklar')}
           </p>
         </div>
       </div>

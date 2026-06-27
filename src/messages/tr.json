@@ -17,5 +17,17 @@
     "mesaj": "Mesaj", "isKolu": "İlgili Hizmet", "il": "İl", "metrekare": "Bina m²",
     "zorunlu": "Bu alan zorunludur", "gecersizEmail": "Geçerli bir e-posta girin",
     "basarili": "Talebiniz alındı. En kısa sürede dönüş yapacağız."
+  },
+  "footer": {
+    "isKollarimiz": "İş Kollarımız",
+    "tagline": "Yangın güvenliği alanında yazılım, danışmanlık ve mühendislik hizmetleri sunan güvenilir çözüm ortağınız.",
+    "haklar": "Tüm hakları saklıdır."
+  },
+  "a11y": {
+    "anaMenu": "Ana menü",
+    "menuAc": "Menüyü aç",
+    "menuKapat": "Menüyü kapat",
+    "temaDegistir": "Tema değiştir",
+    "mobilMenu": "Mobil menü"
   }
 }
