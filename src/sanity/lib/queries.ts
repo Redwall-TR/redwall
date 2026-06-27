@@ -11,7 +11,8 @@ export const PRODUCTS_QUERY = `*[_type=="product"]|order(sira asc){
   "slug": slug.current, ad, slogan, aciklama, ozellikler }`;
 export const PRODUCT_QUERY = `*[_type=="product" && slug.current==$slug][0]{
   ad, slogan, aciklama, ozellikler, hedefKitle, ekranGorselleri }`;
-export const REFERENCES_QUERY = `*[_type=="referans"]{ ad, logo, gorus }`;
+export const REFERENCES_QUERY = `*[_type=="referans"]|order(ad asc){ ad, logo, gorus }`;
+export const FEATURED_REFERENCES_QUERY = `*[_type=="referans" && anasayfada==true]|order(ad asc){ ad, logo }`;
 export const FAQS_QUERY = `*[_type=="faq"]|order(sira asc){ kategori, soru, cevap }`;
 export const POSTS_QUERY = `*[_type=="post"]|order(tarih desc){ "slug":slug.current, baslik, tarih, kapak, ozet }`;
 export const POST_QUERY = `*[_type=="post" && slug.current==$slug][0]{ baslik, tarih, kapak, icerik }`;

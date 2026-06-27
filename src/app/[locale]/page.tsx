@@ -7,7 +7,7 @@ import {
   HOME_QUERY,
   SERVICES_QUERY,
   FEATURED_PROJECTS_QUERY,
-  REFERENCES_QUERY,
+  FEATURED_REFERENCES_QUERY,
   SITE_SETTINGS_QUERY,
 } from '@/sanity/lib/queries';
 import { pick, isLocale, type Locale } from '@/lib/locales';
@@ -102,7 +102,7 @@ export default async function HomePage({
     sanityFetch<HomeData | null>(HOME_QUERY, {}, null),
     sanityFetch<unknown[]>(SERVICES_QUERY, {}, []),
     sanityFetch<FeaturedProject[]>(FEATURED_PROJECTS_QUERY, {}, []),
-    sanityFetch<Ref[]>(REFERENCES_QUERY, {}, []),
+    sanityFetch<Ref[]>(FEATURED_REFERENCES_QUERY, {}, []),
     sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null),
   ]);
 

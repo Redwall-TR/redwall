@@ -6,6 +6,9 @@ export const reference = defineType({
   fields: [
     defineField({ name: 'ad', title: 'Ad', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'logo', title: 'Logo', type: 'image', options: { hotspot: true } }),
+    defineField({ name: 'anasayfada', title: 'Ana sayfada göster', type: 'boolean',
+      description: 'İşaretlenirse ana sayfadaki "Bize Güvenen Kurumlar" bölümünde gösterilir.',
+      initialValue: false }),
     defineField({
       name: 'gorus', title: 'Görüş', type: 'object',
       fields: [

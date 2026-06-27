@@ -7,8 +7,9 @@ import { REFERENCES_QUERY } from '@/sanity/lib/queries';
 import { urlFor } from '@/sanity/lib/image';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { Section, LogoWall, Cta } from '@/components/ui';
+import { Section, Cta } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
+import PaginatedLogoWall from '@/components/sections/PaginatedLogoWall';
 import { ServiceIcon } from '@/components/ui/icons';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -104,7 +105,7 @@ export default async function ReferanslarPage({
       {/* Logo Wall */}
       <Section tone="muted">
         {references.length > 0 ? (
-          <LogoWall logos={logoItems} />
+          <PaginatedLogoWall logos={logoItems} locale={loc} />
         ) : (
           <p className="text-center text-muted py-12">{emptyLabel}</p>
         )}
