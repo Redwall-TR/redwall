@@ -1,7 +1,8 @@
 import { defineType, defineField } from 'sanity';
 
+// NOT: Sanity'de 'reference' ayrılmış bir tip adı olduğundan tip adı 'referans'.
 export const reference = defineType({
-  name: 'reference', title: 'Referans', type: 'document',
+  name: 'referans', title: 'Referans', type: 'document',
   fields: [
     defineField({ name: 'ad', title: 'Ad', type: 'string', validation: (r) => r.required() }),
     defineField({ name: 'logo', title: 'Logo', type: 'image', options: { hotspot: true } }),

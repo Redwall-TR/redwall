@@ -5,7 +5,7 @@ const SINGLETONS = [
   { id: 'navigation', title: 'Navigasyon' },
   { id: 'homePage', title: 'Ana Sayfa' },
 ];
-const COLLECTIONS = ['service', 'product', 'project', 'reference', 'faq', 'post', 'jobPosting', 'page'];
+const COLLECTIONS = ['service', 'product', 'project', 'referans', 'faq', 'post', 'jobPosting', 'page'];
 
 export const structure: StructureResolver = (S) =>
   S.list().title('İçerik').items([
