@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 import { isLocale, pick, LOCALES } from '@/lib/locales';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PRODUCT_QUERY, PRODUCTS_QUERY } from '@/sanity/lib/queries';
-import { PageHeader, Section, Cta, Breadcrumb, Badge } from '@/components/ui';
+import { PageHeader, Section, Cta, Breadcrumb, Badge, Button } from '@/components/ui';
 import ProductFeatures, { type Feature } from '@/components/sections/ProductFeatures';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -211,7 +211,17 @@ export async function generateMetadata({
 
 // ── Decorative mockup ─────────────────────────────────────────────────────────
 
-function DashboardMockup({ productName }: { productName: string }) {
+function DashboardMockup({ productName, locale }: { productName: string; locale: string }) {
+  const isEn = locale === 'en';
+  const tiles = [
+    { label: isEn ? 'Projects' : 'Projeler', val: '24' },
+    { label: isEn ? 'Calculations' : 'Hesaplar', val: '186' },
+    { label: isEn ? 'Reports' : 'Raporlar', val: '52' },
+  ];
+  const statusItems = isEn
+    ? ['Completed', 'In progress', 'Awaiting approval']
+    : ['Tamamlandı', 'Devam ediyor', 'Onay bekliyor'];
+
   return (
     <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-[#141416] shadow-2xl">
       {/* Window chrome */}
@@ -225,11 +235,7 @@ function DashboardMockup({ productName }: { productName: string }) {
       {/* Dashboard body */}
       <div className="p-6 grid grid-cols-3 gap-4">
         {/* Stat tiles */}
-        {[
-          { label: 'Projeler', val: '24' },
-          { label: 'Hesaplar', val: '186' },
-          { label: 'Raporlar', val: '52' },
-        ].map((tile) => (
+        {tiles.map((tile) => (
           <div key={tile.label} className="rounded-xl bg-white/5 border border-white/10 p-4 flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-wider text-white/40">{tile.label}</span>
             <span className="text-2xl font-bold text-white">{tile.val}</span>
@@ -238,7 +244,9 @@ function DashboardMockup({ productName }: { productName: string }) {
 
         {/* Bar chart mock */}
         <div className="col-span-2 rounded-xl bg-white/5 border border-white/10 p-4">
-          <span className="text-[10px] uppercase tracking-wider text-white/40 mb-3 block">Aylık Hesaplar</span>
+          <span className="text-[10px] uppercase tracking-wider text-white/40 mb-3 block">
+            {isEn ? 'Monthly Calculations' : 'Aylık Hesaplar'}
+          </span>
           <div className="flex items-end gap-2 h-16">
             {[40, 65, 50, 80, 55, 90, 70].map((h, i) => (
               <div
@@ -252,8 +260,10 @@ function DashboardMockup({ productName }: { productName: string }) {
 
         {/* Status list mock */}
         <div className="rounded-xl bg-white/5 border border-white/10 p-4 flex flex-col gap-2">
-          <span className="text-[10px] uppercase tracking-wider text-white/40">Durum</span>
-          {['Tamamlandı', 'Devam ediyor', 'Onay bekliyor'].map((s) => (
+          <span className="text-[10px] uppercase tracking-wider text-white/40">
+            {isEn ? 'Status' : 'Durum'}
+          </span>
+          {statusItems.map((s) => (
             <div key={s} className="flex items-center gap-2">
               <span className="h-1.5 w-1.5 rounded-full bg-primary flex-shrink-0" />
               <span className="text-[10px] text-white/50 truncate">{s}</span>
@@ -335,25 +345,19 @@ export default async function UrunDetayPage({
           <p className="mt-4 max-w-2xl text-lg text-muted leading-relaxed">{aciklama}</p>
         )}
         <div className="mt-8 flex flex-wrap gap-4">
-          <a
-            href={`/${locale}/iletisim`}
-            className="inline-flex items-center gap-2 rounded-lg bg-primary px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90"
-          >
+          <Button href="/iletisim">
             {isTr ? 'Demo Talep Et' : 'Request a Demo'}
-          </a>
-          <a
-            href={`/${locale}/teklif`}
-            className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface px-6 py-3 text-sm font-semibold text-foreground transition-colors hover:bg-background"
-          >
+          </Button>
+          <Button href="/teklif" variant="secondary">
             {isTr ? 'Teklif Al' : 'Get a Quote'}
-          </a>
+          </Button>
         </div>
       </div>
 
       {/* Interface mockup */}
       <Section tone="dark">
         <div className="max-w-3xl mx-auto">
-          <DashboardMockup productName={ad} />
+          <DashboardMockup productName={ad} locale={locale} />
         </div>
       </Section>
 
