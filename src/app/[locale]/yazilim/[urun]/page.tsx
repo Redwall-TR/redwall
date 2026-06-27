@@ -224,10 +224,101 @@ export async function generateMetadata({
   return buildMetadata({ baslik, aciklama, locale: loc, path: `/yazilim/${urun}` });
 }
 
-// ── Decorative mockup ─────────────────────────────────────────────────────────
+// ── Decorative mockups ────────────────────────────────────────────────────────
 
-function DashboardMockup({ productName, locale }: { productName: string; locale: string }) {
-  const isEn = locale === 'en';
+function MockupChrome({ title }: { title: string }) {
+  return (
+    <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
+      <span className="h-3 w-3 rounded-full bg-red-500/70" />
+      <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
+      <span className="h-3 w-3 rounded-full bg-green-500/70" />
+      <span className="mx-auto text-xs text-white/30 font-mono">{title}</span>
+    </div>
+  );
+}
+
+// YangınPro — building fire-safety compliance dashboard
+function ComplianceMockup({ productName, isEn }: { productName: string; isEn: boolean }) {
+  const tiles = [
+    { label: isEn ? 'Buildings' : 'Binalar', val: '128', tone: 'text-white' },
+    { label: isEn ? 'Compliance' : 'Uyumluluk', val: '87%', tone: 'text-green-400' },
+    { label: isEn ? 'Findings' : 'Bulgular', val: '34', tone: 'text-amber' },
+  ] as const;
+
+  const statusMap = {
+    ok: { label: isEn ? 'Compliant' : 'Uyumlu', cls: 'bg-green-400' },
+    review: { label: isEn ? 'In review' : 'İnceleniyor', cls: 'bg-amber' },
+    fail: { label: isEn ? 'Non-compliant' : 'Uyumsuz', cls: 'bg-red-500' },
+  } as const;
+
+  const buildings: { name: string; meta: string; pct: number; status: keyof typeof statusMap }[] = [
+    { name: 'Plaza A', meta: isEn ? '24 floors' : '24 kat', pct: 96, status: 'ok' },
+    { name: isEn ? 'Hotel D' : 'Otel D', meta: isEn ? '12 floors' : '12 kat', pct: 91, status: 'ok' },
+    { name: isEn ? 'Hospital B' : 'Hastane B', meta: isEn ? '8 floors' : '8 kat', pct: 71, status: 'review' },
+    { name: isEn ? 'Mall C' : 'AVM C', meta: isEn ? '5 floors' : '5 kat', pct: 58, status: 'fail' },
+  ];
+
+  return (
+    <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-[#141416] shadow-2xl">
+      <MockupChrome title={`${productName} · ${isEn ? 'Compliance' : 'Uyumluluk Paneli'}`} />
+      <div className="p-6 space-y-4">
+        {/* Stat tiles */}
+        <div className="grid grid-cols-3 gap-4">
+          {tiles.map((tile) => (
+            <div key={tile.label} className="rounded-xl bg-white/5 border border-white/10 p-4 flex flex-col gap-1">
+              <span className="text-[10px] uppercase tracking-wider text-white/40">{tile.label}</span>
+              <span className={`text-2xl font-bold ${tile.tone}`}>{tile.val}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Building inspection list */}
+        <div className="rounded-xl bg-white/5 border border-white/10 p-4">
+          <span className="text-[10px] uppercase tracking-wider text-white/40 mb-3 block">
+            {isEn ? 'Building Inspection Status' : 'Bina Denetim Durumu'}
+          </span>
+          <div className="space-y-3">
+            {buildings.map((b) => {
+              const s = statusMap[b.status];
+              return (
+                <div key={b.name} className="flex items-center gap-3">
+                  <span className={`h-2 w-2 flex-shrink-0 rounded-full ${s.cls}`} />
+                  <div className="w-24 flex-shrink-0">
+                    <div className="truncate text-xs text-white/80">{b.name}</div>
+                    <div className="text-[10px] text-white/35">{b.meta}</div>
+                  </div>
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-white/10">
+                    <div className={`h-full rounded-full ${s.cls}`} style={{ width: `${b.pct}%` }} />
+                  </div>
+                  <span className="w-20 flex-shrink-0 text-right text-[10px] text-white/50">{s.label}</span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Rule engine strip */}
+        <div className="flex items-center gap-3 rounded-xl bg-white/5 border border-white/10 px-4 py-3">
+          <span
+            className="inline-flex h-6 w-6 flex-shrink-0 items-center justify-center rounded-full"
+            style={{ backgroundColor: `${ACCENT}22`, color: ACCENT }}
+          >
+            <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+              <path d="M12 3 4 6v6c0 5 3.5 7.5 8 9 4.5-1.5 8-4 8-9V6l-8-3Z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+          </span>
+          <span className="text-[11px] text-white/55">
+            {isEn ? 'BYKHY 2007/2024 · 2,090 rules evaluated' : 'BYKHY 2007/2024 · 2.090 kural değerlendirildi'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// MekanikPro (and other calc-style products) — calculation dashboard
+function CalcMockup({ productName, isEn }: { productName: string; isEn: boolean }) {
   const tiles = [
     { label: isEn ? 'Projects' : 'Projeler', val: '24' },
     { label: isEn ? 'Calculations' : 'Hesaplar', val: '186' },
@@ -239,41 +330,24 @@ function DashboardMockup({ productName, locale }: { productName: string; locale:
 
   return (
     <div className="w-full rounded-2xl overflow-hidden border border-white/10 bg-[#141416] shadow-2xl">
-      {/* Window chrome */}
-      <div className="flex items-center gap-2 px-4 py-3 border-b border-white/10">
-        <span className="h-3 w-3 rounded-full bg-red-500/70" />
-        <span className="h-3 w-3 rounded-full bg-yellow-500/70" />
-        <span className="h-3 w-3 rounded-full bg-green-500/70" />
-        <span className="mx-auto text-xs text-white/30 font-mono">{productName}</span>
-      </div>
-
-      {/* Dashboard body */}
+      <MockupChrome title={productName} />
       <div className="p-6 grid grid-cols-3 gap-4">
-        {/* Stat tiles */}
         {tiles.map((tile) => (
           <div key={tile.label} className="rounded-xl bg-white/5 border border-white/10 p-4 flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-wider text-white/40">{tile.label}</span>
             <span className="text-2xl font-bold text-white">{tile.val}</span>
           </div>
         ))}
-
-        {/* Bar chart mock */}
         <div className="col-span-2 rounded-xl bg-white/5 border border-white/10 p-4">
           <span className="text-[10px] uppercase tracking-wider text-white/40 mb-3 block">
             {isEn ? 'Monthly Calculations' : 'Aylık Hesaplar'}
           </span>
           <div className="flex items-end gap-2 h-16">
             {[40, 65, 50, 80, 55, 90, 70].map((h, i) => (
-              <div
-                key={i}
-                className="flex-1 rounded-sm bg-primary/60"
-                style={{ height: `${h}%` }}
-              />
+              <div key={i} className="flex-1 rounded-sm bg-primary/60" style={{ height: `${h}%` }} />
             ))}
           </div>
         </div>
-
-        {/* Status list mock */}
         <div className="rounded-xl bg-white/5 border border-white/10 p-4 flex flex-col gap-2">
           <span className="text-[10px] uppercase tracking-wider text-white/40">
             {isEn ? 'Status' : 'Durum'}
@@ -287,6 +361,15 @@ function DashboardMockup({ productName, locale }: { productName: string; locale:
         </div>
       </div>
     </div>
+  );
+}
+
+function DashboardMockup({ productName, locale, slug }: { productName: string; locale: string; slug: string }) {
+  const isEn = locale === 'en';
+  return slug === 'yanginpro' ? (
+    <ComplianceMockup productName={productName} isEn={isEn} />
+  ) : (
+    <CalcMockup productName={productName} isEn={isEn} />
   );
 }
 
@@ -367,7 +450,7 @@ export default async function UrunDetayPage({
       {/* Interface mockup */}
       <Section tone="dark">
         <div className="max-w-3xl mx-auto">
-          <DashboardMockup productName={ad} locale={locale} />
+          <DashboardMockup productName={ad} locale={locale} slug={urun} />
         </div>
       </Section>
 
