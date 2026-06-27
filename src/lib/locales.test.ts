@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { isLocale, pick, DEFAULT_LOCALE } from './locales';
+import { isLocale, pick } from './locales';
 
 describe('isLocale', () => {
   it('tr/en için true, diğerleri için false', () => {

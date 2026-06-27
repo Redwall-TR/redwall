@@ -5,7 +5,11 @@ import { useEffect, useState } from 'react';
 export default function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    // next-themes mount guard: sets mounted after hydration to avoid SSR mismatch
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
   const isDark = resolvedTheme === 'dark';
   return (
     <button

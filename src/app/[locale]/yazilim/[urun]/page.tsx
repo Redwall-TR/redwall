@@ -6,7 +6,7 @@ import { isLocale, pick, LOCALES } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { sanityFetch } from '@/sanity/lib/fetch';
 import { PRODUCT_QUERY, PRODUCTS_QUERY } from '@/sanity/lib/queries';
-import { PageHeader, Section, Cta, Breadcrumb, Badge, Button } from '@/components/ui';
+import { Section, Cta, Breadcrumb, Badge, Button } from '@/components/ui';
 import ProductFeatures, { type Feature } from '@/components/sections/ProductFeatures';
 
 // ── Types ─────────────────────────────────────────────────────────────────────

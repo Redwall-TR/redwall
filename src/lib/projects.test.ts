@@ -1,9 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { filterProjects } from './projects';
-const P = [
+import type { IsKolu, ProjeDurumu } from '@/types';
+const P: Array<{ slug: string; isKolu: IsKolu; durum: ProjeDurumu }> = [
   { slug: 'a', isKolu: 'yazilim', durum: 'tamamlandi' },
   { slug: 'b', isKolu: 'muhendislik', durum: 'devam-eden' },
-] as any;
+];
 describe('filterProjects', () => {
   it('iş koluna göre filtreler', () => {
     expect(filterProjects(P, { isKolu: 'yazilim' }).map((p) => p.slug)).toEqual(['a']);

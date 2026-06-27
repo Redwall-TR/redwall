@@ -87,7 +87,7 @@ function HakkimizdaFallback({ locale }: { locale: Locale }) {
                 uygulamaya kadar her evresinde güvenilir bir ortak olarak rol üstlenir.
               </p>
               <p>
-                Redwall'un temel farkı, bu üç disiplinin ayrı ekipler yerine ortak bir bilgi havuzu ve süreç
+                Redwall&apos;un temel farkı, bu üç disiplinin ayrı ekipler yerine ortak bir bilgi havuzu ve süreç
                 mimarisinden beslenmesidir. Böylece yazılımda üretilen veriler danışmanlık sürecini besler,
                 danışmanlıkta elde edilen saha deneyimi yazılımın gelişimine geri döner ve mühendislik uygulamaları
                 gerçek proje gereksinimlerine göre sürekli güncellenir.
