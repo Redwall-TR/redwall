@@ -197,6 +197,48 @@ const MUHENDISLIK_FALLBACK = {
       },
     },
   ],
+  surec: [
+    {
+      adim: 1,
+      baslik: { tr: 'Keşif & Etüt', en: 'Survey & Assessment' },
+      aciklama: {
+        tr: 'Sahayı yerinde inceliyor, mevcut sistemleri ve yapısal koşulları değerlendiriyor; projenin teknik gereksinimlerini belirliyoruz.',
+        en: 'We inspect the site in person, assess existing systems and structural conditions, and define the technical requirements of your project.',
+      },
+    },
+    {
+      adim: 2,
+      baslik: { tr: 'Projelendirme', en: 'Engineering Design' },
+      aciklama: {
+        tr: 'Yönetmeliğe uygun mühendislik hesapları, teknik çizimler ve malzeme listeleri hazırlıyoruz; onay süreçleri için gereken tüm teknik belgeleri teslim ediyoruz.',
+        en: 'We prepare code-compliant engineering calculations, technical drawings, and material lists, delivering all technical documents required for approval processes.',
+      },
+    },
+    {
+      adim: 3,
+      baslik: { tr: 'Malzeme Temini', en: 'Material Procurement' },
+      aciklama: {
+        tr: 'Projeye özgü teknik şartnamelere göre malzeme ve ekipmanı temin ediyor; kalite kontrol süreçleriyle uygunluğunu doğruluyoruz.',
+        en: 'We procure materials and equipment to project-specific technical specifications, verifying conformity through quality-control processes.',
+      },
+    },
+    {
+      adim: 4,
+      baslik: { tr: 'Saha Uygulaması', en: 'Field Application' },
+      aciklama: {
+        tr: 'Deneyimli saha ekiplerimizle kurulum çalışmalarını plana ve teknik çizimlere uygun şekilde gerçekleştiriyor; uygulama sürecini sürekli denetliyoruz.',
+        en: 'Our experienced field crews carry out installation work in accordance with the plan and technical drawings, with continuous supervision throughout the application process.',
+      },
+    },
+    {
+      adim: 5,
+      baslik: { tr: 'Test, Devreye Alma & Bakım', en: 'Testing, Commissioning & Maintenance' },
+      aciklama: {
+        tr: 'Sistemleri kapsamlı testlerle devreye alıyor, kabul belgelerini hazırlıyor ve uzun vadeli işlerliği güvence altına almak için periyodik bakım planı sunuyoruz.',
+        en: 'We commission systems through comprehensive testing, prepare acceptance documents, and provide a periodic maintenance plan to ensure long-term operability.',
+      },
+    },
+  ],
 };
 
 // ── Sub-components ────────────────────────────────────────────────────────────
@@ -398,6 +440,30 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
                   h.aciklama?.tr ??
                   ''
                 }
+              />
+            ))}
+          </div>
+        </Section>
+
+        {/* Süreç adımları */}
+        <Section>
+          <div className="mb-10 text-center">
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
+              {locale === 'tr' ? 'Uygulama Sürecimiz' : 'Our Application Process'}
+            </h2>
+            <p className="mt-3 text-muted max-w-xl mx-auto text-sm">
+              {locale === 'tr'
+                ? 'Keşiften devreye almaya kadar her adımda yanınızdayız.'
+                : 'We are with you at every step, from survey to commissioning.'}
+            </p>
+          </div>
+          <div className="mx-auto max-w-2xl flex flex-col gap-8">
+            {fb.surec.map((s) => (
+              <SurecAdim
+                key={s.adim}
+                adim={s.adim}
+                baslik={pick(s.baslik, locale) ?? s.baslik.tr}
+                aciklama={pick(s.aciklama, locale) ?? s.aciklama.tr}
               />
             ))}
           </div>
