@@ -27,8 +27,9 @@ export default function ReferenceStrip({ references, locale }: ReferenceStripPro
 
   const logos = references.map((ref) => ({
     ad: ref.ad,
+    // Yalnızca genişlik veriyoruz: en-boy oranı korunur, kırpma olmaz.
     src: ref.logo
-      ? urlFor(ref.logo as Parameters<typeof urlFor>[0]).width(240).height(120).fit('max').url()
+      ? urlFor(ref.logo as Parameters<typeof urlFor>[0]).width(280).url()
       : undefined,
   }));
 
