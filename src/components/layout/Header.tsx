@@ -100,21 +100,26 @@ function DropdownItem({
       </button>
 
       {open && (
-        <div
-          role="menu"
-          className="absolute left-0 top-full z-50 mt-1 min-w-[180px] rounded-lg border border-border bg-surface p-1 shadow-lg"
-        >
-          {item.children.map((child) => (
-            <Link
-              key={child.key}
-              href={child.href}
-              role="menuitem"
-              onClick={() => setOpen(false)}
-              className="block rounded-md px-3 py-2 text-sm text-foreground hover:text-primary hover:bg-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            >
-              {getChildLabel(child, t)}
-            </Link>
-          ))}
+        // Outer wrapper sits flush against the button (top-full, no margin) so
+        // the hover area stays continuous; pt-2 gives a visual gap that is still
+        // hoverable — fixes the dropdown closing before a child can be clicked.
+        <div className="absolute left-0 top-full z-50 pt-2">
+          <div
+            role="menu"
+            className="min-w-[180px] rounded-lg border border-border bg-surface p-1 shadow-lg"
+          >
+            {item.children.map((child) => (
+              <Link
+                key={child.key}
+                href={child.href}
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="block rounded-md px-3 py-2 text-sm text-foreground hover:text-primary hover:bg-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+              >
+                {getChildLabel(child, t)}
+              </Link>
+            ))}
+          </div>
         </div>
       )}
     </div>

@@ -77,7 +77,7 @@ export default function ProjectsExplorer({ projects, locale }: ProjectsExplorerP
       : 'No projects match this filter.';
 
   return (
-    <div className="mx-auto max-w-6xl px-4 sm:px-6 pb-20">
+    <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-14 pb-20 sm:pt-16">
       {/* ── Filter Chips ───────────────────────────────────────── */}
       <div className="mb-8 flex flex-wrap gap-2">
         {/* İş Kolu chips */}
