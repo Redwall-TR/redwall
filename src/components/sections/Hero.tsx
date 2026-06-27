@@ -30,14 +30,14 @@ interface HeroProps {
 
 const FALLBACK: Record<Locale, { baslik: string; altMetin: string; birincil: string; ikincil: string }> = {
   tr: {
-    baslik: 'Yangın güvenliğinde 360° yaklaşım: yazılım, danışmanlık, mühendislik.',
+    baslik: 'Yangın güvenliğinde 360° yaklaşım: Yazılım, Danışmanlık, Mühendislik.',
     altMetin:
       'Redwall; kendi geliştirdiği yazılımlar, itfaiye uyumlu danışmanlık ve anahtar teslim mühendislik hizmetleriyle yangın güvenliğinin her adımında yanınızda.',
     birincil: 'Teklif İste',
     ikincil: 'Yazılımı İncele',
   },
   en: {
-    baslik: 'A 360° approach to fire safety: software, consulting, engineering.',
+    baslik: 'A 360° approach to fire safety: Software, Consulting, Engineering.',
     altMetin:
       'Redwall covers every step of fire safety — proprietary software, fire-department-compliant consulting, and turnkey engineering services.',
     birincil: 'Get a Quote',
