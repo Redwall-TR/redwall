@@ -12,6 +12,7 @@ import { Link } from '@/i18n/navigation';
 import { isKoluLabel } from '@/lib/labels';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { RichText } from '@payloadcms/richtext-lexical/react';
 import type { IsKolu, ProjeDurumu } from '@/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -115,6 +116,10 @@ export default async function ProjeDetayPage({
   const baslik = pick(data.baslik, locale) ?? data.baslik.tr;
   const ozet = data.ozet ? (pick(data.ozet, locale) ?? undefined) : undefined;
   const kapsam = data.kapsam ? (pick(data.kapsam, locale) ?? undefined) : undefined;
+  // data.aciklama is a locale-keyed object: { tr: LexicalState, en: LexicalState }
+  const aciklamaLexical = data.aciklama
+    ? (pick(data.aciklama as Record<'tr' | 'en', Record<string, unknown>>, locale) ?? undefined)
+    : undefined;
 
   const gorseller = (data.gorseller ?? []).filter(Boolean);
 
@@ -206,7 +211,16 @@ export default async function ProjeDetayPage({
       </Section>
 
       {/* Açıklama */}
-      {/* (project description is stored as plain text summary only; no rich-text body here) */}
+      {aciklamaLexical && (
+        <Section>
+          <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl mb-8">
+            {isTr ? 'Proje Hakkında' : 'About the Project'}
+          </h2>
+          <div className="max-w-3xl prose prose-neutral dark:prose-invert">
+            <RichText data={aciklamaLexical as unknown as Parameters<typeof RichText>[0]['data']} />
+          </div>
+        </Section>
+      )}
 
       {/* Görsel Galeri */}
       {gorseller.length > 0 && (
