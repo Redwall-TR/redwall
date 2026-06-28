@@ -1,6 +1,7 @@
 import * as migration_20260628_152258_initial from './20260628_152258_initial';
 import * as migration_20260628_153136_media from './20260628_153136_media';
 import * as migration_20260628_153642_collections1 from './20260628_153642_collections1';
+import * as migration_20260628_154834_service_iskolu_unique from './20260628_154834_service_iskolu_unique';
 
 export const migrations = [
   {
@@ -16,6 +17,11 @@ export const migrations = [
   {
     up: migration_20260628_153642_collections1.up,
     down: migration_20260628_153642_collections1.down,
-    name: '20260628_153642_collections1'
+    name: '20260628_153642_collections1',
+  },
+  {
+    up: migration_20260628_154834_service_iskolu_unique.up,
+    down: migration_20260628_154834_service_iskolu_unique.down,
+    name: '20260628_154834_service_iskolu_unique'
   },
 ];
