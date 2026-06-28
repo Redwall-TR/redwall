@@ -5,9 +5,13 @@
 #
 # Gerekli env (CI bunları export eder, .env.example'a bak):
 #   WEB_IMAGE, SITE_HOST, SANITY_API_READ_TOKEN
+#   DATABASE_URI, PAYLOAD_SECRET, POSTGRES_PASSWORD, MINIO_ROOT_USER, MINIO_ROOT_PASSWORD
 #
 # TLS: redwall.tr Cloudflare arkasında (proxied), SSL modu "Full". Cloudflare origin
 #      sertifikasını doğrulamaz → Traefik varsayılan self-signed cert sunar, ACME gerekmez.
+#
+# Payload (Faz 2a): web imajı Payload'ı içerir (/admin). postgres + minio yalnız iç
+#   ağda (app-internal), dışa publish edilmez. Site bu fazda hâlâ Sanity'den okur.
 #
 # Ön koşul: `traefik-public` overlay ağı + en az bir Swarm manager düğümü.
 #   docker network create --driver overlay --attachable traefik-public
@@ -15,6 +19,14 @@
 networks:
   traefik-public:
     external: true
+  app-internal:
+    driver: overlay
+    internal: true       # postgres/minio dışarıya kapalı; yalnız servisler arası
+    attachable: true     # migrate/import job'ları tek-seferlik container olarak katılabilsin
+
+volumes:
+  pgdata:
+  miniodata:
 
 services:
   # ── Ingress + otomatik TLS ────────────────────────────────────────────────
@@ -60,11 +72,19 @@ services:
     image: ${WEB_IMAGE}
     environment:
       NODE_ENV: production
-      # Sunucu-yalnızı sır (Sanity okuma token'ı). Sıkılaştırma için Docker
-      # secret'a geçirilebilir (bkz. docs/DEPLOY-SWARM.md).
+      # Sunucu-yalnızı sır (Sanity okuma token'ı). Site bu fazda Sanity'den okur.
       SANITY_API_READ_TOKEN: ${SANITY_API_READ_TOKEN}
+      # Payload CMS (/admin) — Postgres + MinIO (iç ağ)
+      DATABASE_URI: ${DATABASE_URI}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      S3_BUCKET: redwall-media
+      S3_REGION: us-east-1
+      S3_ENDPOINT: http://minio:9000
+      S3_ACCESS_KEY_ID: ${MINIO_ROOT_USER}
+      S3_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD}
     networks:
       - traefik-public
+      - app-internal
     deploy:
       replicas: 2
       update_config:
@@ -86,3 +106,39 @@ services:
         - traefik.http.middlewares.redwall-www.redirectregex.regex=^https://www\.(.*)
         - traefik.http.middlewares.redwall-www.redirectregex.replacement=https://$${1}
         - traefik.http.middlewares.redwall-www.redirectregex.permanent=true
+
+  # ── PostgreSQL (Payload DB) — yalnız iç ağda, dışa publish YOK ─────────────
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: redwall
+      POSTGRES_USER: redwall
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-internal
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any
+
+  # ── MinIO (Payload medya, S3) — yalnız iç ağda, dışa publish YOK ───────────
+  minio:
+    image: minio/minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
+    volumes:
+      - miniodata:/data
+    networks:
+      - app-internal
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
+      restart_policy:
+        condition: any

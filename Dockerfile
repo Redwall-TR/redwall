@@ -32,6 +32,13 @@ ENV NEXT_PUBLIC_SANITY_PROJECT_ID=$NEXT_PUBLIC_SANITY_PROJECT_ID \
 
 RUN npm run build
 
+# ---------- Tools (tek-seferlik job'lar: payload migrate, Sanity import) ----------
+# Tam node_modules (tsx + payload CLI dahil) + kaynak. Servis olarak deploy EDİLMEZ;
+# yalnız `docker run --rm --network <stack>_app-internal <tools-image> <cmd>` ile çağrılır.
+FROM builder AS tools
+ENV NODE_ENV=production
+CMD ["npx", "payload", "migrate"]
+
 # ---------- Runner ----------
 FROM base AS runner
 ENV NODE_ENV=production \
