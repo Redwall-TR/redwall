@@ -90,4 +90,3 @@ jobs:
             docker network create --driver overlay --attachable traefik-public 2>/dev/null || true
             cd /opt/redwall
             docker stack deploy -c stack.yml redwall --with-registry-auth --detach=true
-            docker service update --force redwall_web >/dev/null 2>&1 || true

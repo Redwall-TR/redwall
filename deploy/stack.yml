@@ -32,6 +32,10 @@ services:
       # TLS: Cloudflare "Full" origin cert'i doğrulamaz → Traefik varsayılan
       # self-signed cert sunar (router'da tls=true yeter, ACME yok).
       # - --api.dashboard=true   # açarsan ayrı bir güvenli router + auth ekle
+      #
+      # NOT: Traefik swarm provider'ı Docker API 1.24 ile konuşur; Docker Engine 29
+      # min API 1.40 ister. Sunucuda daemon'a DOCKER_MIN_API_VERSION=1.24 verilerek
+      # 1.24 yeniden etkinleştirilir (bkz. docs/DEPLOY-SWARM.md §1).
     ports:
       # mode: host → gerçek istemci IP'si korunur (ingress mesh NAT'lamaz)
       - target: 80

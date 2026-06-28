@@ -23,8 +23,16 @@ Docker Hub  ──pull──►  VDS / Docker Swarm
 Ubuntu 22/24 varsayımıyla, `root` veya sudo'lu kullanıcıyla:
 
 ```bash
-# Docker Engine + Compose plugin
+# Docker Engine + Compose plugin (snap docker KULLANMA — confined, Swarm'da sorun çıkarır)
 curl -fsSL https://get.docker.com | sh
+
+# ÖNEMLİ: Docker Engine 29 min API 1.40 ister; Traefik swarm provider'ı 1.24 ile
+# konuşur. Daemon'a 1.24'ü yeniden etkinleştir (yoksa Traefik routing çalışmaz):
+mkdir -p /etc/systemd/system/docker.service.d
+printf '[Service]\nEnvironment=DOCKER_MIN_API_VERSION=1.24\n' \
+  > /etc/systemd/system/docker.service.d/api-compat.conf
+systemctl daemon-reload && systemctl restart docker
+docker version --format 'MinAPI: {{.Server.MinAPIVersion}}'   # → 1.24 olmalı
 
 # Swarm'ı başlat (tek düğüm yeterli; <PUBLIC_IP> = VDS'in dış IP'si)
 docker swarm init --advertise-addr <PUBLIC_IP>
