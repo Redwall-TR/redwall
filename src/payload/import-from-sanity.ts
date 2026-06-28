@@ -9,9 +9,11 @@
  *  • Media: downloads Sanity image assets, uploads to Payload/MinIO (de-duped)
  *
  * Strategy (clean mirror, idempotent):
- *  1. Delete all docs in CONTENT collections + media (NOT users).
- *  2. Fetch FULL docs from Sanity (no projection drops).
- *  3. Recreate in Payload; write locale:'tr' then locale:'en'.
+ *  1. Fetch ALL docs from Sanity into memory (all 11 types).
+ *  2. Validate: assert each expected type returned results + required singletons present.
+ *     → If validation fails: console.error + process.exit(1), DB untouched.
+ *  3. Delete all docs in CONTENT collections + media (NOT users).
+ *  4. Recreate in Payload; write locale:'tr' then locale:'en'.
  *
  * Transforms:
  *  • localeString/localeText {tr,en}      → TR create + EN update
@@ -75,7 +77,7 @@ function locArray(arr: any[] | undefined, locale: Locale): string[] {
  */
 function assetRefToUrl(ref: string): string | null {
   // image-<hash>-<w>x<h>-<ext>
-  const m = ref.match(/^image-([a-f0-9]+)-(\d+x\d+)-(\w+)$/)
+  const m = ref.match(/^image-([a-fA-F0-9]+)-(\d+x\d+)-(\w+)$/)
   if (!m) return null
   const [, hash, dims, ext] = m
   return `https://cdn.sanity.io/images/${SANITY_PROJECT}/${SANITY_DATASET}/${hash}-${dims}.${ext}`
@@ -177,7 +179,7 @@ function ptBlockToLexNode(block: AnyDoc): AnyDoc | null {
  * Handles paragraphs, headings, blockquotes, bold/italic/underline/code, links,
  * and bullet/numbered lists. Unknown block types fall back to a paragraph.
  */
-function portableTextToLexical(blocks: any): AnyDoc {
+function portableTextToLexical(blocks: any, context?: string): AnyDoc {
   const emptyRoot = {
     root: {
       type: 'root',
@@ -218,7 +220,10 @@ function portableTextToLexical(blocks: any): AnyDoc {
     }
 
     const node = ptBlockToLexNode(block)
-    if (!node) continue
+    if (!node) {
+      console.warn(`  ⚠  PT block dropped (no children) [${context ?? 'unknown'}] style=${block.style ?? 'normal'}`)
+      continue
+    }
 
     if (block.listItem) {
       const tag: 'ul' | 'ol' = block.listItem === 'number' ? 'ol' : 'ul'
@@ -309,7 +314,73 @@ async function main() {
     return doc.id
   }
 
-  // ── 1. Clean mirror: delete content collections + media (NOT users) ─────────
+  // ── 1. Fetch ALL Sanity docs into memory (validate BEFORE any delete) ────────
+
+  console.log('🔍  Sanity verileri çekiliyor ve doğrulanıyor…')
+
+  const ss: AnyDoc = await sanity.fetch(
+    `*[_type=="siteSettings" && !(_id in path("drafts.**"))][0]`,
+  )
+  const nav: AnyDoc = await sanity.fetch(
+    `*[_type=="navigation" && !(_id in path("drafts.**"))][0]`,
+  )
+  const home: AnyDoc = await sanity.fetch(
+    `*[_type=="homePage" && !(_id in path("drafts.**"))][0]{
+      ..., "oneCikanUrunSlug": oneCikanUrun->slug.current
+    }`,
+  )
+  const products: AnyDoc[] = await sanity.fetch(
+    `*[_type=="product" && !(_id in path("drafts.**"))]|order(sira asc)`,
+  )
+  const services: AnyDoc[] = await sanity.fetch(
+    `*[_type=="service" && !(_id in path("drafts.**"))]|order(sira asc)`,
+  )
+  const projects: AnyDoc[] = await sanity.fetch(
+    `*[_type=="project" && !(_id in path("drafts.**"))]|order(yil desc)`,
+  )
+  const referanslar: AnyDoc[] = await sanity.fetch(
+    `*[_type=="referans" && !(_id in path("drafts.**"))]|order(ad asc)`,
+  )
+  const faqs: AnyDoc[] = await sanity.fetch(
+    `*[_type=="faq" && !(_id in path("drafts.**"))]|order(sira asc)`,
+  )
+  const posts: AnyDoc[] = await sanity.fetch(
+    `*[_type=="post" && !(_id in path("drafts.**"))]|order(tarih desc)`,
+  )
+  const jobs: AnyDoc[] = await sanity.fetch(
+    `*[_type=="jobPosting" && !(_id in path("drafts.**"))]`,
+  )
+  const pages: AnyDoc[] = await sanity.fetch(
+    `*[_type=="page" && !(_id in path("drafts.**"))]`,
+  )
+
+  // Validate: required singletons must be present + at least one doc per collection
+  const validationErrors: string[] = []
+  if (!ss) validationErrors.push('siteSettings singleton bulunamadı')
+  if (!nav) validationErrors.push('navigation singleton bulunamadı')
+  if (!home) validationErrors.push('homePage singleton bulunamadı')
+  if (!products.length) validationErrors.push('product koleksiyonu boş döndü')
+  if (!services.length) validationErrors.push('service koleksiyonu boş döndü')
+  if (!projects.length) validationErrors.push('project koleksiyonu boş döndü')
+  if (!referanslar.length) validationErrors.push('referans koleksiyonu boş döndü')
+  if (!faqs.length) validationErrors.push('faq koleksiyonu boş döndü')
+  if (!posts.length) validationErrors.push('post koleksiyonu boş döndü')
+  if (!jobs.length) validationErrors.push('job koleksiyonu boş döndü')
+  if (!pages.length) validationErrors.push('page koleksiyonu boş döndü')
+
+  if (validationErrors.length > 0) {
+    console.error('❌  Sanity doğrulama hatası — veritabanına dokunulmadı:')
+    for (const e of validationErrors) console.error(`   • ${e}`)
+    process.exit(1)
+  }
+
+  console.log(
+    `  ✓ Doğrulama geçti — product:${products.length} service:${services.length}` +
+    ` project:${projects.length} referans:${referanslar.length} faq:${faqs.length}` +
+    ` post:${posts.length} job:${jobs.length} page:${pages.length}\n`,
+  )
+
+  // ── 2. Clean mirror: delete content collections + media (NOT users) ──────────
   const contentCollections = [
     'service',
     'product',
@@ -335,12 +406,9 @@ async function main() {
 
   const counts: Record<string, number> = {}
 
-  // ── 2. Globals ──────────────────────────────────────────────────────────────
+  // ── 3. Globals ──────────────────────────────────────────────────────────────
 
-  // 2a. siteSettings
-  const ss: AnyDoc = await sanity.fetch(
-    `*[_type=="siteSettings" && !(_id in path("drafts.**"))][0]`,
-  )
+  // 3a. siteSettings (use pre-fetched ss)
   if (ss) {
     const sosyal = ss.sosyal || {}
     await updateGlobal({
@@ -395,10 +463,7 @@ async function main() {
     console.log('  ✓ siteSettings güncellendi')
   }
 
-  // 2b. navigation
-  const nav: AnyDoc = await sanity.fetch(
-    `*[_type=="navigation" && !(_id in path("drafts.**"))][0]`,
-  )
+  // 3b. navigation (use pre-fetched nav)
   if (nav) {
     const navData = (locale: Locale) => ({
       headerLinks: (nav.headerLinks || []).map((l: AnyDoc) => ({
@@ -422,21 +487,22 @@ async function main() {
     console.log('  ✓ navigation güncellendi')
   }
 
-  // ── 3. Collections (content) — products first (homePage references them) ─────
+  // ── 4. Collections (content) — products first (homePage references them) ──────
 
-  // 3a. product
-  const products: AnyDoc[] = await sanity.fetch(
-    `*[_type=="product" && !(_id in path("drafts.**"))]|order(sira asc)`,
-  )
+  // 4a. product (use pre-fetched products)
   const productSlugToId = new Map<string, string | number>()
   counts.product = 0
   for (const p of products) {
     const slug = p.slug?.current
     if (!slug) continue
     const ekranGorselleri: AnyDoc[] = []
+    const srcEkranCount = (p.ekranGorselleri || []).length
     for (const g of p.ekranGorselleri || []) {
       const id = await uploadImage(g, p.ad)
       if (id) ekranGorselleri.push({ gorsel: id })
+    }
+    if (ekranGorselleri.length < srcEkranCount) {
+      console.warn(`  ⚠  product[${slug}] ekranGorselleri: ${ekranGorselleri.length}/${srcEkranCount} görsel yüklendi`)
     }
     const doc = await create({
       collection: 'product',
@@ -477,10 +543,7 @@ async function main() {
     console.log(`  ✓ product[${slug}]`)
   }
 
-  // 3b. service
-  const services: AnyDoc[] = await sanity.fetch(
-    `*[_type=="service" && !(_id in path("drafts.**"))]|order(sira asc)`,
-  )
+  // 4b. service (use pre-fetched services)
   counts.service = 0
   for (const s of services) {
     const doc = await create({
@@ -531,18 +594,19 @@ async function main() {
     console.log(`  ✓ service[${s.isKolu}]`)
   }
 
-  // 3c. project
-  const projects: AnyDoc[] = await sanity.fetch(
-    `*[_type=="project" && !(_id in path("drafts.**"))]|order(yil desc)`,
-  )
+  // 4c. project (use pre-fetched projects)
   counts.project = 0
   for (const pr of projects) {
     const slug = pr.slug?.current
     if (!slug) continue
     const gorseller: AnyDoc[] = []
+    const srcGorsellerCount = (pr.gorseller || []).length
     for (const g of pr.gorseller || []) {
       const id = await uploadImage(g, loc(pr.baslik, 'tr'))
       if (id) gorseller.push({ gorsel: id })
+    }
+    if (gorseller.length < srcGorsellerCount) {
+      console.warn(`  ⚠  project[${slug}] gorseller: ${gorseller.length}/${srcGorsellerCount} görsel yüklendi`)
     }
     const doc = await create({
       collection: 'project',
@@ -558,7 +622,7 @@ async function main() {
         kapsam: loc(pr.kapsam, 'tr'),
         ozet: loc(pr.ozet, 'tr'),
         aciklama: hasPT(pr.aciklama, 'tr')
-          ? portableTextToLexical(pr.aciklama.tr)
+          ? portableTextToLexical(pr.aciklama.tr, `project[${slug}].aciklama.tr`)
           : undefined,
         gorseller,
         oneCikan: !!pr.oneCikan,
@@ -574,7 +638,7 @@ async function main() {
         kapsam: loc(pr.kapsam, 'en'),
         ozet: loc(pr.ozet, 'en'),
         aciklama: hasPT(pr.aciklama, 'en')
-          ? portableTextToLexical(pr.aciklama.en)
+          ? portableTextToLexical(pr.aciklama.en, `project[${slug}].aciklama.en`)
           : undefined,
       },
       overrideAccess: true,
@@ -583,10 +647,7 @@ async function main() {
     console.log(`  ✓ project[${slug}]`)
   }
 
-  // 3d. referans
-  const referanslar: AnyDoc[] = await sanity.fetch(
-    `*[_type=="referans" && !(_id in path("drafts.**"))]|order(ad asc)`,
-  )
+  // 4d. referans (use pre-fetched referanslar)
   counts.referans = 0
   for (const r of referanslar) {
     const logoId = await uploadImage(r.logo, r.ad)
@@ -621,10 +682,7 @@ async function main() {
     console.log(`  ✓ referans[${r.ad}]${logoId ? ' (logo ✓)' : ''}`)
   }
 
-  // 3e. faq
-  const faqs: AnyDoc[] = await sanity.fetch(
-    `*[_type=="faq" && !(_id in path("drafts.**"))]|order(sira asc)`,
-  )
+  // 4e. faq (use pre-fetched faqs)
   counts.faq = 0
   for (const f of faqs) {
     const doc = await create({
@@ -649,10 +707,7 @@ async function main() {
     console.log(`  ✓ faq[${(loc(f.soru, 'tr') || '').slice(0, 30)}…]`)
   }
 
-  // 3f. post
-  const posts: AnyDoc[] = await sanity.fetch(
-    `*[_type=="post" && !(_id in path("drafts.**"))]|order(tarih desc)`,
-  )
+  // 4f. post (use pre-fetched posts)
   counts.post = 0
   for (const p of posts) {
     const slug = p.slug?.current
@@ -667,8 +722,8 @@ async function main() {
         tarih: p.tarih ? new Date(p.tarih).toISOString() : undefined,
         kapak: kapakId ?? undefined,
         ozet: loc(p.ozet, 'tr'),
-        icerik: hasPT(p.icerik, 'tr') ? portableTextToLexical(p.icerik.tr) : undefined,
-        etiketler: (Array.isArray(p.etiketler) ? p.etiketler : []).map((e: string) => ({ etiket: e })),
+        icerik: hasPT(p.icerik, 'tr') ? portableTextToLexical(p.icerik.tr, `post[${slug}].icerik.tr`) : undefined,
+        etiketler: (Array.isArray(p.etiketler) ? p.etiketler : []).filter(Boolean).map((e: string) => ({ etiket: e })),
       },
       overrideAccess: true,
     })
@@ -679,7 +734,7 @@ async function main() {
       data: {
         baslik: loc(p.baslik, 'en'),
         ozet: loc(p.ozet, 'en'),
-        icerik: hasPT(p.icerik, 'en') ? portableTextToLexical(p.icerik.en) : undefined,
+        icerik: hasPT(p.icerik, 'en') ? portableTextToLexical(p.icerik.en, `post[${slug}].icerik.en`) : undefined,
       },
       overrideAccess: true,
     })
@@ -687,10 +742,7 @@ async function main() {
     console.log(`  ✓ post[${slug}]`)
   }
 
-  // 3g. job (Sanity type: jobPosting)
-  const jobs: AnyDoc[] = await sanity.fetch(
-    `*[_type=="jobPosting" && !(_id in path("drafts.**"))]`,
-  )
+  // 4g. job (use pre-fetched jobs)
   counts.job = 0
   for (const j of jobs) {
     const slug = j.slug?.current
@@ -703,7 +755,7 @@ async function main() {
         baslik: loc(j.baslik, 'tr'),
         lokasyon: j.lokasyon,
         tip: j.tip,
-        aciklama: hasPT(j.aciklama, 'tr') ? portableTextToLexical(j.aciklama.tr) : undefined,
+        aciklama: hasPT(j.aciklama, 'tr') ? portableTextToLexical(j.aciklama.tr, `job[${slug}].aciklama.tr`) : undefined,
         aktif: j.aktif !== false,
       },
       overrideAccess: true,
@@ -714,7 +766,7 @@ async function main() {
       locale: 'en',
       data: {
         baslik: loc(j.baslik, 'en'),
-        aciklama: hasPT(j.aciklama, 'en') ? portableTextToLexical(j.aciklama.en) : undefined,
+        aciklama: hasPT(j.aciklama, 'en') ? portableTextToLexical(j.aciklama.en, `job[${slug}].aciklama.en`) : undefined,
       },
       overrideAccess: true,
     })
@@ -722,10 +774,7 @@ async function main() {
     console.log(`  ✓ job[${slug}]`)
   }
 
-  // 3h. page
-  const pages: AnyDoc[] = await sanity.fetch(
-    `*[_type=="page" && !(_id in path("drafts.**"))]`,
-  )
+  // 4h. page (use pre-fetched pages)
   counts.page = 0
   for (const pg of pages) {
     const slug = pg.slug?.current
@@ -783,12 +832,7 @@ async function main() {
     console.log(`  ✓ page[${slug}]`)
   }
 
-  // 2c. homePage (after products so oneCikanUrun relationship resolves) ─────────
-  const home: AnyDoc = await sanity.fetch(
-    `*[_type=="homePage" && !(_id in path("drafts.**"))][0]{
-      ..., "oneCikanUrunSlug": oneCikanUrun->slug.current
-    }`,
-  )
+  // 4i. homePage (after products so oneCikanUrun relationship resolves, uses pre-fetched home)
   if (home) {
     const urunId = home.oneCikanUrunSlug
       ? productSlugToId.get(home.oneCikanUrunSlug)
@@ -809,7 +853,7 @@ async function main() {
         },
         oneCikanUrun: urunId ?? undefined,
         yaklasim: hasPT(home.yaklasim, 'tr')
-          ? portableTextToLexical(home.yaklasim.tr)
+          ? portableTextToLexical(home.yaklasim.tr, 'homePage.yaklasim.tr')
           : undefined,
       },
       overrideAccess: true,
@@ -823,7 +867,7 @@ async function main() {
         heroBirincilCta: { etiket: loc(home.heroBirincilCta?.etiket, 'en') },
         heroIkincilCta: { etiket: loc(home.heroIkincilCta?.etiket, 'en') },
         yaklasim: hasPT(home.yaklasim, 'en')
-          ? portableTextToLexical(home.yaklasim.en)
+          ? portableTextToLexical(home.yaklasim.en, 'homePage.yaklasim.en')
           : undefined,
       },
       overrideAccess: true,
