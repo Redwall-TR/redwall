@@ -76,6 +76,7 @@ jobs:
           SITE_HOST: ${{ vars.SITE_HOST }}
           ACME_EMAIL: ${{ vars.ACME_EMAIL }}
           SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+          CF_DNS_API_TOKEN: ${{ secrets.CF_DNS_API_TOKEN }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         with:
@@ -83,7 +84,7 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
           # Sırlar script'e gömülmez; env olarak SSH oturumuna taşınır.
-          envs: WEB_IMAGE,SITE_HOST,ACME_EMAIL,SANITY_API_READ_TOKEN,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: WEB_IMAGE,SITE_HOST,ACME_EMAIL,SANITY_API_READ_TOKEN,CF_DNS_API_TOKEN,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           script: |
             set -e
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
