@@ -51,21 +51,24 @@ const SANITY_PROJECT = process.env.NEXT_PUBLIC_SANITY_PROJECT_ID || '22ukr7s6'
 const SANITY_DATASET = process.env.NEXT_PUBLIC_SANITY_DATASET || 'production'
 
 // ── Type helpers (loose — Sanity docs are dynamic) ─────────────────────────────
-
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type AnyDoc = Record<string, any>
 type Locale = 'tr' | 'en'
 
 // ── localeString / localeText helpers ──────────────────────────────────────────
 
-function loc(field: any, locale: Locale): string | undefined {
+function loc(field: unknown, locale: Locale): string | undefined {
   if (field == null) return undefined
   if (typeof field === 'string') return locale === 'tr' ? field : undefined
-  const v = field[locale]
-  return typeof v === 'string' && v.length > 0 ? v : undefined
+  if (typeof field === 'object') {
+    const v = (field as Record<string, unknown>)[locale]
+    return typeof v === 'string' && v.length > 0 ? v : undefined
+  }
+  return undefined
 }
 
 /** Array of localeString → string[] for a locale (drops empties). */
-function locArray(arr: any[] | undefined, locale: Locale): string[] {
+function locArray(arr: unknown[] | undefined, locale: Locale): string[] {
   if (!Array.isArray(arr)) return []
   return arr.map((x) => loc(x, locale)).filter((s): s is string => !!s)
 }
@@ -84,11 +87,12 @@ function assetRefToUrl(ref: string): string | null {
 }
 
 /** Get a usable CDN URL + filename from a Sanity image field. */
-function imageInfo(img: any): { url: string; assetId: string; filename: string } | null {
-  if (!img) return null
+function imageInfo(img: unknown): { url: string; assetId: string; filename: string } | null {
+  if (!img || typeof img !== 'object') return null
+  const sanityImg = img as { asset?: { _ref?: string }; _ref?: string }
   let ref: string | undefined
-  if (img.asset?._ref) ref = img.asset._ref
-  else if (img._ref) ref = img._ref
+  if (sanityImg.asset?._ref) ref = sanityImg.asset._ref
+  else if (sanityImg._ref) ref = sanityImg._ref
   if (!ref) return null
   const url = assetRefToUrl(ref)
   if (!url) return null
@@ -179,7 +183,7 @@ function ptBlockToLexNode(block: AnyDoc): AnyDoc | null {
  * Handles paragraphs, headings, blockquotes, bold/italic/underline/code, links,
  * and bullet/numbered lists. Unknown block types fall back to a paragraph.
  */
-function portableTextToLexical(blocks: any, context?: string): AnyDoc {
+function portableTextToLexical(blocks: unknown, context?: string): AnyDoc {
   const emptyRoot = {
     root: {
       type: 'root',
@@ -263,8 +267,10 @@ function portableTextToLexical(blocks: any, context?: string): AnyDoc {
 }
 
 /** True if a localePortableText field has any content for the given locale. */
-function hasPT(field: any, locale: Locale): boolean {
-  return Array.isArray(field?.[locale]) && field[locale].length > 0
+function hasPT(field: unknown, locale: Locale): boolean {
+  if (!field || typeof field !== 'object') return false
+  const locField = (field as Record<string, unknown>)[locale]
+  return Array.isArray(locField) && locField.length > 0
 }
 
 // ── main ───────────────────────────────────────────────────────────────────────
@@ -275,16 +281,20 @@ async function main() {
   // Loosely-typed wrappers: this one-time migration feeds dynamic Sanity data
   // (with optional/undefined values) into Payload. The generated collection
   // types reject `undefined` for required fields, so we relax the data arg here.
+  // The `any` casts below are intentional — Payload's overloads require collection-specific
+  // discriminated union types that cannot be satisfied when passing cross-collection data.
+  /* eslint-disable @typescript-eslint/no-explicit-any */
   const create = (args: any) => payload.create(args)
   const update = (args: any) => payload.update(args)
   const updateGlobal = (args: any) => payload.updateGlobal(args)
+  /* eslint-enable @typescript-eslint/no-explicit-any */
 
   console.log('📥  Sanity → Payload import başlıyor…\n')
 
   // ── Media de-dup cache: Sanity assetId → Payload media id ───────────────────
   const mediaCache = new Map<string, string | number>()
 
-  async function uploadImage(img: any, altText?: string): Promise<string | number | null> {
+  async function uploadImage(img: unknown, altText?: string): Promise<string | number | null> {
     const info = imageInfo(img)
     if (!info) return null
     if (mediaCache.has(info.assetId)) return mediaCache.get(info.assetId)!

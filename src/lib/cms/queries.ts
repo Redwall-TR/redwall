@@ -32,7 +32,7 @@ export async function getProjects() {
       yil: r.yil,
       il: r.il,
       ozet: r.ozet,
-      gorsel: Array.isArray(r.gorseller) && r.gorseller.length > 0 ? (r.gorseller[0] as any)?.gorsel ?? null : null,
+      gorsel: Array.isArray(r.gorseller) && r.gorseller.length > 0 ? (r.gorseller[0] as Record<string, unknown>)?.gorsel ?? null : null,
       oneCikan: r.oneCikan,
     }))
   }, [])
@@ -61,7 +61,7 @@ export async function getProject(slug: string) {
       ozet: r.ozet,
       aciklama: r.aciklama,
       gorseller: Array.isArray(r.gorseller)
-        ? r.gorseller.map((row: any) => row?.gorsel ?? null).filter(Boolean)
+        ? r.gorseller.map((row: Record<string, unknown>) => row?.gorsel ?? null).filter(Boolean)
         : [],
     }
   }, null)
@@ -84,7 +84,7 @@ export async function getFeaturedProjects() {
       musteri: r.musteri,
       isKolu: r.isKolu,
       durum: r.durum,
-      gorsel: Array.isArray(r.gorseller) && r.gorseller.length > 0 ? (r.gorseller[0] as any)?.gorsel ?? null : null,
+      gorsel: Array.isArray(r.gorseller) && r.gorseller.length > 0 ? (r.gorseller[0] as Record<string, unknown>)?.gorsel ?? null : null,
     }))
   }, [])
 }
@@ -108,7 +108,7 @@ export async function getServices() {
       baslik: r.baslik,
       ozet: r.ozet,
       altHizmetler: r.altHizmetler,
-      imzaRengi: (r as any).imzaRengi,
+      imzaRengi: (r as unknown as Record<string, unknown>).imzaRengi,
     }))
   }, [])
 }
@@ -395,7 +395,7 @@ export async function getHome() {
       locale: 'all',
       depth: 2,
     })
-    const urun = r.oneCikanUrun as any
+    const urun = r.oneCikanUrun as Record<string, unknown> | null | undefined
     return {
       heroBaslik: r.heroBaslik,
       heroAltMetin: r.heroAltMetin,

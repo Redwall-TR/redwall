@@ -126,11 +126,11 @@ export default async function HomePage({
               {locale === 'tr' ? 'Öne Çıkan Yazılım' : 'Featured Software'}
             </span>
             <h2 className="font-display text-3xl font-bold text-white sm:text-4xl max-w-2xl">
-              {oneCikanUrun.ad ? (pick(oneCikanUrun.ad, locale) ?? oneCikanUrun.ad.tr) : ''}
+              {oneCikanUrun.ad ? (pick(oneCikanUrun.ad as LocaleString, locale) ?? (oneCikanUrun.ad as LocaleString).tr) : ''}
             </h2>
             {oneCikanUrun.slogan && (
               <p className="text-white/70 max-w-xl text-base leading-relaxed">
-                {pick(oneCikanUrun.slogan, locale) ?? oneCikanUrun.slogan.tr}
+                {pick(oneCikanUrun.slogan as LocaleString, locale) ?? (oneCikanUrun.slogan as LocaleString).tr}
               </p>
             )}
             <Link
