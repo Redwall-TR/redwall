@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import { Space_Grotesk } from 'next/font/google';
 import { getLocale } from 'next-intl/server';
-import './globals.css';
+import '../globals.css';
 import { ThemeProvider } from '@/components/layout/ThemeProvider';
 
 const sans = Geist({ variable: '--font-sans', subsets: ['latin'] });
