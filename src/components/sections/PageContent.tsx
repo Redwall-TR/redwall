@@ -1,6 +1,5 @@
 import type { CSSProperties } from 'react';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { PAGE_QUERY } from '@/sanity/lib/queries';
+import { getPage } from '@/lib/cms/queries';
 import { pick, type Locale } from '@/lib/locales';
 import { Section, Cta } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
@@ -478,7 +477,7 @@ export default async function PageContent({
   slug: Slug;
   locale: Locale;
 }) {
-  const data = await sanityFetch<PageData | null>(PAGE_QUERY, { slug }, null);
+  const data = await getPage(slug) as PageData | null;
 
   const title =
     (data?.baslik ? pick(data.baslik, locale) : undefined) ??

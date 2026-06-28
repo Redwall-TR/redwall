@@ -1,5 +1,4 @@
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { SERVICE_QUERY } from '@/sanity/lib/queries';
+import { getService } from '@/lib/cms/queries';
 import { pick, type Locale } from '@/lib/locales';
 import { Section, Cta } from '@/components/ui';
 import { ServiceIcon } from '@/components/ui/icons';
@@ -277,7 +276,7 @@ const MUHENDISLIK_FALLBACK = {
 // ── Component ─────────────────────────────────────────────────────────────────
 
 export default async function ServiceDetail({ isKolu, locale }: ServiceDetailProps) {
-  const data = await sanityFetch<ServiceData | null>(SERVICE_QUERY, { isKolu }, null);
+  const data = await getService(isKolu) as ServiceData | null;
 
   if (isKolu === 'danismanlik' || isKolu === 'muhendislik') {
     const fb = isKolu === 'danismanlik' ? DANISMANLIK_FALLBACK : MUHENDISLIK_FALLBACK;

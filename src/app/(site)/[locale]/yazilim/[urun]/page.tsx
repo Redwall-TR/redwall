@@ -4,8 +4,7 @@ import type { Metadata } from 'next';
 
 import { isLocale, pick, LOCALES } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { PRODUCT_QUERY, PRODUCTS_QUERY } from '@/sanity/lib/queries';
+import { getProduct, getProducts } from '@/lib/cms/queries';
 import { Section, Cta } from '@/components/ui';
 import { ServiceIcon } from '@/components/ui/icons';
 import { PageHero } from '@/components/sections/PageHero';
@@ -28,9 +27,6 @@ interface ProductData {
   ekranGorselleri?: unknown[];
 }
 
-interface ProductsListItem {
-  slug: string;
-}
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -182,7 +178,7 @@ const FALLBACK: Record<KnownSlug, { ad: string; slogan: LocaleString; aciklama: 
 // ── Static params ─────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const products = await sanityFetch<ProductsListItem[]>(PRODUCTS_QUERY, {}, []);
+  const products = await getProducts();
 
   const slugs: string[] =
     products.length > 0
@@ -204,7 +200,7 @@ export async function generateMetadata({
   const { locale, urun } = await params;
   const loc = isLocale(locale) ? locale : 'tr';
 
-  const data = await sanityFetch<ProductData | null>(PRODUCT_QUERY, { slug: urun }, null);
+  const data = await getProduct(urun) as ProductData | null;
 
   let ad = urun;
   let slogan: string | undefined;
@@ -384,7 +380,7 @@ export default async function UrunDetayPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const data = await sanityFetch<ProductData | null>(PRODUCT_QUERY, { slug: urun }, null);
+  const data = await getProduct(urun) as ProductData | null;
 
   // Unknown slug → 404
   if (!data && !isKnownSlug(urun)) notFound();

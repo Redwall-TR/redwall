@@ -58,6 +58,12 @@ const FALLBACK_CARDS: ServiceCard[] = [
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
+const ISKOLU_RENK: Record<IsKolu, ImzaRengi> = {
+  yazilim: 'primary',
+  danismanlik: 'amber',
+  muhendislik: 'navy',
+};
+
 const HREF_MAP: Record<IsKolu, string> = {
   yazilim: '/yazilim',
   danismanlik: '/danismanlik',
@@ -139,7 +145,7 @@ export default function ServiceCards({ services, locale }: ServiceCardsProps) {
         {/* Cards grid */}
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {cards.map((card) => {
-            const renk: ImzaRengi = card.imzaRengi ?? 'primary';
+            const renk: ImzaRengi = ISKOLU_RENK[card.isKolu] ?? card.imzaRengi ?? 'primary';
             const accent = ACCENT_CLASSES[renk];
             const href = HREF_MAP[card.isKolu];
             const title = pick(card.baslik, locale) ?? card.baslik.tr;

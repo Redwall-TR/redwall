@@ -2,22 +2,15 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
-import { sanityFetch } from '@/sanity/lib/fetch';
-import {
-  HOME_QUERY,
-  SERVICES_QUERY,
-  FEATURED_PROJECTS_QUERY,
-  FEATURED_REFERENCES_QUERY,
-  SITE_SETTINGS_QUERY,
-} from '@/sanity/lib/queries';
+import { getHome, getServices, getFeaturedProjects, getFeaturedReferences, getSiteSettings } from '@/lib/cms/queries';
 import { pick, isLocale, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { Button, Section, Stat } from '@/components/ui';
 
 import Hero from '@/components/sections/Hero';
 import ServiceCards from '@/components/sections/ServiceCards';
-import FeaturedProjects, { type FeaturedProject } from '@/components/sections/FeaturedProjects';
-import ReferenceStrip, { type Ref } from '@/components/sections/ReferenceStrip';
+import FeaturedProjects from '@/components/sections/FeaturedProjects';
+import ReferenceStrip from '@/components/sections/ReferenceStrip';
 import { Link } from '@/i18n/navigation';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -25,33 +18,6 @@ import { Link } from '@/i18n/navigation';
 interface LocaleString {
   tr: string;
   en: string;
-}
-
-interface HomeData {
-  heroBaslik?: LocaleString;
-  heroAltMetin?: LocaleString;
-  heroBirincilCta?: { etiket: LocaleString; href: string };
-  heroIkincilCta?: { etiket: LocaleString; href: string };
-  yaklasim?: unknown;
-  oneCikanUrun?: {
-    slug: string;
-    ad?: LocaleString;
-    slogan?: LocaleString;
-  };
-}
-
-interface Istatistik {
-  deger: string;
-  etiket?: LocaleString;
-}
-
-interface SiteSettings {
-  sirketAdi?: string;
-  istatistikler?: Istatistik[];
-  seo?: {
-    baslik?: LocaleString;
-    aciklama?: LocaleString;
-  };
 }
 
 // ── Fallback stats ─────────────────────────────────────────────────────────────
@@ -72,14 +38,17 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const settings = await sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null);
+  const settings = await getSiteSettings();
 
-  const title =
-    (settings?.seo?.baslik ? pick(settings.seo.baslik, loc) : undefined) ??
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const seo = settings?.seo as any;
+
+  const title: string =
+    (seo?.baslik ? (pick(seo.baslik as LocaleString, loc) ?? undefined) : undefined) ??
     (loc === 'tr' ? 'Redwall — Yangın Güvenliği Çözümleri' : 'Redwall — Fire Safety Solutions');
 
-  const description =
-    (settings?.seo?.aciklama ? pick(settings.seo.aciklama, loc) : undefined) ??
+  const description: string =
+    (seo?.aciklama ? (pick(seo.aciklama as LocaleString, loc) ?? undefined) : undefined) ??
     (loc === 'tr'
       ? 'Yangın güvenliğinde yazılım, danışmanlık ve mühendislik hizmetleriyle uçtan uca çözümler.'
       : 'End-to-end fire safety solutions covering software, consulting, and engineering.');
@@ -99,11 +68,11 @@ export default async function HomePage({
   setRequestLocale(locale);
 
   const [home, services, featured, refs, settings] = await Promise.all([
-    sanityFetch<HomeData | null>(HOME_QUERY, {}, null),
-    sanityFetch<unknown[]>(SERVICES_QUERY, {}, []),
-    sanityFetch<FeaturedProject[]>(FEATURED_PROJECTS_QUERY, {}, []),
-    sanityFetch<Ref[]>(FEATURED_REFERENCES_QUERY, {}, []),
-    sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null),
+    getHome(),
+    getServices(),
+    getFeaturedProjects(),
+    getFeaturedReferences(),
+    getSiteSettings(),
   ]);
 
   // Stats: use Sanity data if present, else fallback
@@ -115,7 +84,8 @@ export default async function HomePage({
   return (
     <>
       {/* ── Hero ──────────────────────────────────────────────── */}
-      <Hero data={home} locale={locale} />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <Hero data={home as any} locale={locale} />
 
       {/* ── Service cards ─────────────────────────────────────── */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
@@ -130,11 +100,12 @@ export default async function HomePage({
         </div>
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
           {istatistikler.length > 0
-            ? istatistikler.map((stat, i) => (
+            ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+              (istatistikler as any[]).map((stat, i) => (
                 <Stat
                   key={i}
-                  deger={stat.deger}
-                  etiket={stat.etiket ? (pick(stat.etiket, locale) ?? stat.etiket.tr) : ''}
+                  deger={stat.deger ?? ''}
+                  etiket={stat.etiket ? (pick(stat.etiket, locale) ?? stat.etiket?.tr ?? '') : ''}
                 />
               ))
             : FALLBACK_STATS.map((stat) => (
@@ -187,10 +158,12 @@ export default async function HomePage({
       )}
 
       {/* ── Featured projects ─────────────────────────────────── */}
-      <FeaturedProjects projects={featured} locale={locale} />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <FeaturedProjects projects={featured as any} locale={locale} />
 
       {/* ── Reference strip ───────────────────────────────────── */}
-      <ReferenceStrip references={refs} locale={locale} />
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+      <ReferenceStrip references={refs as any} locale={locale} />
 
       {/* ── Closing CTA ───────────────────────────────────────── */}
       <Section tone="dark">
