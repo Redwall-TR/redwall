@@ -9,7 +9,8 @@
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run --passWithNoTests",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "payload:seed": "tsx src/payload/seed.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.85.1",
@@ -45,6 +46,7 @@
     "jsdom": "^29.1.1",
     "tailwindcss": "^4",
     "typescript": "^5",
+    "tsx": "^4.22.4",
     "vitest": "^4.1.9"
   }
 }
