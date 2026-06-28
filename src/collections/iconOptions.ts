@@ -1,0 +1,16 @@
+export const ICON_OPTIONS = [
+  { label: 'Kalkan / Onay (shield-check)', value: 'shield-check' },
+  { label: 'Pano / Liste (clipboard)', value: 'clipboard' },
+  { label: 'Cetvel / Çizim (ruler)', value: 'ruler' },
+  { label: 'Baret (hard-hat)', value: 'hard-hat' },
+  { label: 'Bina (building)', value: 'building' },
+  { label: 'Anahtar (key)', value: 'key' },
+  { label: 'Damla / Söndürme (droplet)', value: 'droplet' },
+  { label: 'Duvar / Bariyer (wall)', value: 'wall' },
+  { label: 'Anahtar/Tesisat (wrench)', value: 'wrench' },
+  { label: 'Yenile / Bakım (refresh)', value: 'refresh' },
+  { label: 'Kod / Yazılım (code)', value: 'code' },
+  { label: 'Alev (flame)', value: 'flame' },
+  { label: 'Gösterge / Panel (gauge)', value: 'gauge' },
+  { label: 'Belge (document)', value: 'document' },
+]

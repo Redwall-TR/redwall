@@ -1,7 +1,7 @@
 name: Build & Deploy
 
-# main'e push → imaj build + Docker Hub push → SSH ile Swarm deploy.
-# Elle de tetiklenebilir (workflow_dispatch).
+# main'e push → web + tools imajı build/push (Docker Hub) → SSH ile Swarm deploy
+# + MinIO bucket + Payload migrate. Elle de tetiklenebilir (workflow_dispatch).
 on:
   push:
     branches: [main]
@@ -13,16 +13,16 @@ concurrency:
 
 env:
   IMAGE: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/redwall-web
+  TOOLS_IMAGE: docker.io/${{ secrets.DOCKERHUB_USERNAME }}/redwall-tools
 
 jobs:
   build:
-    name: Build & push image
+    name: Build & push images
     runs-on: ubuntu-latest
     outputs:
       tag: ${{ steps.meta.outputs.tag }}
     steps:
       - uses: actions/checkout@v4
-
       - uses: docker/setup-buildx-action@v3
 
       - name: Log in to Docker Hub
@@ -35,15 +35,34 @@ jobs:
         id: meta
         run: echo "tag=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
 
-      - name: Build & push
+      # web = standalone runtime imajı (servis olarak deploy edilir)
+      - name: Build & push web (runner)
         uses: docker/build-push-action@v6
         with:
           context: .
+          target: runner
           push: true
           tags: |
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ steps.meta.outputs.tag }}
-          # NEXT_PUBLIC_* sır değil → GitHub Variables (vars.*)
+          build-args: |
+            NEXT_PUBLIC_SANITY_PROJECT_ID=${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
+            NEXT_PUBLIC_SANITY_DATASET=${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
+            NEXT_PUBLIC_SANITY_API_VERSION=${{ vars.NEXT_PUBLIC_SANITY_API_VERSION }}
+            NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      # tools = tam imaj (payload migrate / Sanity import job'ları için, deploy EDİLMEZ)
+      - name: Build & push tools
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          target: tools
+          push: true
+          tags: |
+            ${{ env.TOOLS_IMAGE }}:latest
+            ${{ env.TOOLS_IMAGE }}:${{ steps.meta.outputs.tag }}
           build-args: |
             NEXT_PUBLIC_SANITY_PROJECT_ID=${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
             NEXT_PUBLIC_SANITY_DATASET=${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
@@ -69,24 +88,59 @@ jobs:
           target: /opt/redwall
           strip_components: 1
 
-      - name: Deploy stack over SSH
+      - name: Deploy stack + migrate over SSH
         uses: appleboy/ssh-action@v1.2.0
         env:
           WEB_IMAGE: ${{ env.IMAGE }}:${{ needs.build.outputs.tag }}
+          TOOLS_IMAGE: ${{ env.TOOLS_IMAGE }}:${{ needs.build.outputs.tag }}
           SITE_HOST: ${{ vars.SITE_HOST }}
-          ACME_EMAIL: ${{ vars.ACME_EMAIL }}
           SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
+          MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          # Sırlar script'e gömülmez; env olarak SSH oturumuna taşınır.
-          envs: WEB_IMAGE,SITE_HOST,SANITY_API_READ_TOKEN,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: WEB_IMAGE,TOOLS_IMAGE,SITE_HOST,SANITY_API_READ_TOKEN,PAYLOAD_SECRET,POSTGRES_PASSWORD,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          command_timeout: 15m
           script: |
             set -e
             echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
             docker network create --driver overlay --attachable traefik-public 2>/dev/null || true
+            export DATABASE_URI="postgres://redwall:${POSTGRES_PASSWORD}@postgres:5432/redwall"
+
             cd /opt/redwall
             docker stack deploy -c stack.yml redwall --with-registry-auth --detach=true
+
+            echo "Ağ + servisler hazırlanıyor..."
+            for i in $(seq 1 30); do docker network inspect redwall_app-internal >/dev/null 2>&1 && break; sleep 2; done
+
+            echo "Postgres hazır mı bekleniyor..."
+            for i in $(seq 1 40); do
+              docker run --rm --network redwall_app-internal postgres:16-alpine pg_isready -h postgres -U redwall >/dev/null 2>&1 && break
+              sleep 3
+            done
+
+            echo "Migration öncesi yedek (best-effort)..."
+            PG=$(docker ps -qf name=redwall_postgres | head -1)
+            if [ -n "$PG" ]; then
+              mkdir -p /opt/redwall/backups
+              docker exec "$PG" pg_dump -U redwall redwall 2>/dev/null | gzip > "/opt/redwall/backups/pre-migrate-$(date +%Y%m%d-%H%M%S).sql.gz" || true
+            fi
+
+            echo "MinIO bucket (idempotent)..."
+            MINIO=$(docker ps -qf name=redwall_minio | head -1)
+            if [ -n "$MINIO" ]; then
+              docker exec "$MINIO" sh -c "mc alias set l http://127.0.0.1:9000 $MINIO_ROOT_USER $MINIO_ROOT_PASSWORD && mc mb -p l/redwall-media" || true
+            fi
+
+            echo "Payload migrate (şema)..."
+            docker run --rm --network redwall_app-internal \
+              -e DATABASE_URI="$DATABASE_URI" -e PAYLOAD_SECRET="$PAYLOAD_SECRET" \
+              "$TOOLS_IMAGE" npx payload migrate
+
+            echo "Deploy + migrate tamam."
