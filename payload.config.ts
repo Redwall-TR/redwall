@@ -6,6 +6,9 @@ import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { s3Storage } from '@payloadcms/storage-s3'
 import { Media } from './src/collections/Media'
+import { Service } from './src/collections/Service'
+import { Product } from './src/collections/Product'
+import { Referans } from './src/collections/Referans'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -23,6 +26,9 @@ export default buildConfig({
       fields: [],
     },
     Media,
+    Service,
+    Product,
+    Referans,
   ],
   plugins: [
     s3Storage({

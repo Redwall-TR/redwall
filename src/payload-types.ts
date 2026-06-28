@@ -69,6 +69,9 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    service: Service;
+    product: Product;
+    referans: Referan;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +81,9 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    service: ServiceSelect<false> | ServiceSelect<true>;
+    product: ProductSelect<false> | ProductSelect<true>;
+    referans: ReferansSelect<false> | ReferansSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -163,6 +169,138 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service".
+ */
+export interface Service {
+  id: number;
+  isKolu: 'yazilim' | 'danismanlik' | 'muhendislik';
+  baslik: string;
+  ozet?: string | null;
+  chips?:
+    | {
+        etiket?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  girisLead?: string | null;
+  girisParagraflar?:
+    | {
+        paragraf?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  altHizmetler?:
+    | {
+        icon?:
+          | (
+              | 'shield-check'
+              | 'clipboard'
+              | 'ruler'
+              | 'hard-hat'
+              | 'building'
+              | 'key'
+              | 'droplet'
+              | 'wall'
+              | 'wrench'
+              | 'refresh'
+              | 'code'
+              | 'flame'
+              | 'gauge'
+              | 'document'
+            )
+          | null;
+        baslik?: string | null;
+        aciklama?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Sıra, listedeki diziliş ile belirlenir (01, 02, ...).
+   */
+  surec?:
+    | {
+        baslik?: string | null;
+        aciklama?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  sira?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product".
+ */
+export interface Product {
+  id: number;
+  /**
+   * Örn: yanginpro veya mekanikpro
+   */
+  slug: string;
+  ad: string;
+  slogan?: string | null;
+  aciklama?: string | null;
+  ozellikler?:
+    | {
+        icon?:
+          | (
+              | 'shield-check'
+              | 'clipboard'
+              | 'ruler'
+              | 'hard-hat'
+              | 'building'
+              | 'key'
+              | 'droplet'
+              | 'wall'
+              | 'wrench'
+              | 'refresh'
+              | 'code'
+              | 'flame'
+              | 'gauge'
+              | 'document'
+            )
+          | null;
+        baslik?: string | null;
+        aciklama?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  hedefKitle?:
+    | {
+        madde?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  ekranGorselleri?:
+    | {
+        gorsel?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  sira?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "referans".
+ */
+export interface Referan {
+  id: number;
+  ad: string;
+  logo?: (number | null) | Media;
+  anasayfada?: boolean | null;
+  gorus?: {
+    metin?: string | null;
+    kisi?: string | null;
+    unvan?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -192,6 +330,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'service';
+        value: number | Service;
+      } | null)
+    | ({
+        relationTo: 'product';
+        value: number | Product;
+      } | null)
+    | ({
+        relationTo: 'referans';
+        value: number | Referan;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -274,6 +424,97 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "service_select".
+ */
+export interface ServiceSelect<T extends boolean = true> {
+  isKolu?: T;
+  baslik?: T;
+  ozet?: T;
+  chips?:
+    | T
+    | {
+        etiket?: T;
+        id?: T;
+      };
+  girisLead?: T;
+  girisParagraflar?:
+    | T
+    | {
+        paragraf?: T;
+        id?: T;
+      };
+  altHizmetler?:
+    | T
+    | {
+        icon?: T;
+        baslik?: T;
+        aciklama?: T;
+        id?: T;
+      };
+  surec?:
+    | T
+    | {
+        baslik?: T;
+        aciklama?: T;
+        id?: T;
+      };
+  sira?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "product_select".
+ */
+export interface ProductSelect<T extends boolean = true> {
+  slug?: T;
+  ad?: T;
+  slogan?: T;
+  aciklama?: T;
+  ozellikler?:
+    | T
+    | {
+        icon?: T;
+        baslik?: T;
+        aciklama?: T;
+        id?: T;
+      };
+  hedefKitle?:
+    | T
+    | {
+        madde?: T;
+        id?: T;
+      };
+  ekranGorselleri?:
+    | T
+    | {
+        gorsel?: T;
+        id?: T;
+      };
+  sira?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "referans_select".
+ */
+export interface ReferansSelect<T extends boolean = true> {
+  ad?: T;
+  logo?: T;
+  anasayfada?: T;
+  gorus?:
+    | T
+    | {
+        metin?: T;
+        kisi?: T;
+        unvan?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
