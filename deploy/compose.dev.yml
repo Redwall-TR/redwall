@@ -1,7 +1,10 @@
 # Yerel geliştirme — Payload için Postgres + MinIO (production stack ayrı)
+# Docker Desktop grubu: kurumsal-web | container'lar: kurumsal-local-*
+name: kurumsal-web
 services:
   postgres:
     image: postgres:16-alpine
+    container_name: kurumsal-local-postgres
     environment:
       POSTGRES_DB: redwall
       POSTGRES_USER: redwall
@@ -10,6 +13,7 @@ services:
     volumes: ["redwall_pg_dev:/var/lib/postgresql/data"]
   minio:
     image: minio/minio
+    container_name: kurumsal-local-minio
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: minioadmin
