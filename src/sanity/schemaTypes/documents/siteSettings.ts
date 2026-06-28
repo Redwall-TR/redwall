@@ -14,10 +14,14 @@ export const siteSettings = defineType({
     }),
     defineField({
       name: 'sosyal', title: 'Sosyal Medya', type: 'object',
+      description: 'Tam URL girin (https://...). Boş bırakılan platform footer\'da gösterilmez.',
       fields: [
-        { name: 'linkedin', title: 'LinkedIn', type: 'string' },
-        { name: 'instagram', title: 'Instagram', type: 'string' },
-        { name: 'youtube', title: 'YouTube', type: 'string' },
+        { name: 'linkedin', title: 'LinkedIn', type: 'url' },
+        { name: 'instagram', title: 'Instagram', type: 'url' },
+        { name: 'youtube', title: 'YouTube', type: 'url' },
+        { name: 'x', title: 'X (Twitter)', type: 'url' },
+        { name: 'facebook', title: 'Facebook', type: 'url' },
+        { name: 'whatsapp', title: 'WhatsApp', type: 'url', description: 'Örn: https://wa.me/90XXXXXXXXXX' },
       ],
     }),
     defineField({ name: 'calismaSaatleri', title: 'Çalışma Saatleri', type: 'localeString' }),
