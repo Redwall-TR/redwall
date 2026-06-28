@@ -2,8 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { PROJECTS_QUERY } from '@/sanity/lib/queries';
+import { getProjects } from '@/lib/cms/queries';
 import { isLocale, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { PageHero } from '@/components/sections/PageHero';
@@ -41,7 +40,7 @@ export default async function ProjelerPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const projects = await sanityFetch<ProjectCard[]>(PROJECTS_QUERY, {}, []);
+  const projects = (await getProjects()) as unknown as ProjectCard[];
 
   const isTr = locale === 'tr';
   const heading = isTr ? 'Projeler' : 'Projects';

@@ -2,15 +2,13 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 import Image from 'next/image';
-import type { SanityImageSource } from '@sanity/image-url';
 
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { POSTS_QUERY } from '@/sanity/lib/queries';
+import { getPosts } from '@/lib/cms/queries';
+import { mediaUrl } from '@/lib/cms/image';
 import { Section } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
-import { urlFor } from '@/sanity/lib/image';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 
@@ -25,7 +23,7 @@ interface PostCard {
   slug: string;
   baslik: LocaleString;
   tarih?: string;
-  kapak?: SanityImageSource;
+  kapak?: unknown;
   ozet?: LocaleString;
 }
 
@@ -59,7 +57,7 @@ export default async function BlogPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const posts = await sanityFetch<PostCard[]>(POSTS_QUERY, {}, []);
+  const posts = (await getPosts()) as unknown as PostCard[];
 
   const isTr = locale === 'tr';
 
@@ -114,9 +112,7 @@ export default async function BlogPage({
               const ozet = post.ozet ? (pick(post.ozet, locale) ?? undefined) : undefined;
               const tarihStr = post.tarih ? post.tarih.slice(0, 10) : null;
 
-              const imgSrc = post.kapak
-                ? urlFor(post.kapak).width(640).height(400).fit('crop').url()
-                : null;
+              const imgSrc = post.kapak ? mediaUrl(post.kapak) ?? null : null;
 
               return (
                 <Link

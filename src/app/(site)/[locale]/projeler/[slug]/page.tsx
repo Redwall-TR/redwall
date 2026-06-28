@@ -1,16 +1,14 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
-import type { PortableTextBlock } from '@portabletext/react';
 import Image from 'next/image';
 
 import { isLocale, pick, LOCALES } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { PROJECT_QUERY, PROJECTS_QUERY } from '@/sanity/lib/queries';
-import { Section, Badge, Cta, PortableTextRenderer } from '@/components/ui';
+import { getProject, getProjects } from '@/lib/cms/queries';
+import { mediaUrl } from '@/lib/cms/image';
+import { Section, Badge, Cta } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
-import { urlFor } from '@/sanity/lib/image';
 import { isKoluLabel } from '@/lib/labels';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
@@ -23,11 +21,6 @@ interface LocaleString {
   en: string;
 }
 
-interface LocalePortableText {
-  tr: PortableTextBlock[];
-  en: PortableTextBlock[];
-}
-
 interface ProjectData {
   baslik: LocaleString;
   musteri?: string;
@@ -37,7 +30,7 @@ interface ProjectData {
   il?: string;
   kapsam?: LocaleString;
   ozet?: LocaleString;
-  aciklama?: LocalePortableText;
+  aciklama?: unknown;
   gorseller?: unknown[];
 }
 
@@ -48,7 +41,7 @@ interface ProjectsListItem {
 // ── Static params ─────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const projects = await sanityFetch<ProjectsListItem[]>(PROJECTS_QUERY, {}, []);
+  const projects = (await getProjects()) as ProjectsListItem[];
 
   if (!projects.length) return [];
 
@@ -67,7 +60,7 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const loc = isLocale(locale) ? locale : 'tr';
 
-  const data = await sanityFetch<ProjectData | null>(PROJECT_QUERY, { slug }, null);
+  const data = (await getProject(slug)) as ProjectData | null;
 
   if (!data) {
     return buildMetadata({
@@ -114,7 +107,7 @@ export default async function ProjeDetayPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const data = await sanityFetch<ProjectData | null>(PROJECT_QUERY, { slug }, null);
+  const data = (await getProject(slug)) as ProjectData | null;
 
   if (!data) notFound();
 
@@ -122,9 +115,6 @@ export default async function ProjeDetayPage({
   const baslik = pick(data.baslik, locale) ?? data.baslik.tr;
   const ozet = data.ozet ? (pick(data.ozet, locale) ?? undefined) : undefined;
   const kapsam = data.kapsam ? (pick(data.kapsam, locale) ?? undefined) : undefined;
-  const aciklamaBlocks = data.aciklama
-    ? (pick(data.aciklama as Record<'tr' | 'en', PortableTextBlock[]>, locale) ?? undefined)
-    : undefined;
 
   const gorseller = (data.gorseller ?? []).filter(Boolean);
 
@@ -215,17 +205,8 @@ export default async function ProjeDetayPage({
         </div>
       </Section>
 
-      {/* Açıklama (Portable Text) */}
-      {aciklamaBlocks && aciklamaBlocks.length > 0 && (
-        <Section>
-          <div className="max-w-3xl">
-            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl mb-6">
-              {isTr ? 'Proje Hakkında' : 'About the Project'}
-            </h2>
-            <PortableTextRenderer value={aciklamaBlocks} />
-          </div>
-        </Section>
-      )}
+      {/* Açıklama */}
+      {/* (project description is stored as plain text summary only; no rich-text body here) */}
 
       {/* Görsel Galeri */}
       {gorseller.length > 0 && (
@@ -235,11 +216,8 @@ export default async function ProjeDetayPage({
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {gorseller.map((gorsel, i) => {
-              const src = urlFor(gorsel as Parameters<typeof urlFor>[0])
-                .width(800)
-                .height(600)
-                .fit('crop')
-                .url();
+              const src = mediaUrl(gorsel);
+              if (!src) return null;
               return (
                 <div
                   key={i}
