@@ -52,11 +52,12 @@ mkdir -p /home/deploy/.ssh && nano /home/deploy/.ssh/authorized_keys
 
 ---
 
-## 2. DNS + TLS (Cloudflare proxied)
+## 2. DNS + TLS (Cloudflare proxied, "Full")
 
-`redwall.tr` Cloudflare arkasında (proxied / turuncu bulut). TLS, Let's Encrypt
-**DNS-01 challenge** (Cloudflare API token) ile alınır; Traefik gerçek cert'i otomatik
-yönetir/yeniler. Cloudflare edge'i ziyaretçiye kendi sertifikasını sunar.
+`redwall.tr` Cloudflare arkasında (proxied / turuncu bulut), SSL modu **"Full"**.
+Full modunda Cloudflare origin sertifikasını **doğrulamaz** → Traefik varsayılan
+**self-signed** cert'i sunar, Cloudflare bunu kabul eder, ziyaretçi Cloudflare'in geçerli
+edge sertifikasını görür. Origin'de ACME/Let's Encrypt **gerekmez**.
 
 **Cloudflare panelinde yapılacaklar:**
 
@@ -65,12 +66,11 @@ yönetir/yeniler. Cloudflare edge'i ziyaretçiye kendi sertifikasını sunar.
 | `redwall.tr` | A | `194.62.52.14` | Proxied (turuncu) |
 | `www` | A | `194.62.52.14` | Proxied (turuncu) |
 
-1. **SSL/TLS → Overview → "Full (strict)"** moduna al (origin'deki gerçek LE cert ile doğrulanır).
-2. **API token oluştur:** My Profile → API Tokens → "Edit zone DNS" şablonu → Zone = `redwall.tr`.
-   Token'ı `CF_DNS_API_TOKEN` secret'ı olarak ekle.
+- **SSL/TLS → Overview → "Full"** (mevcut ayar — değiştirme).
 
-> DNS-01 challenge proxy'den etkilenmez (sadece DNS TXT kaydı oluşturur). Origin'de
-> 80/443'ün açık olması Cloudflare→origin (Full strict) bağlantısı için yeterlidir.
+> Not: Full modunda Cloudflare→origin trafiği şifreli ama origin cert doğrulanmaz.
+> Daha sıkı isteniyorsa ileride "Full (strict)" + gerçek cert'e geçilebilir (origin
+> cert veya LE DNS-01); şu an Full ile uyumlu en sade kurulum kullanılıyor.
 
 ---
 
@@ -87,7 +87,6 @@ Repo → **Settings → Secrets and variables → Actions**.
 | `SSH_USER` | `deploy` (veya kullandığınız kullanıcı) |
 | `SSH_KEY` | Deploy kullanıcısının **private** SSH anahtarı (PEM) |
 | `SANITY_API_READ_TOKEN` | Sanity sunucu-yalnızı okuma token'ı |
-| `CF_DNS_API_TOKEN` | Cloudflare **Zone.DNS:Edit** token'ı (Let's Encrypt DNS-01 için) |
 
 ### Variables (gizli değil — tarayıcıya da gider)
 | Ad | Değer |

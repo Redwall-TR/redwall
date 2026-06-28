@@ -4,10 +4,10 @@
 #   docker stack deploy -c stack.yml redwall --with-registry-auth
 #
 # Gerekli env (CI bunları export eder, .env.example'a bak):
-#   WEB_IMAGE, SITE_HOST, ACME_EMAIL, SANITY_API_READ_TOKEN, CF_DNS_API_TOKEN
+#   WEB_IMAGE, SITE_HOST, SANITY_API_READ_TOKEN
 #
-# TLS: redwall.tr Cloudflare arkasında (proxied) → Let's Encrypt DNS-01 challenge
-#      (Cloudflare API token ile). Cloudflare SSL/TLS modu "Full (strict)" olmalı.
+# TLS: redwall.tr Cloudflare arkasında (proxied), SSL modu "Full". Cloudflare origin
+#      sertifikasını doğrulamaz → Traefik varsayılan self-signed cert sunar, ACME gerekmez.
 #
 # Ön koşul: `traefik-public` overlay ağı + en az bir Swarm manager düğümü.
 #   docker network create --driver overlay --attachable traefik-public
@@ -15,9 +15,6 @@
 networks:
   traefik-public:
     external: true
-
-volumes:
-  traefik-acme:
 
 services:
   # ── Ingress + otomatik TLS ────────────────────────────────────────────────
@@ -32,16 +29,9 @@ services:
       # HTTP → HTTPS kalıcı yönlendirme
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
-      # Let's Encrypt DNS-01 challenge (Cloudflare) — proxied origin ile çalışır
-      - --certificatesresolvers.le.acme.dnschallenge=true
-      - --certificatesresolvers.le.acme.dnschallenge.provider=cloudflare
-      - --certificatesresolvers.le.acme.dnschallenge.resolvers=1.1.1.1:53,8.8.8.8:53
-      - --certificatesresolvers.le.acme.email=${ACME_EMAIL}
-      - --certificatesresolvers.le.acme.storage=/acme/acme.json
+      # TLS: Cloudflare "Full" origin cert'i doğrulamaz → Traefik varsayılan
+      # self-signed cert sunar (router'da tls=true yeter, ACME yok).
       # - --api.dashboard=true   # açarsan ayrı bir güvenli router + auth ekle
-    environment:
-      # Zone.DNS:Edit yetkili Cloudflare API token'ı (DNS-01 için)
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN}
     ports:
       # mode: host → gerçek istemci IP'si korunur (ingress mesh NAT'lamaz)
       - target: 80
@@ -52,7 +42,6 @@ services:
         mode: host
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - traefik-acme:/acme
     networks:
       - traefik-public
     deploy:
@@ -87,7 +76,6 @@ services:
         - traefik.http.routers.redwall.rule=Host(`${SITE_HOST}`) || Host(`www.${SITE_HOST}`)
         - traefik.http.routers.redwall.entrypoints=websecure
         - traefik.http.routers.redwall.tls=true
-        - traefik.http.routers.redwall.tls.certresolver=le
         - traefik.http.services.redwall.loadbalancer.server.port=3000
         # www → apex 301 ($${1} = Compose interpolasyonundan kaçırılmış $1)
         - traefik.http.routers.redwall.middlewares=redwall-www
