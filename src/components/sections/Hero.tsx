@@ -63,12 +63,6 @@ export default function Hero({ data, locale }: HeroProps) {
       : fb.birincil;
   const birincilHref = data?.heroBirincilCta?.href ?? FALLBACK_HREFS.birincil;
 
-  const ikincilLabel =
-    data?.heroIkincilCta?.etiket
-      ? pick(data.heroIkincilCta.etiket, locale) ?? fb.ikincil
-      : fb.ikincil;
-  const ikincilHref = data?.heroIkincilCta?.href ?? FALLBACK_HREFS.ikincil;
-
   // Split headline at the colon so we can accent the second part
   const colonIdx = baslik.indexOf(':');
   const beforeColon = colonIdx !== -1 ? baslik.slice(0, colonIdx + 1) : baslik;
@@ -116,17 +110,10 @@ export default function Hero({ data, locale }: HeroProps) {
           {altMetin}
         </p>
 
-        {/* CTAs */}
-        <div className="mt-10 flex flex-wrap gap-4">
+        {/* CTA */}
+        <div className="mt-10">
           <Button href={birincilHref} variant="primary">
             {birincilLabel}
-          </Button>
-          <Button
-            href={ikincilHref}
-            variant="secondary"
-            className="border-white/20 bg-white/5 text-white hover:bg-white/10"
-          >
-            {ikincilLabel}
           </Button>
         </div>
       </div>

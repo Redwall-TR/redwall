@@ -164,10 +164,11 @@ export default function Header({ locale }: { locale: string }) {
 
         {/* Right cluster */}
         <div className="flex items-center gap-2">
-          <div className="hidden lg:flex items-center gap-2">
+          <div className="hidden lg:flex items-center gap-3">
             <ThemeToggle />
             <LocaleSwitcher locale={locale} />
-            <Button href="/teklif" variant="primary" className="px-4 py-2 text-sm">
+            <span className="h-6 w-px bg-border" aria-hidden="true" />
+            <Button href="/teklif" variant="primary" className="px-5 py-2 text-sm shadow-sm shadow-primary/20">
               {t('teklifIste')}
             </Button>
           </div>
