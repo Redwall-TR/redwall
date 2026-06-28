@@ -4,8 +4,7 @@ import type { Metadata } from 'next';
 
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { getSiteSettings } from '@/lib/cms/queries';
 import { Section } from '@/components/ui';
 import ContactForm from '@/components/sections/ContactForm';
 import { PageHero } from '@/components/sections/PageHero';
@@ -55,7 +54,7 @@ export default async function IletisimPage({
   const loc: Locale = locale;
   const isTr = loc === 'tr';
 
-  const settings = await sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null);
+  const settings = await getSiteSettings() as SiteSettings | null;
   const email = settings?.iletisim?.email ?? 'info@redwall.com.tr';
   const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
   const adres =

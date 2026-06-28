@@ -46,9 +46,6 @@ jobs:
             ${{ env.IMAGE }}:latest
             ${{ env.IMAGE }}:${{ steps.meta.outputs.tag }}
           build-args: |
-            NEXT_PUBLIC_SANITY_PROJECT_ID=${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
-            NEXT_PUBLIC_SANITY_DATASET=${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
-            NEXT_PUBLIC_SANITY_API_VERSION=${{ vars.NEXT_PUBLIC_SANITY_API_VERSION }}
             NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -64,9 +61,6 @@ jobs:
             ${{ env.TOOLS_IMAGE }}:latest
             ${{ env.TOOLS_IMAGE }}:${{ steps.meta.outputs.tag }}
           build-args: |
-            NEXT_PUBLIC_SANITY_PROJECT_ID=${{ vars.NEXT_PUBLIC_SANITY_PROJECT_ID }}
-            NEXT_PUBLIC_SANITY_DATASET=${{ vars.NEXT_PUBLIC_SANITY_DATASET }}
-            NEXT_PUBLIC_SANITY_API_VERSION=${{ vars.NEXT_PUBLIC_SANITY_API_VERSION }}
             NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
@@ -94,7 +88,6 @@ jobs:
           WEB_IMAGE: ${{ env.IMAGE }}:${{ needs.build.outputs.tag }}
           TOOLS_IMAGE: ${{ env.TOOLS_IMAGE }}:${{ needs.build.outputs.tag }}
           SITE_HOST: ${{ vars.SITE_HOST }}
-          SANITY_API_READ_TOKEN: ${{ secrets.SANITY_API_READ_TOKEN }}
           PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
           POSTGRES_PASSWORD: ${{ secrets.POSTGRES_PASSWORD }}
           MINIO_ROOT_USER: ${{ secrets.MINIO_ROOT_USER }}
@@ -105,7 +98,7 @@ jobs:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          envs: WEB_IMAGE,TOOLS_IMAGE,SITE_HOST,SANITY_API_READ_TOKEN,PAYLOAD_SECRET,POSTGRES_PASSWORD,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: WEB_IMAGE,TOOLS_IMAGE,SITE_HOST,PAYLOAD_SECRET,POSTGRES_PASSWORD,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
           command_timeout: 15m
           script: |
             set -e

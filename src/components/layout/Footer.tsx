@@ -1,8 +1,7 @@
 import Image from 'next/image';
 import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { SITE_SETTINGS_QUERY } from '@/sanity/lib/queries';
+import { getSiteSettings } from '@/lib/cms/queries';
 import { pick, type Locale } from '@/lib/locales';
 
 type Social = 'linkedin' | 'instagram' | 'youtube' | 'x' | 'facebook' | 'whatsapp';
@@ -93,7 +92,7 @@ export default async function Footer({ locale }: { locale: string }) {
 
   const loc: Locale = locale === 'en' ? 'en' : 'tr';
   const isTr = loc === 'tr';
-  const settings = await sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null);
+  const settings = await getSiteSettings() as SiteSettings | null;
 
   const sirketAdi =
     settings?.sirketAdi ?? 'Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri LTD. Şti.';

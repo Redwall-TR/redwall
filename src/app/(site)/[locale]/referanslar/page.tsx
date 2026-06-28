@@ -2,9 +2,8 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { REFERENCES_QUERY } from '@/sanity/lib/queries';
-import { urlFor } from '@/sanity/lib/image';
+import { getReferences } from '@/lib/cms/queries';
+import { mediaUrl } from '@/lib/cms/image';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { Section, Cta } from '@/components/ui';
@@ -61,7 +60,7 @@ export default async function ReferanslarPage({
   setRequestLocale(locale);
 
   const loc: Locale = locale;
-  const references = await sanityFetch<Reference[]>(REFERENCES_QUERY, {}, []);
+  const references = (await getReferences()) as unknown as Reference[];
 
   const heading = loc === 'tr' ? 'Referanslar' : 'References';
   const description =
@@ -71,7 +70,7 @@ export default async function ReferanslarPage({
 
   const logoItems = references.map((ref) => ({
     ad: ref.ad,
-    src: ref.logo ? urlFor(ref.logo as Parameters<typeof urlFor>[0]).width(200).url() : undefined,
+    src: mediaUrl(ref.logo),
   }));
 
   const testimonials = references.filter((ref) => ref.gorus);

@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { JOBS_QUERY } from '@/sanity/lib/queries';
+import { getJobs } from '@/lib/cms/queries';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { Section, Cta, Button } from '@/components/ui';
@@ -60,7 +59,7 @@ export default async function KariyerPage({
   setRequestLocale(locale);
 
   const loc: Locale = locale;
-  const jobs = await sanityFetch<Job[]>(JOBS_QUERY, {}, []);
+  const jobs = (await getJobs()) as unknown as Job[];
 
   // Page heading
   const heading = loc === 'tr' ? 'Kariyer' : 'Careers';

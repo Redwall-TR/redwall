@@ -1,17 +1,15 @@
 import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
-import type { PortableTextBlock } from '@portabletext/react';
-import type { SanityImageSource } from '@sanity/image-url';
 import Image from 'next/image';
 
 import { isLocale, pick, LOCALES, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { POST_QUERY, POSTS_QUERY } from '@/sanity/lib/queries';
-import { Section, Cta, PortableTextRenderer } from '@/components/ui';
+import { getPost, getPosts } from '@/lib/cms/queries';
+import { mediaUrl } from '@/lib/cms/image';
+import { Section, Cta } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
-import { urlFor } from '@/sanity/lib/image';
+import { RichText } from '@payloadcms/richtext-lexical/react';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 
@@ -22,16 +20,11 @@ interface LocaleString {
   en: string;
 }
 
-interface LocalePortableText {
-  tr: PortableTextBlock[];
-  en: PortableTextBlock[];
-}
-
 interface PostData {
   baslik: LocaleString;
   tarih?: string;
-  kapak?: SanityImageSource;
-  icerik?: LocalePortableText;
+  kapak?: unknown;
+  icerik?: Record<string, unknown>;
 }
 
 interface PostSlug {
@@ -41,7 +34,7 @@ interface PostSlug {
 // ── Static params ─────────────────────────────────────────────────────────────
 
 export async function generateStaticParams() {
-  const posts = await sanityFetch<PostSlug[]>(POSTS_QUERY, {}, []);
+  const posts = (await getPosts()) as PostSlug[];
 
   if (!posts.length) return [];
 
@@ -60,7 +53,7 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const data = await sanityFetch<PostData | null>(POST_QUERY, { slug }, null);
+  const data = (await getPost(slug)) as PostData | null;
 
   if (!data) {
     const fallbackBaslik = loc === 'tr' ? 'Blog Yazısı | Redwall' : 'Blog Post | Redwall';
@@ -89,20 +82,19 @@ export default async function BlogDetayPage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const data = await sanityFetch<PostData | null>(POST_QUERY, { slug }, null);
+  const data = (await getPost(slug)) as PostData | null;
 
   if (!data) notFound();
 
   const isTr = locale === 'tr';
   const baslik = pick(data.baslik, locale) ?? data.baslik.tr;
   const tarihStr = data.tarih ? data.tarih.slice(0, 10) : null;
-  const icerikBlocks = data.icerik
-    ? (pick(data.icerik as Record<'tr' | 'en', PortableTextBlock[]>, locale) ?? undefined)
+  // data.icerik is a locale-keyed object: { tr: LexicalState, en: LexicalState }
+  const icerikLexical = data.icerik
+    ? (pick(data.icerik as Record<'tr' | 'en', Record<string, unknown>>, locale) ?? undefined)
     : undefined;
 
-  const imgSrc = data.kapak
-    ? urlFor(data.kapak).width(1200).height(630).fit('crop').url()
-    : null;
+  const imgSrc = data.kapak ? mediaUrl(data.kapak) ?? null : null;
 
   return (
     <>
@@ -153,11 +145,13 @@ export default async function BlogDetayPage({
       )}
 
       {/* Article content */}
-      <Section>
-        <div className="max-w-3xl">
-          <PortableTextRenderer value={icerikBlocks} />
-        </div>
-      </Section>
+      {icerikLexical && (
+        <Section>
+          <div className="max-w-3xl prose prose-neutral dark:prose-invert">
+            <RichText data={icerikLexical as unknown as Parameters<typeof RichText>[0]['data']} />
+          </div>
+        </Section>
+      )}
 
       {/* CTA */}
       <Cta

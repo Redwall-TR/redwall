@@ -1,5 +1,5 @@
 import { type Locale } from '@/lib/locales';
-import { urlFor } from '@/sanity/lib/image';
+import { mediaUrl } from '@/lib/cms/image';
 import { LogoWall } from '@/components/ui';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -27,10 +27,7 @@ export default function ReferenceStrip({ references, locale }: ReferenceStripPro
 
   const logos = references.map((ref) => ({
     ad: ref.ad,
-    // Yalnızca genişlik veriyoruz: en-boy oranı korunur, kırpma olmaz.
-    src: ref.logo
-      ? urlFor(ref.logo as Parameters<typeof urlFor>[0]).width(280).url()
-      : undefined,
+    src: ref.logo ? mediaUrl(ref.logo) : undefined,
   }));
 
   return (

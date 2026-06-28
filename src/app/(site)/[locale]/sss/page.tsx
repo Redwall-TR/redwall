@@ -2,8 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { FAQS_QUERY } from '@/sanity/lib/queries';
+import { getFaqs } from '@/lib/cms/queries';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { Section, Cta } from '@/components/ui';
@@ -175,8 +174,8 @@ export default async function SssPage({
 
   const loc: Locale = locale;
 
-  const sanityFaqs = await sanityFetch<FaqItem[]>(FAQS_QUERY, {}, []);
-  const faqs: FaqItem[] = sanityFaqs.length > 0 ? sanityFaqs : FALLBACK_FAQS;
+  const payloadFaqs = await getFaqs();
+  const faqs: FaqItem[] = payloadFaqs.length > 0 ? (payloadFaqs as unknown as FaqItem[]) : FALLBACK_FAQS;
 
   const isTr = loc === 'tr';
 

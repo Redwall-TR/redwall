@@ -7,4 +7,3 @@ export { Accordion } from './Accordion';
 export { Breadcrumb } from './Breadcrumb';
 export { Stat } from './Stat';
 export { LogoWall } from './LogoWall';
-export { PortableTextRenderer } from './PortableText';

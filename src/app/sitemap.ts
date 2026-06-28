@@ -1,6 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { PROJECTS_QUERY, POSTS_QUERY } from '@/sanity/lib/queries';
+import { getProjects, getPosts } from '@/lib/cms/queries';
 import { LOCALES } from '@/lib/locales';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.com.tr';
@@ -26,8 +25,8 @@ const STATIC_PATHS: string[] = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const [projects, posts] = await Promise.all([
-    sanityFetch<{ slug: string }[]>(PROJECTS_QUERY, {}, []),
-    sanityFetch<{ slug: string }[]>(POSTS_QUERY, {}, []),
+    getProjects(),
+    getPosts(),
   ]);
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_PATHS.flatMap((path) =>

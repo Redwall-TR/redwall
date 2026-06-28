@@ -3,8 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { isLocale, pick } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { sanityFetch } from '@/sanity/lib/fetch';
-import { PRODUCTS_QUERY, SERVICE_QUERY } from '@/sanity/lib/queries';
+import { getProducts, getService } from '@/lib/cms/queries';
 import { Section, Cta } from '@/components/ui';
 import { ServiceIcon } from '@/components/ui/icons';
 import { PageHero } from '@/components/sections/PageHero';
@@ -67,8 +66,8 @@ export default async function YazilimPage({
 
   // Fetch service and products in parallel
   const [service, products] = await Promise.all([
-    sanityFetch<ServiceData | null>(SERVICE_QUERY, { isKolu: 'yazilim' }, null),
-    sanityFetch<ProductCard[]>(PRODUCTS_QUERY, {}, []),
+    getService('yazilim') as Promise<ServiceData | null>,
+    getProducts() as Promise<ProductCard[]>,
   ]);
 
   const isTr = locale === 'tr';
