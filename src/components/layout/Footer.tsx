@@ -8,6 +8,7 @@ import { pick, type Locale } from '@/lib/locales';
 type Social = 'linkedin' | 'instagram' | 'youtube' | 'x' | 'facebook' | 'whatsapp';
 
 interface SiteSettings {
+  sirketAdi?: string;
   iletisim?: { tel?: string; email?: string; adres?: { tr: string; en: string } };
   sosyal?: Partial<Record<Social, string>>;
 }
@@ -94,6 +95,8 @@ export default async function Footer({ locale }: { locale: string }) {
   const isTr = loc === 'tr';
   const settings = await sanityFetch<SiteSettings | null>(SITE_SETTINGS_QUERY, {}, null);
 
+  const sirketAdi =
+    settings?.sirketAdi ?? 'Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri LTD. Şti.';
   const email = settings?.iletisim?.email ?? 'info@redwall.com.tr';
   const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
   const adres =
@@ -212,8 +215,7 @@ export default async function Footer({ locale }: { locale: string }) {
       <div className="relative border-t border-white/10">
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-white/40 sm:flex-row sm:px-6">
           <p>
-            © 2026 Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri LTD. Şti.{' '}
-            {tf('haklar')}
+            © 2026 {sirketAdi}. {tf('haklar')}
           </p>
           <p className="text-white/30">
             {isTr ? 'Yangın güvenliğinde 360° yaklaşım' : 'A 360° approach to fire safety'}
