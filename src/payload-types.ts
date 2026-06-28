@@ -72,6 +72,11 @@ export interface Config {
     service: Service;
     product: Product;
     referans: Referan;
+    page: Page;
+    faq: Faq;
+    post: Post;
+    job: Job;
+    project: Project;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +89,11 @@ export interface Config {
     service: ServiceSelect<false> | ServiceSelect<true>;
     product: ProductSelect<false> | ProductSelect<true>;
     referans: ReferansSelect<false> | ReferansSelect<true>;
+    page: PageSelect<false> | PageSelect<true>;
+    faq: FaqSelect<false> | FaqSelect<true>;
+    post: PostSelect<false> | PostSelect<true>;
+    job: JobSelect<false> | JobSelect<true>;
+    project: ProjectSelect<false> | ProjectSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -93,8 +103,16 @@ export interface Config {
     defaultIDType: number;
   };
   fallbackLocale: ('false' | 'none' | 'null') | false | null | ('tr' | 'en') | ('tr' | 'en')[];
-  globals: {};
-  globalsSelect: {};
+  globals: {
+    siteSettings: SiteSetting;
+    navigation: Navigation;
+    homePage: HomePage;
+  };
+  globalsSelect: {
+    siteSettings: SiteSettingsSelect<false> | SiteSettingsSelect<true>;
+    navigation: NavigationSelect<false> | NavigationSelect<true>;
+    homePage: HomePageSelect<false> | HomePageSelect<true>;
+  };
   locale: 'tr' | 'en';
   widgets: {
     collections: CollectionsWidget;
@@ -301,6 +319,183 @@ export interface Referan {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page".
+ */
+export interface Page {
+  id: number;
+  /**
+   * hakkimizda, vizyon-misyon veya kalite-belgeler
+   */
+  slug: string;
+  baslik: string;
+  altBaslik?: string | null;
+  chips?:
+    | {
+        etiket?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  girisLead?: string | null;
+  girisParagraflar?:
+    | {
+        paragraf?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  vizyonBaslik?: string | null;
+  vizyonMetin?: string | null;
+  misyonBaslik?: string | null;
+  misyonMetin?: string | null;
+  kartlarEyebrow?: string | null;
+  kartlarBaslik?: string | null;
+  kartlarAciklama?: string | null;
+  kartlar?:
+    | {
+        icon?:
+          | (
+              | 'shield-check'
+              | 'clipboard'
+              | 'ruler'
+              | 'hard-hat'
+              | 'building'
+              | 'key'
+              | 'droplet'
+              | 'wall'
+              | 'wrench'
+              | 'refresh'
+              | 'code'
+              | 'flame'
+              | 'gauge'
+              | 'document'
+            )
+          | null;
+        baslik?: string | null;
+        aciklama?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faq".
+ */
+export interface Faq {
+  id: number;
+  kategori?: ('genel' | 'yazilim' | 'danismanlik' | 'muhendislik') | null;
+  soru: string;
+  cevap?: string | null;
+  sira?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post".
+ */
+export interface Post {
+  id: number;
+  slug: string;
+  baslik: string;
+  tarih?: string | null;
+  kapak?: (number | null) | Media;
+  ozet?: string | null;
+  icerik?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  etiketler?:
+    | {
+        etiket?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job".
+ */
+export interface Job {
+  id: number;
+  slug: string;
+  baslik: string;
+  lokasyon?: string | null;
+  tip?: string | null;
+  aciklama?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  aktif?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project".
+ */
+export interface Project {
+  id: number;
+  slug: string;
+  baslik: string;
+  musteri?: string | null;
+  isKolu?: ('yazilim' | 'danismanlik' | 'muhendislik') | null;
+  durum?: ('devam-eden' | 'tamamlandi') | null;
+  yil?: number | null;
+  il?: string | null;
+  kapsam?: string | null;
+  ozet?: string | null;
+  aciklama?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  gorseller?:
+    | {
+        gorsel?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  oneCikan?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -342,6 +537,26 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'referans';
         value: number | Referan;
+      } | null)
+    | ({
+        relationTo: 'page';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'faq';
+        value: number | Faq;
+      } | null)
+    | ({
+        relationTo: 'post';
+        value: number | Post;
+      } | null)
+    | ({
+        relationTo: 'job';
+        value: number | Job;
+      } | null)
+    | ({
+        relationTo: 'project';
+        value: number | Project;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -518,6 +733,116 @@ export interface ReferansSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "page_select".
+ */
+export interface PageSelect<T extends boolean = true> {
+  slug?: T;
+  baslik?: T;
+  altBaslik?: T;
+  chips?:
+    | T
+    | {
+        etiket?: T;
+        id?: T;
+      };
+  girisLead?: T;
+  girisParagraflar?:
+    | T
+    | {
+        paragraf?: T;
+        id?: T;
+      };
+  vizyonBaslik?: T;
+  vizyonMetin?: T;
+  misyonBaslik?: T;
+  misyonMetin?: T;
+  kartlarEyebrow?: T;
+  kartlarBaslik?: T;
+  kartlarAciklama?: T;
+  kartlar?:
+    | T
+    | {
+        icon?: T;
+        baslik?: T;
+        aciklama?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "faq_select".
+ */
+export interface FaqSelect<T extends boolean = true> {
+  kategori?: T;
+  soru?: T;
+  cevap?: T;
+  sira?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "post_select".
+ */
+export interface PostSelect<T extends boolean = true> {
+  slug?: T;
+  baslik?: T;
+  tarih?: T;
+  kapak?: T;
+  ozet?: T;
+  icerik?: T;
+  etiketler?:
+    | T
+    | {
+        etiket?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "job_select".
+ */
+export interface JobSelect<T extends boolean = true> {
+  slug?: T;
+  baslik?: T;
+  lokasyon?: T;
+  tip?: T;
+  aciklama?: T;
+  aktif?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "project_select".
+ */
+export interface ProjectSelect<T extends boolean = true> {
+  slug?: T;
+  baslik?: T;
+  musteri?: T;
+  isKolu?: T;
+  durum?: T;
+  yil?: T;
+  il?: T;
+  kapsam?: T;
+  ozet?: T;
+  aciklama?: T;
+  gorseller?:
+    | T
+    | {
+        gorsel?: T;
+        id?: T;
+      };
+  oneCikan?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -555,6 +880,220 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T;
   updatedAt?: T;
   createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "siteSettings".
+ */
+export interface SiteSetting {
+  id: number;
+  sirketAdi: string;
+  iletisim?: {
+    tel?: string | null;
+    email?: string | null;
+    adres?: string | null;
+  };
+  /**
+   * Tam URL girin (https://...). Boş bırakılan platform footer'da gösterilmez.
+   */
+  sosyal?: {
+    linkedin?: string | null;
+    instagram?: string | null;
+    youtube?: string | null;
+    x?: string | null;
+    facebook?: string | null;
+    /**
+     * Örn: https://wa.me/90XXXXXXXXXX
+     */
+    whatsapp?: string | null;
+  };
+  calismaSaatleri?: string | null;
+  istatistikler?:
+    | {
+        deger?: string | null;
+        etiket?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  seo?: {
+    baslik?: string | null;
+    aciklama?: string | null;
+  };
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation".
+ */
+export interface Navigation {
+  id: number;
+  headerLinks?:
+    | {
+        etiket?: string | null;
+        href?: string | null;
+        alt?:
+          | {
+              etiket?: string | null;
+              href?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  footerKolonlari?:
+    | {
+        baslik?: string | null;
+        linkler?:
+          | {
+              etiket?: string | null;
+              href?: string | null;
+              id?: string | null;
+            }[]
+          | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homePage".
+ */
+export interface HomePage {
+  id: number;
+  heroBaslik: string;
+  heroAltMetin?: string | null;
+  heroBirincilCta?: {
+    etiket?: string | null;
+    href?: string | null;
+  };
+  heroIkincilCta?: {
+    etiket?: string | null;
+    href?: string | null;
+  };
+  oneCikanUrun?: (number | null) | Product;
+  yaklasim?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  updatedAt?: string | null;
+  createdAt?: string | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "siteSettings_select".
+ */
+export interface SiteSettingsSelect<T extends boolean = true> {
+  sirketAdi?: T;
+  iletisim?:
+    | T
+    | {
+        tel?: T;
+        email?: T;
+        adres?: T;
+      };
+  sosyal?:
+    | T
+    | {
+        linkedin?: T;
+        instagram?: T;
+        youtube?: T;
+        x?: T;
+        facebook?: T;
+        whatsapp?: T;
+      };
+  calismaSaatleri?: T;
+  istatistikler?:
+    | T
+    | {
+        deger?: T;
+        etiket?: T;
+        id?: T;
+      };
+  seo?:
+    | T
+    | {
+        baslik?: T;
+        aciklama?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "navigation_select".
+ */
+export interface NavigationSelect<T extends boolean = true> {
+  headerLinks?:
+    | T
+    | {
+        etiket?: T;
+        href?: T;
+        alt?:
+          | T
+          | {
+              etiket?: T;
+              href?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  footerKolonlari?:
+    | T
+    | {
+        baslik?: T;
+        linkler?:
+          | T
+          | {
+              etiket?: T;
+              href?: T;
+              id?: T;
+            };
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "homePage_select".
+ */
+export interface HomePageSelect<T extends boolean = true> {
+  heroBaslik?: T;
+  heroAltMetin?: T;
+  heroBirincilCta?:
+    | T
+    | {
+        etiket?: T;
+        href?: T;
+      };
+  heroIkincilCta?:
+    | T
+    | {
+        etiket?: T;
+        href?: T;
+      };
+  oneCikanUrun?: T;
+  yaklasim?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  globalType?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

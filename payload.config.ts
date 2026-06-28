@@ -9,6 +9,14 @@ import { Media } from './src/collections/Media'
 import { Service } from './src/collections/Service'
 import { Product } from './src/collections/Product'
 import { Referans } from './src/collections/Referans'
+import { Page } from './src/collections/Page'
+import { Faq } from './src/collections/Faq'
+import { Post } from './src/collections/Post'
+import { Job } from './src/collections/Job'
+import { Project } from './src/collections/Project'
+import { SiteSettings } from './src/globals/SiteSettings'
+import { Navigation } from './src/globals/Navigation'
+import { HomePage } from './src/globals/HomePage'
 
 const dirname = path.dirname(fileURLToPath(import.meta.url))
 
@@ -29,7 +37,13 @@ export default buildConfig({
     Service,
     Product,
     Referans,
+    Page,
+    Faq,
+    Post,
+    Job,
+    Project,
   ],
+  globals: [SiteSettings, Navigation, HomePage],
   plugins: [
     s3Storage({
       collections: { media: true },
