@@ -430,23 +430,46 @@ async function main() {
   }
 
   // 3c. referans — 2 records
-  const referanslar = [
+  type ReferansDef = {
+    ad: string
+    anasayfada: boolean
+    tr: { gorus: { metin: string; kisi: string; unvan: string } }
+    en: { gorus: { metin: string; unvan: string } }
+  }
+
+  const referanslar: ReferansDef[] = [
     {
       ad: 'Aksa Enerji Üretim A.Ş.',
       anasayfada: true,
-      gorus: {
-        metin: 'Redwall\'ın YangınPro yazılımı ekibimizin proje üretim süresini yaklaşık %40 kısalttı.',
-        kisi: 'Ahmet Demir',
-        unvan: 'Teknik Direktör',
+      tr: {
+        gorus: {
+          metin: 'Redwall\'ın YangınPro yazılımı ekibimizin proje üretim süresini yaklaşık %40 kısalttı.',
+          kisi: 'Ahmet Demir',
+          unvan: 'Teknik Direktör',
+        },
+      },
+      en: {
+        gorus: {
+          metin: 'Redwall\'s YangınPro software reduced our team\'s project production time by approximately 40%.',
+          unvan: 'Technical Director',
+        },
       },
     },
     {
       ad: 'Emlak Konut GYO A.Ş.',
       anasayfada: false,
-      gorus: {
-        metin: 'Büyük ölçekli konut projelerimizde Redwall\'ın danışmanlık desteği sayesinde itfaiye onaylarını hızla aldık.',
-        kisi: 'Zeynep Arslan',
-        unvan: 'Proje Koordinatörü',
+      tr: {
+        gorus: {
+          metin: 'Büyük ölçekli konut projelerimizde Redwall\'ın danışmanlık desteği sayesinde itfaiye onaylarını hızla aldık.',
+          kisi: 'Zeynep Arslan',
+          unvan: 'Proje Koordinatörü',
+        },
+      },
+      en: {
+        gorus: {
+          metin: 'Thanks to Redwall\'s consulting support on our large-scale residential projects, we obtained fire department approvals swiftly.',
+          unvan: 'Project Coordinator',
+        },
       },
     },
   ]
@@ -458,25 +481,41 @@ async function main() {
       limit: 1,
       overrideAccess: true,
     })
+    let docId: string | number
     if (existing.totalDocs > 0) {
-      console.log(`  – referans[${r.ad}] zaten var, atlandı.`)
-      continue
+      docId = existing.docs[0].id
+      console.log(`  – referans[${r.ad}] zaten var, EN güncelleniyor.`)
+    } else {
+      const doc = await payload.create({
+        collection: 'referans',
+        locale: 'tr',
+        data: {
+          ad: r.ad,
+          anasayfada: r.anasayfada,
+          gorus: {
+            metin: r.tr.gorus.metin,
+            kisi: r.tr.gorus.kisi,
+            unvan: r.tr.gorus.unvan,
+          },
+        },
+        overrideAccess: true,
+      })
+      docId = doc.id
+      console.log(`  ✓ referans[${r.ad}] oluşturuldu (TR)`)
     }
-    await payload.create({
+    await payload.update({
       collection: 'referans',
-      locale: 'tr',
+      id: docId,
+      locale: 'en',
       data: {
-        ad: r.ad,
-        anasayfada: r.anasayfada,
         gorus: {
-          metin: r.gorus.metin,
-          kisi: r.gorus.kisi,
-          unvan: r.gorus.unvan,
+          metin: r.en.gorus.metin,
+          unvan: r.en.gorus.unvan,
         },
       },
       overrideAccess: true,
     })
-    console.log(`  ✓ referans[${r.ad}] oluşturuldu`)
+    console.log(`  ✓ referans[${r.ad}] EN locale yazıldı`)
   }
 
   // 3d. page — 2 records
