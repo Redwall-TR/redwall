@@ -314,3 +314,97 @@ export async function getJobs() {
     }))
   }, [])
 }
+
+// ---------------------------------------------------------------------------
+// Pages
+// ---------------------------------------------------------------------------
+
+export async function getPage(slug: string) {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'page',
+      where: { slug: { equals: slug } },
+      locale: 'all',
+      depth: 2,
+      limit: 1,
+    })
+    const r = docs[0]
+    if (!r) return null
+    return {
+      baslik: r.baslik,
+      altBaslik: r.altBaslik,
+      chips: unwrap(r.chips, 'etiket'),
+      girisLead: r.girisLead,
+      girisParagraflar: unwrap(r.girisParagraflar, 'paragraf'),
+      vizyonBaslik: r.vizyonBaslik,
+      vizyonMetin: r.vizyonMetin,
+      misyonBaslik: r.misyonBaslik,
+      misyonMetin: r.misyonMetin,
+      kartlarEyebrow: r.kartlarEyebrow,
+      kartlarBaslik: r.kartlarBaslik,
+      kartlarAciklama: r.kartlarAciklama,
+      kartlar: r.kartlar ?? [],
+    }
+  }, null)
+}
+
+// ---------------------------------------------------------------------------
+// Globals
+// ---------------------------------------------------------------------------
+
+export async function getSiteSettings() {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const r = await p.findGlobal({
+      slug: 'siteSettings',
+      locale: 'all',
+      depth: 2,
+    })
+    return {
+      sirketAdi: r.sirketAdi,
+      iletisim: r.iletisim,
+      sosyal: r.sosyal,
+      calismaSaatleri: r.calismaSaatleri,
+      istatistikler: r.istatistikler,
+      seo: r.seo,
+    }
+  }, null)
+}
+
+export async function getNav() {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const r = await p.findGlobal({
+      slug: 'navigation',
+      locale: 'all',
+      depth: 2,
+    })
+    return {
+      headerLinks: r.headerLinks,
+      footerKolonlari: r.footerKolonlari,
+    }
+  }, null)
+}
+
+export async function getHome() {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const r = await p.findGlobal({
+      slug: 'homePage',
+      locale: 'all',
+      depth: 2,
+    })
+    const urun = r.oneCikanUrun as any
+    return {
+      heroBaslik: r.heroBaslik,
+      heroAltMetin: r.heroAltMetin,
+      heroBirincilCta: r.heroBirincilCta,
+      heroIkincilCta: r.heroIkincilCta,
+      yaklasim: r.yaklasim,
+      oneCikanUrun: urun && typeof urun === 'object' && !Array.isArray(urun)
+        ? { slug: urun.slug ?? null, ad: urun.ad ?? null, slogan: urun.slogan ?? null }
+        : null,
+    }
+  }, null)
+}
