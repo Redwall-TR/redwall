@@ -1,0 +1,30 @@
+# Build context trimming — keep the image small and secrets out.
+node_modules
+.next
+out
+build
+
+# Git / CI / editor
+.git
+.github
+.vscode
+.idea
+
+# Secrets & local env (NEVER ship into the image)
+.env
+.env.*
+!.env.example
+
+# Docs & deploy manifests (not needed at build time)
+docs
+deploy
+*.md
+
+# Test / coverage / logs
+coverage
+*.log
+npm-debug.log*
+
+# OS cruft
+.DS_Store
+Thumbs.db
