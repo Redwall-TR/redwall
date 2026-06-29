@@ -96,7 +96,7 @@ export default async function Footer({ locale }: { locale: string }) {
 
   const sirketAdi =
     settings?.sirketAdi ?? 'Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri LTD. Şti.';
-  const email = settings?.iletisim?.email ?? 'info@redwall.com.tr';
+  const email = settings?.iletisim?.email ?? 'info@redwall.tr';
   const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
   const adres =
     (settings?.iletisim?.adres ? pick(settings.iletisim.adres, loc) : undefined) ?? 'İstanbul, Türkiye';

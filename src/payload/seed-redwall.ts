@@ -88,7 +88,7 @@ function lex(blocks: Block[]) {
 
 // ── Shared ──────────────────────────────────────────────────────────────────
 
-const EMAIL = 'info@redwall.com.tr'
+const EMAIL = 'info@redwall.tr'
 const TELEFON = '[DOLDURULACAK: destek telefonu]'
 
 const INFO_NOTE_TR =

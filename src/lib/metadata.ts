@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { LOCALES, type Locale } from '@/lib/locales';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.com.tr';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
 
 export function buildMetadata({
   baslik,

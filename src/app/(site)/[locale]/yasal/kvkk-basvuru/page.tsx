@@ -83,8 +83,8 @@ export default async function KvkkBasvuruPage({
                   </li>
                   <li>
                     <strong>E-posta:</strong>{' '}
-                    <a href="mailto:info@redwall.com.tr" className="underline hover:text-foreground">
-                      info@redwall.com.tr
+                    <a href="mailto:info@redwall.tr" className="underline hover:text-foreground">
+                      info@redwall.tr
                     </a>
                   </li>
                 </ul>
@@ -98,8 +98,8 @@ export default async function KvkkBasvuruPage({
                   </li>
                   <li>
                     <strong>Email:</strong>{' '}
-                    <a href="mailto:info@redwall.com.tr" className="underline hover:text-foreground">
-                      info@redwall.com.tr
+                    <a href="mailto:info@redwall.tr" className="underline hover:text-foreground">
+                      info@redwall.tr
                     </a>
                   </li>
                 </ul>

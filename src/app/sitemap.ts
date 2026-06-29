@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getProjects, getPosts } from '@/lib/cms/queries';
 import { LOCALES } from '@/lib/locales';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.com.tr';
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
 
 const STATIC_PATHS: string[] = [
   '',

@@ -63,7 +63,7 @@ export default async function IletisimPage({
   const isTr = loc === 'tr';
 
   const settings = await getSiteSettings() as SiteSettings | null;
-  const email = settings?.iletisim?.email ?? 'info@redwall.com.tr';
+  const email = settings?.iletisim?.email ?? 'info@redwall.tr';
   const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
   const adres =
     (settings?.iletisim?.adres ? pick(settings.iletisim.adres, loc) : undefined) ?? 'İstanbul, Türkiye';

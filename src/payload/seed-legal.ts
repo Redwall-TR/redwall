@@ -94,7 +94,7 @@ const UNVAN =
   'Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri Limited Şirketi'
 const ADRES =
   'Kurtuluş Mah. Bahçıvan Sok. Sağlık İşhanı No: 2 Kat: 1, Adapazarı / Sakarya'
-const EMAIL = 'info@redwall.com.tr'
+const EMAIL = 'info@redwall.tr'
 
 const DRAFT_NOTE_TR =
   'Bu metin hukuki taslaktır. Yürürlüğe girmeden önce bir KVKK danışmanına ya da hukuk müşavirine kontrol ettirmeniz tavsiye edilir. Aşağıdaki "[DOLDURULACAK: ...]" alanları, şirket tescil belgelerinden temin edilecek gerçek verilerle değiştirilmelidir.'

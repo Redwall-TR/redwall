@@ -71,7 +71,7 @@ async function main() {
         'Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri Limited Şirketi',
       iletisim: {
         tel: '+90 212 000 00 00',
-        email: 'info@redwall.com.tr',
+        email: 'info@redwall.tr',
         adres:
           'Mecidiyeköy Mahallesi, Büyükdere Caddesi No:52, Kat:8, 34387 Şişli / İstanbul',
       },
