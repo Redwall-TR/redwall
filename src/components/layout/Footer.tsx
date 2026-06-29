@@ -109,11 +109,13 @@ export default async function Footer({ locale }: { locale: string }) {
     { href: '/yazilim', label: t('yazilim') },
     { href: '/danismanlik', label: t('danismanlik') },
     { href: '/muhendislik', label: t('muhendislik') },
+    { href: '/cozumler', label: t('cozumler') },
   ];
   const kurumsal = [
     { href: '/kurumsal/hakkimizda', label: t('hakkimizda') },
     { href: '/kurumsal/vizyon-misyon', label: t('vizyonMisyon') },
     { href: '/kurumsal/kalite-belgeler', label: t('kaliteBelgeler') },
+    { href: '/kurumsal/ekibimiz', label: t('ekibimiz') },
   ];
   const dahaFazla = [
     { href: '/projeler', label: t('projeler') },
@@ -121,6 +123,7 @@ export default async function Footer({ locale }: { locale: string }) {
     { href: '/sss', label: t('sss') },
     { href: '/blog', label: t('blog') },
     { href: '/kariyer', label: t('kariyer') },
+    { href: '/dokumanlar', label: t('dokumanlar') },
   ];
 
   return (

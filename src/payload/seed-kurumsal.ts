@@ -90,9 +90,25 @@ function lex(blocks: Block[]) {
 
 // ── Çözümler ──────────────────────────────────────────────────────────────────
 
+type SolutionIkon =
+  | 'shield-check'
+  | 'clipboard'
+  | 'ruler'
+  | 'hard-hat'
+  | 'building'
+  | 'key'
+  | 'droplet'
+  | 'wall'
+  | 'wrench'
+  | 'refresh'
+  | 'code'
+  | 'flame'
+  | 'gauge'
+  | 'document'
+
 type SolutionSeed = {
   slug: string
-  ikon: string
+  ikon: SolutionIkon
   sira: number
   baslikTR: string
   baslikEN: string

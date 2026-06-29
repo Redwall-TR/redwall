@@ -10,6 +10,7 @@ export const PRIMARY = [
   { key: 'danismanlik', href: '/danismanlik' },
   { key: 'muhendislik', href: '/muhendislik' },
   { key: 'projeler', href: '/projeler' },
+  { key: 'cozumler', href: '/cozumler' },
   {
     key: 'kurumsal',
     href: '/kurumsal/hakkimizda',
@@ -17,6 +18,7 @@ export const PRIMARY = [
       { key: 'hakkimizda', href: '/kurumsal/hakkimizda' },
       { key: 'vizyonMisyon', href: '/kurumsal/vizyon-misyon' },
       { key: 'kaliteBelgeler', href: '/kurumsal/kalite-belgeler' },
+      { key: 'ekibimiz', href: '/kurumsal/ekibimiz' },
     ],
   },
   {
@@ -27,6 +29,7 @@ export const PRIMARY = [
       { key: 'sss', href: '/sss' },
       { key: 'blog', href: '/blog' },
       { key: 'kariyer', href: '/kariyer' },
+      { key: 'dokumanlar', href: '/dokumanlar' },
     ],
   },
 ] as const;

@@ -1,10 +1,10 @@
 {
   "nav": {
     "yazilim": "Yazılım", "danismanlik": "Danışmanlık", "muhendislik": "Mühendislik",
-    "projeler": "Projeler", "kurumsal": "Kurumsal", "hakkimizda": "Hakkımızda",
-    "vizyonMisyon": "Vizyon & Misyon", "kaliteBelgeler": "Kalite & Belgeler",
+    "projeler": "Projeler", "cozumler": "Çözümler", "kurumsal": "Kurumsal", "hakkimizda": "Hakkımızda",
+    "vizyonMisyon": "Vizyon & Misyon", "kaliteBelgeler": "Kalite & Belgeler", "ekibimiz": "Ekibimiz",
     "dahaFazla": "Daha Fazla", "referanslar": "Referanslar", "sss": "S.S.S.",
-    "blog": "Blog", "kariyer": "Kariyer", "iletisim": "İletişim", "teklifIste": "Teklif İste"
+    "blog": "Blog", "kariyer": "Kariyer", "dokumanlar": "Dokümanlar", "iletisim": "İletişim", "teklifIste": "Teklif İste"
   },
   "common": {
     "detayliBilgi": "Detaylı bilgi", "tumProjeler": "Tüm projeler",
