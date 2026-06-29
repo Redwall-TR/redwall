@@ -1,5 +1,15 @@
 import 'server-only'
 import nodemailer from 'nodemailer'
+import { isEmail } from './form'
+
+function escapeHtml(s: string): string {
+  return s
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;')
+}
 
 /**
  * SMTP üzerinden e-posta gönderimi (form bildirimleri için).
@@ -27,7 +37,7 @@ function getTransport() {
 }
 
 export interface FormBildirim {
-  tur: 'iletisim' | 'teklif' | 'demo'
+  tur: 'iletisim' | 'teklif' | 'demo' | 'kvkk'
   ad: string
   email: string
   telefon?: string
@@ -43,6 +53,7 @@ const TUR_ETIKET: Record<FormBildirim['tur'], string> = {
   iletisim: 'İletişim',
   teklif: 'Teklif Talebi',
   demo: 'Demo Talebi',
+  kvkk: 'KVKK Başvurusu',
 }
 
 /**
@@ -80,9 +91,11 @@ export async function sendFormBildirim(data: FormBildirim): Promise<{ sent: bool
       ${dolu
         .map(
           ([k, v]) =>
-            `<tr><td style="padding:4px 12px 4px 0;color:#666;vertical-align:top"><strong>${k}</strong></td><td style="padding:4px 0;white-space:pre-wrap">${String(
-              v,
-            ).replace(/</g, '&lt;')}</td></tr>`,
+            `<tr><td style="padding:4px 12px 4px 0;color:#666;vertical-align:top"><strong>${escapeHtml(
+              k,
+            )}</strong></td><td style="padding:4px 0;white-space:pre-wrap">${escapeHtml(
+              String(v),
+            )}</td></tr>`,
         )
         .join('')}
     </table>`
@@ -91,7 +104,8 @@ export async function sendFormBildirim(data: FormBildirim): Promise<{ sent: bool
     await transport.sendMail({
       from,
       to,
-      replyTo: data.email,
+      // replyTo yalnızca geçerli e-posta ise (KVKK formunda iletişim telefon olabilir)
+      replyTo: data.email && isEmail(data.email) ? data.email : undefined,
       subject: `[Redwall] Yeni ${TUR_ETIKET[data.tur]} — ${data.ad}`,
       text,
       html,

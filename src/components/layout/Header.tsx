@@ -137,7 +137,6 @@ export default function Header({
 }) {
   const t = useTranslations('nav');
   const ta = useTranslations('a11y');
-  // TODO (Task 3.2): lift this state to control the mobile panel
   const [mobileOpen, setMobileOpen] = useState(false);
 
   // "Yazılım" alt menüsü yayındaki ürünlerden üretilir. Ürün yoksa düz link.

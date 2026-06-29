@@ -7,6 +7,7 @@ import * as migration_20260629_095057_richpage_kunye from './20260629_095057_ric
 import * as migration_20260629_101844_product_yayinda from './20260629_101844_product_yayinda';
 import * as migration_20260629_150619_kurumsal_koleksiyonlar from './20260629_150619_kurumsal_koleksiyonlar';
 import * as migration_20260629_161326_form_gonderimi from './20260629_161326_form_gonderimi';
+import * as migration_20260629_175116_form_gonderimi_kvkk from './20260629_175116_form_gonderimi_kvkk';
 
 export const migrations = [
   {
@@ -52,6 +53,11 @@ export const migrations = [
   {
     up: migration_20260629_161326_form_gonderimi.up,
     down: migration_20260629_161326_form_gonderimi.down,
-    name: '20260629_161326_form_gonderimi'
+    name: '20260629_161326_form_gonderimi',
+  },
+  {
+    up: migration_20260629_175116_form_gonderimi_kvkk.up,
+    down: migration_20260629_175116_form_gonderimi_kvkk.down,
+    name: '20260629_175116_form_gonderimi_kvkk'
   },
 ];

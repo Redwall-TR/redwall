@@ -377,23 +377,6 @@ export async function getRichPage(slug: string) {
   }, null)
 }
 
-export async function getRichPagesByCategory(kategori: string) {
-  return safe(async () => {
-    const p = await getPayloadClient()
-    return (
-      await p.find({
-        collection: 'richPage',
-        where: { kategori: { equals: kategori } },
-        locale: 'all',
-        depth: 0,
-        limit: 50,
-      })
-    ).docs.map((r) => {
-      const doc = r as unknown as Record<string, unknown>
-      return { slug: doc.slug, baslik: doc.baslik, kategori: doc.kategori }
-    })
-  }, [])
-}
 
 // ---------------------------------------------------------------------------
 // Solutions
@@ -445,25 +428,6 @@ export async function getSolution(slug: string) {
 // Team
 // ---------------------------------------------------------------------------
 
-export async function getTeam() {
-  return safe(async () => {
-    const p = await getPayloadClient()
-    const { docs } = await p.find({
-      collection: 'teamMember',
-      sort: 'sira',
-      locale: 'all',
-      depth: 2,
-      limit: 100,
-    })
-    return docs.map((r) => ({
-      ad: r.ad,
-      unvan: (r as unknown as Record<string, unknown>).unvan,
-      foto: (r as unknown as Record<string, unknown>).foto,
-      bio: (r as unknown as Record<string, unknown>).bio,
-      linkedin: (r as unknown as Record<string, unknown>).linkedin,
-    }))
-  }, [])
-}
 
 // ---------------------------------------------------------------------------
 // Documents

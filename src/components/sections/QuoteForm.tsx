@@ -18,6 +18,7 @@ type FormValues = {
   telefon: string;
   email: string;
   mesaj: string;
+  hp: string;
 };
 
 const INITIAL: FormValues = {
@@ -30,6 +31,7 @@ const INITIAL: FormValues = {
   telefon: '',
   email: '',
   mesaj: '',
+  hp: '',
 };
 
 const IS_KOLU_VALUES: IsKolu[] = ['yazilim', 'danismanlik', 'muhendislik'];
@@ -79,6 +81,7 @@ export default function QuoteForm({ locale }: { locale: Locale }) {
       il: values.il,
       metrekare: values.metrekare,
       mesaj,
+      hp: values.hp,
     });
     setSubmitting(false);
     if (res.ok) {
@@ -274,6 +277,16 @@ export default function QuoteForm({ locale }: { locale: Locale }) {
         />
       </div>
 
+      <input
+        type="text"
+        name="hp"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={values.hp}
+        onChange={handleChange}
+        className="hidden"
+      />
       {genelHata && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {t('genelHata')}

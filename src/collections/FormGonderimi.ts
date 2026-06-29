@@ -30,6 +30,7 @@ export const FormGonderimi: CollectionConfig = {
         { label: 'İletişim', value: 'iletisim' },
         { label: 'Teklif', value: 'teklif' },
         { label: 'Demo', value: 'demo' },
+        { label: 'KVKK Başvurusu', value: 'kvkk' },
       ],
     },
     { name: 'ad', type: 'text', label: 'Ad Soyad', required: true },

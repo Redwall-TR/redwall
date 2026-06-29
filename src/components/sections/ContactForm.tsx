@@ -12,9 +12,10 @@ type FormValues = {
   email: string;
   telefon: string;
   mesaj: string;
+  hp: string;
 };
 
-const INITIAL: FormValues = { ad: '', kurum: '', email: '', telefon: '', mesaj: '' };
+const INITIAL: FormValues = { ad: '', kurum: '', email: '', telefon: '', mesaj: '', hp: '' };
 
 export default function ContactForm() {
   const t = useTranslations('form');
@@ -169,6 +170,16 @@ export default function ContactForm() {
         )}
       </div>
 
+      <input
+        type="text"
+        name="hp"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={values.hp}
+        onChange={handleChange}
+        className="hidden"
+      />
       {genelHata && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {t('genelHata')}

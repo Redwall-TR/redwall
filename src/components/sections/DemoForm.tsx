@@ -13,6 +13,7 @@ type FormValues = {
   kurum: string;
   email: string;
   mesaj: string;
+  hp: string;
 };
 
 const INITIAL: FormValues = {
@@ -21,6 +22,7 @@ const INITIAL: FormValues = {
   kurum: '',
   email: '',
   mesaj: '',
+  hp: '',
 };
 
 const URUN_OPTIONS = [
@@ -195,6 +197,16 @@ export default function DemoForm({ locale }: { locale: Locale }) {
         />
       </div>
 
+      <input
+        type="text"
+        name="hp"
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        value={values.hp}
+        onChange={handleChange}
+        className="hidden"
+      />
       {genelHata && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
           {t('genelHata')}

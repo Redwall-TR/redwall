@@ -618,7 +618,7 @@ export interface Document {
  */
 export interface FormGonderimi {
   id: number;
-  tur: 'iletisim' | 'teklif' | 'demo';
+  tur: 'iletisim' | 'teklif' | 'demo' | 'kvkk';
   ad: string;
   email: string;
   telefon?: string | null;
