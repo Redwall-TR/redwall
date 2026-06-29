@@ -22,6 +22,16 @@ export const Product: CollectionConfig = {
       required: true,
     },
     {
+      name: 'yayinda',
+      type: 'checkbox',
+      label: 'Sitede yayınla',
+      defaultValue: true,
+      admin: {
+        position: 'sidebar',
+        description: 'Kapalıysa ürün sitede (liste ve detay) gösterilmez.',
+      },
+    },
+    {
       name: 'slogan',
       type: 'text',
       label: 'Slogan',

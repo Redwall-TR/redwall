@@ -372,8 +372,9 @@ export default async function UrunDetayPage({
 
   const data = await getProduct(urun) as ProductData | null;
 
-  // Unknown slug → 404
-  if (!data && !isKnownSlug(urun)) notFound();
+  // Yayında değil veya bulunamadı → 404. (getProduct, yayinda==true filtreler;
+  // yayından kaldırılan ürün KNOWN_SLUGS fallback'ine düşmeden 404 olur.)
+  if (!data) notFound();
 
   // Resolve content: Sanity data or fallback
   const fb = isKnownSlug(urun) ? FALLBACK[urun] : null;

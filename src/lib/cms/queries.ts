@@ -147,6 +147,7 @@ export async function getProducts() {
     const p = await getPayloadClient()
     const { docs } = await p.find({
       collection: 'product',
+      where: { yayinda: { equals: true } },
       sort: 'sira',
       locale: 'all',
       depth: 2,
@@ -167,7 +168,7 @@ export async function getProduct(slug: string) {
     const p = await getPayloadClient()
     const { docs } = await p.find({
       collection: 'product',
-      where: { slug: { equals: slug } },
+      where: { slug: { equals: slug }, yayinda: { equals: true } },
       locale: 'all',
       depth: 2,
       limit: 1,

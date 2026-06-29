@@ -4,6 +4,7 @@ import * as migration_20260628_153642_collections1 from './20260628_153642_colle
 import * as migration_20260628_154834_service_iskolu_unique from './20260628_154834_service_iskolu_unique';
 import * as migration_20260628_155709_collections2 from './20260628_155709_collections2';
 import * as migration_20260629_095057_richpage_kunye from './20260629_095057_richpage_kunye';
+import * as migration_20260629_101844_product_yayinda from './20260629_101844_product_yayinda';
 
 export const migrations = [
   {
@@ -34,6 +35,11 @@ export const migrations = [
   {
     up: migration_20260629_095057_richpage_kunye.up,
     down: migration_20260629_095057_richpage_kunye.down,
-    name: '20260629_095057_richpage_kunye'
+    name: '20260629_095057_richpage_kunye',
+  },
+  {
+    up: migration_20260629_101844_product_yayinda.up,
+    down: migration_20260629_101844_product_yayinda.down,
+    name: '20260629_101844_product_yayinda'
   },
 ];

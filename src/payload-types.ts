@@ -259,6 +259,10 @@ export interface Product {
    */
   slug: string;
   ad: string;
+  /**
+   * Kapalıysa ürün sitede (liste ve detay) gösterilmez.
+   */
+  yayinda?: boolean | null;
   slogan?: string | null;
   aciklama?: string | null;
   ozellikler?:
@@ -721,6 +725,7 @@ export interface ServiceSelect<T extends boolean = true> {
 export interface ProductSelect<T extends boolean = true> {
   slug?: T;
   ad?: T;
+  yayinda?: T;
   slogan?: T;
   aciklama?: T;
   ozellikler?:
