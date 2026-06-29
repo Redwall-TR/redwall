@@ -212,13 +212,33 @@ export default async function Footer({ locale }: { locale: string }) {
 
       {/* Bottom bar */}
       <div className="relative border-t border-white/10">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-white/40 sm:flex-row sm:px-6">
-          <p>
-            © 2026 {sirketAdi}. {tf('haklar')}
-          </p>
-          <p className="text-white/30">
-            {isTr ? 'Yangın güvenliğinde 360° yaklaşım' : 'A 360° approach to fire safety'}
-          </p>
+        <div className="mx-auto max-w-6xl px-4 py-5 text-xs text-white/40 sm:px-6">
+          {/* Legal links row */}
+          <div className="mb-3 flex flex-wrap items-center gap-x-4 gap-y-1.5">
+            <Link href="/yasal/kvkk-aydinlatma" className="text-white/40 transition-colors hover:text-white/70">
+              {isTr ? 'KVKK Aydınlatma' : 'GDPR Notice'}
+            </Link>
+            <Link href="/yasal/gizlilik-politikasi" className="text-white/40 transition-colors hover:text-white/70">
+              {isTr ? 'Gizlilik Politikası' : 'Privacy Policy'}
+            </Link>
+            <Link href="/yasal/cerez-politikasi" className="text-white/40 transition-colors hover:text-white/70">
+              {isTr ? 'Çerez Politikası' : 'Cookie Policy'}
+            </Link>
+            <Link href="/yasal/kullanim-kosullari" className="text-white/40 transition-colors hover:text-white/70">
+              {isTr ? 'Kullanım Koşulları' : 'Terms of Use'}
+            </Link>
+            <Link href="/iletisim#kunye" className="text-white/40 transition-colors hover:text-white/70">
+              {isTr ? 'Künye' : 'Imprint'}
+            </Link>
+          </div>
+          <div className="flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
+            <p>
+              © 2026 {sirketAdi}. {tf('haklar')}
+            </p>
+            <p className="text-white/30">
+              {isTr ? 'Yangın güvenliğinde 360° yaklaşım' : 'A 360° approach to fire safety'}
+            </p>
+          </div>
         </div>
       </div>
     </footer>

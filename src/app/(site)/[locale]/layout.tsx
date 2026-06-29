@@ -4,6 +4,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { routing } from '@/i18n/routing';
 import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
+import CookieConsent from '@/components/layout/CookieConsent';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -21,6 +22,7 @@ export default async function LocaleLayout({
         <Header locale={locale} />
         <main className="flex-1">{children}</main>
         <Footer locale={locale} />
+        <CookieConsent locale={locale} />
       </div>
     </NextIntlClientProvider>
   );
