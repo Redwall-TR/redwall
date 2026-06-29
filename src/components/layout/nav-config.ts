@@ -1,12 +1,8 @@
 export const PRIMARY = [
-  {
-    key: 'yazilim',
-    href: '/yazilim',
-    children: [
-      { key: 'yanginpro', href: '/yazilim/yanginpro', label: 'YangınPro' },
-      { key: 'mekanikpro', href: '/yazilim/mekanikpro', label: 'MekanikPro' },
-    ],
-  },
+  // "Yazılım" alt menüsü çalışma zamanında yayındaki ürünlerden üretilir
+  // (Header/MobileNav, layout'tan gelen softwareItems ile). Burada sabit
+  // ürün listesi tutulmaz; yayından kaldırılan ürün menüde de görünmez.
+  { key: 'yazilim', href: '/yazilim' },
   { key: 'danismanlik', href: '/danismanlik' },
   { key: 'muhendislik', href: '/muhendislik' },
   { key: 'projeler', href: '/projeler' },

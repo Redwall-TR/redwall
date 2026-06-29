@@ -92,17 +92,28 @@ function MobileNavItem({
   );
 }
 
+type SoftwareItem = { key: string; href: string; label: string };
+
 export default function MobileNav({
   open,
   onClose,
   locale,
+  softwareItems = [],
 }: {
   open: boolean;
   onClose: () => void;
   locale: string;
+  softwareItems?: SoftwareItem[];
 }) {
   const t = useTranslations('nav');
   const ta = useTranslations('a11y');
+
+  // "Yazılım" alt menüsü yayındaki ürünlerden üretilir. Ürün yoksa düz link.
+  const navItems: NavItem[] = (PRIMARY as readonly NavItem[]).map((item) => {
+    if (item.key !== 'yazilim') return item;
+    if (softwareItems.length === 0) return { key: item.key, href: item.href };
+    return { ...item, children: softwareItems };
+  });
 
   // Close on Escape key
   useEffect(() => {
@@ -123,7 +134,7 @@ export default function MobileNav({
     >
       <div className="border-t border-border bg-background px-4 py-4 space-y-1">
         <nav aria-label={ta('mobilMenu')}>
-          {(PRIMARY as readonly NavItem[]).map((item) => (
+          {navItems.map((item) => (
             <MobileNavItem key={item.key} item={item} t={t} onClose={onClose} />
           ))}
         </nav>

@@ -126,11 +126,26 @@ function DropdownItem({
   );
 }
 
-export default function Header({ locale }: { locale: string }) {
+type SoftwareItem = { key: string; href: string; label: string };
+
+export default function Header({
+  locale,
+  softwareItems = [],
+}: {
+  locale: string;
+  softwareItems?: SoftwareItem[];
+}) {
   const t = useTranslations('nav');
   const ta = useTranslations('a11y');
   // TODO (Task 3.2): lift this state to control the mobile panel
   const [mobileOpen, setMobileOpen] = useState(false);
+
+  // "Yazılım" alt menüsü yayındaki ürünlerden üretilir. Ürün yoksa düz link.
+  const navItems: NavItem[] = (PRIMARY as readonly NavItem[]).map((item) => {
+    if (item.key !== 'yazilim') return item;
+    if (softwareItems.length === 0) return { key: item.key, href: item.href };
+    return { ...item, children: softwareItems };
+  });
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
@@ -157,7 +172,7 @@ export default function Header({ locale }: { locale: string }) {
 
         {/* Desktop nav */}
         <nav className="hidden lg:flex items-center gap-1" aria-label={ta('anaMenu')}>
-          {(PRIMARY as readonly NavItem[]).map((item) => (
+          {navItems.map((item) => (
             <DropdownItem key={item.key} item={item} t={t} />
           ))}
         </nav>
@@ -203,7 +218,7 @@ export default function Header({ locale }: { locale: string }) {
         </div>
       </div>
 
-      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} locale={locale} />
+      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} locale={locale} softwareItems={softwareItems} />
     </header>
   );
 }
