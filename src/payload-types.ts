@@ -627,6 +627,9 @@ export interface FormGonderimi {
   il?: string | null;
   metrekare?: string | null;
   urun?: string | null;
+  basvuruSahibiSifati?: string | null;
+  talepTuru?: string | null;
+  kvkkOnay?: boolean | null;
   mesaj?: string | null;
   updatedAt: string;
   createdAt: string;
@@ -1068,6 +1071,9 @@ export interface FormGonderimiSelect<T extends boolean = true> {
   il?: T;
   metrekare?: T;
   urun?: T;
+  basvuruSahibiSifati?: T;
+  talepTuru?: T;
+  kvkkOnay?: T;
   mesaj?: T;
   updatedAt?: T;
   createdAt?: T;

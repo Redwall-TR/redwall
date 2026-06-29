@@ -8,6 +8,7 @@ import * as migration_20260629_101844_product_yayinda from './20260629_101844_pr
 import * as migration_20260629_150619_kurumsal_koleksiyonlar from './20260629_150619_kurumsal_koleksiyonlar';
 import * as migration_20260629_161326_form_gonderimi from './20260629_161326_form_gonderimi';
 import * as migration_20260629_175116_form_gonderimi_kvkk from './20260629_175116_form_gonderimi_kvkk';
+import * as migration_20260629_183442_form_gonderimi_kvkk_alanlar from './20260629_183442_form_gonderimi_kvkk_alanlar';
 
 export const migrations = [
   {
@@ -58,6 +59,11 @@ export const migrations = [
   {
     up: migration_20260629_175116_form_gonderimi_kvkk.up,
     down: migration_20260629_175116_form_gonderimi_kvkk.down,
-    name: '20260629_175116_form_gonderimi_kvkk'
+    name: '20260629_175116_form_gonderimi_kvkk',
+  },
+  {
+    up: migration_20260629_183442_form_gonderimi_kvkk_alanlar.up,
+    down: migration_20260629_183442_form_gonderimi_kvkk_alanlar.down,
+    name: '20260629_183442_form_gonderimi_kvkk_alanlar'
   },
 ];

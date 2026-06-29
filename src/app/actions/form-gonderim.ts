@@ -2,30 +2,12 @@
 
 import { headers } from 'next/headers'
 import { getPayloadClient } from '@/lib/cms/client'
+import { getSiteSettings } from '@/lib/cms/queries'
 import { validateContact, validateQuote, validateDemo, validateKvkkBasvuru } from '@/lib/form'
-import { sendFormBildirim, type FormBildirim } from '@/lib/email'
-import { KVKK_SIFAT_OPTIONS, KVKK_TALEP_OPTIONS, kvkkLabelTr } from '@/lib/kvkk'
+import { sendFormBildirim } from '@/lib/email'
+import { buildRecord, type FormGonderimInput } from '@/lib/formRecord'
 
-export interface FormGonderimInput {
-  tur: 'iletisim' | 'teklif' | 'demo' | 'kvkk'
-  ad?: string
-  email?: string
-  telefon?: string
-  kurum?: string
-  isKolu?: string
-  il?: string
-  metrekare?: string
-  urun?: string
-  mesaj?: string
-  // KVKK başvuru alanları
-  iletisim?: string
-  basvuruSahibiSifati?: string
-  talepTuru?: string
-  aciklama?: string
-  kvkkOnay?: boolean
-  // Honeypot — botlar doldurur; gerçek kullanıcıda boş kalır (gizli alan)
-  hp?: string
-}
+export type { FormGonderimInput }
 
 export interface FormGonderimSonuc {
   ok: boolean
@@ -77,39 +59,6 @@ function dogrula(input: FormGonderimInput): Record<string, string> {
 }
 
 /**
- * Doğrulanmış girdiyi saklanacak/e-postalanacak kayda dönüştürür (saf fonksiyon).
- * KVKK başvurusu yapılandırılmış alanları okunabilir bir `mesaj` bloğuna katlar.
- */
-function buildRecord(input: FormGonderimInput): FormBildirim {
-  if (input.tur === 'kvkk') {
-    return {
-      tur: 'kvkk',
-      ad: (input.ad ?? '').trim(),
-      email: (input.iletisim ?? '').trim(),
-      mesaj: [
-        `Başvuru sahibinin sıfatı: ${kvkkLabelTr(KVKK_SIFAT_OPTIONS, input.basvuruSahibiSifati)}`,
-        `Talep türü: ${kvkkLabelTr(KVKK_TALEP_OPTIONS, input.talepTuru)}`,
-        `KVKK onayı: ${input.kvkkOnay ? 'Evet' : 'Hayır'}`,
-        '',
-        (input.aciklama ?? '').trim(),
-      ].join('\n'),
-    }
-  }
-  return {
-    tur: input.tur,
-    ad: (input.ad ?? '').trim(),
-    email: (input.email ?? '').trim(),
-    telefon: input.telefon?.trim() || undefined,
-    kurum: input.kurum?.trim() || undefined,
-    isKolu: input.isKolu?.trim() || undefined,
-    il: input.il?.trim() || undefined,
-    metrekare: input.metrekare?.trim() || undefined,
-    urun: input.urun?.trim() || undefined,
-    mesaj: input.mesaj?.trim() || undefined,
-  }
-}
-
-/**
  * Form gönderimini sunucu tarafında doğrular, Payload'a kaydeder ve
  * (yapılandırılmışsa) SMTP ile bildirim e-postası gönderir. E-posta hatası
  * kaydı etkilemez (best-effort).
@@ -148,8 +97,10 @@ export async function submitForm(input: FormGonderimInput): Promise<FormGonderim
     return { ok: false, errors: { _genel: 'kaydedilemedi' } }
   }
 
-  // Bildirim e-postası — best-effort (hata kaydı etkilemez).
-  await sendFormBildirim(data)
+  // Bildirim e-postası — best-effort (hata kaydı etkilemez). Alıcı, siteSettings'teki
+  // iletişim e-postası (admin'den değiştirilebilir; yoksa FORM_NOTIFY_TO/SMTP_USER).
+  const settings = (await getSiteSettings()) as { iletisim?: { email?: string } } | null
+  await sendFormBildirim(data, settings?.iletisim?.email)
 
   return { ok: true }
 }

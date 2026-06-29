@@ -41,6 +41,10 @@ export const FormGonderimi: CollectionConfig = {
     { name: 'il', type: 'text', label: 'İl (teklif)' },
     { name: 'metrekare', type: 'text', label: 'Bina m² (teklif)' },
     { name: 'urun', type: 'text', label: 'Ürün (demo)' },
+    // KVKK başvurusu yapısal alanları (denetlenebilir/filtrelenebilir)
+    { name: 'basvuruSahibiSifati', type: 'text', label: 'Başvuru Sahibi Sıfatı (KVKK)' },
+    { name: 'talepTuru', type: 'text', label: 'Talep Türü (KVKK)' },
+    { name: 'kvkkOnay', type: 'checkbox', label: 'KVKK Onayı' },
     { name: 'mesaj', type: 'textarea', label: 'Mesaj' },
   ],
 }

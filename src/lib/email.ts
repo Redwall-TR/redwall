@@ -1,6 +1,7 @@
 import 'server-only'
 import nodemailer from 'nodemailer'
 import { isEmail } from './form'
+import { KVKK_SIFAT_OPTIONS, KVKK_TALEP_OPTIONS, kvkkLabelTr } from './kvkk'
 
 function escapeHtml(s: string): string {
   return s
@@ -46,6 +47,9 @@ export interface FormBildirim {
   il?: string
   metrekare?: string
   urun?: string
+  basvuruSahibiSifati?: string
+  talepTuru?: string
+  kvkkOnay?: boolean
   mesaj?: string
 }
 
@@ -60,26 +64,33 @@ const TUR_ETIKET: Record<FormBildirim['tur'], string> = {
  * Form gönderimini bildirim e-postası olarak iletir. Başarı/atlama durumunu
  * döndürür; hata durumunda fırlatmaz (best-effort), yalnızca loglar.
  */
-export async function sendFormBildirim(data: FormBildirim): Promise<{ sent: boolean; skipped?: boolean }> {
+export async function sendFormBildirim(
+  data: FormBildirim,
+  toOverride?: string,
+): Promise<{ sent: boolean; skipped?: boolean }> {
   const transport = getTransport()
   if (!transport) {
     console.warn('[email] SMTP yapılandırılmadı; bildirim e-postası atlandı.')
     return { sent: false, skipped: true }
   }
 
-  const to = process.env.FORM_NOTIFY_TO || process.env.SMTP_USER
+  // Alıcı önceliği: çağıran (siteSettings iletişim e-postası) → env → SMTP kullanıcısı.
+  const to = toOverride?.trim() || process.env.FORM_NOTIFY_TO || process.env.SMTP_USER
   const from = process.env.SMTP_FROM || process.env.SMTP_USER
 
   const satirlar: Array<[string, string | undefined]> = [
     ['Tür', TUR_ETIKET[data.tur]],
     ['Ad Soyad', data.ad],
-    ['E-posta', data.email],
+    ['E-posta / İletişim', data.email],
     ['Telefon', data.telefon],
     ['Kurum', data.kurum],
     ['İlgili Hizmet', data.isKolu],
     ['İl', data.il],
     ['Bina m²', data.metrekare],
     ['Ürün', data.urun],
+    ['Başvuru Sahibi Sıfatı', data.basvuruSahibiSifati ? kvkkLabelTr(KVKK_SIFAT_OPTIONS, data.basvuruSahibiSifati) : undefined],
+    ['Talep Türü', data.talepTuru ? kvkkLabelTr(KVKK_TALEP_OPTIONS, data.talepTuru) : undefined],
+    ['KVKK Onayı', data.tur === 'kvkk' ? (data.kvkkOnay ? 'Evet' : 'Hayır') : undefined],
     ['Mesaj', data.mesaj],
   ]
   const dolu = satirlar.filter(([, v]) => v && String(v).trim())
