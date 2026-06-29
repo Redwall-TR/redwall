@@ -116,7 +116,6 @@ export default async function Footer({ locale }: { locale: string }) {
     { href: '/kurumsal/kalite-belgeler', label: t('kaliteBelgeler') },
   ];
   const dahaFazla = [
-    { href: '/cozumler', label: t('cozumler') },
     { href: '/projeler', label: t('projeler') },
     { href: '/referanslar', label: t('referanslar') },
     { href: '/sss', label: t('sss') },

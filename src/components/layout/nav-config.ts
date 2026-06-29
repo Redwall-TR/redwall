@@ -6,7 +6,6 @@ export const PRIMARY = [
   { key: 'danismanlik', href: '/danismanlik' },
   { key: 'muhendislik', href: '/muhendislik' },
   { key: 'projeler', href: '/projeler' },
-  { key: 'cozumler', href: '/cozumler' },
   {
     key: 'kurumsal',
     href: '/kurumsal/hakkimizda',
