@@ -78,6 +78,9 @@ export interface Config {
     job: Job;
     project: Project;
     richPage: RichPage;
+    solution: Solution;
+    teamMember: TeamMember;
+    document: Document;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -96,6 +99,9 @@ export interface Config {
     job: JobSelect<false> | JobSelect<true>;
     project: ProjectSelect<false> | ProjectSelect<true>;
     richPage: RichPageSelect<false> | RichPageSelect<true>;
+    solution: SolutionSelect<false> | SolutionSelect<true>;
+    teamMember: TeamMemberSelect<false> | TeamMemberSelect<true>;
+    document: DocumentSelect<false> | DocumentSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -530,6 +536,82 @@ export interface RichPage {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution".
+ */
+export interface Solution {
+  id: number;
+  slug: string;
+  baslik: string;
+  ozet?: string | null;
+  icerik?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  ikon?:
+    | (
+        | 'shield-check'
+        | 'clipboard'
+        | 'ruler'
+        | 'hard-hat'
+        | 'building'
+        | 'key'
+        | 'droplet'
+        | 'wall'
+        | 'wrench'
+        | 'refresh'
+        | 'code'
+        | 'flame'
+        | 'gauge'
+        | 'document'
+      )
+    | null;
+  hedefKitle?: string | null;
+  sira?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teamMember".
+ */
+export interface TeamMember {
+  id: number;
+  ad: string;
+  unvan?: string | null;
+  foto?: (number | null) | Media;
+  bio?: string | null;
+  linkedin?: string | null;
+  sira?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "document".
+ */
+export interface Document {
+  id: number;
+  baslik: string;
+  aciklama?: string | null;
+  dosya?: (number | null) | Media;
+  kategori?: string | null;
+  sira?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -595,6 +677,18 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'richPage';
         value: number | RichPage;
+      } | null)
+    | ({
+        relationTo: 'solution';
+        value: number | Solution;
+      } | null)
+    | ({
+        relationTo: 'teamMember';
+        value: number | TeamMember;
+      } | null)
+    | ({
+        relationTo: 'document';
+        value: number | Document;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -890,6 +984,48 @@ export interface RichPageSelect<T extends boolean = true> {
   baslik?: T;
   icerik?: T;
   sonGuncelleme?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "solution_select".
+ */
+export interface SolutionSelect<T extends boolean = true> {
+  slug?: T;
+  baslik?: T;
+  ozet?: T;
+  icerik?: T;
+  ikon?: T;
+  hedefKitle?: T;
+  sira?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "teamMember_select".
+ */
+export interface TeamMemberSelect<T extends boolean = true> {
+  ad?: T;
+  unvan?: T;
+  foto?: T;
+  bio?: T;
+  linkedin?: T;
+  sira?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "document_select".
+ */
+export interface DocumentSelect<T extends boolean = true> {
+  baslik?: T;
+  aciklama?: T;
+  dosya?: T;
+  kategori?: T;
+  sira?: T;
   updatedAt?: T;
   createdAt?: T;
 }

@@ -15,6 +15,9 @@ import { Post } from './src/collections/Post'
 import { Job } from './src/collections/Job'
 import { Project } from './src/collections/Project'
 import { RichPage } from './src/collections/RichPage'
+import { Solution } from './src/collections/Solution'
+import { TeamMember } from './src/collections/TeamMember'
+import { Document } from './src/collections/Document'
 import { SiteSettings } from './src/globals/SiteSettings'
 import { Navigation } from './src/globals/Navigation'
 import { HomePage } from './src/globals/HomePage'
@@ -44,6 +47,9 @@ export default buildConfig({
     Job,
     Project,
     RichPage,
+    Solution,
+    TeamMember,
+    Document,
   ],
   globals: [SiteSettings, Navigation, HomePage],
   plugins: [
