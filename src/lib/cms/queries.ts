@@ -414,6 +414,13 @@ export async function getSiteSettings() {
       calismaSaatleri: r.calismaSaatleri,
       istatistikler: r.istatistikler,
       seo: r.seo,
+      kunye: r.kunye
+        ? {
+            mersisNo: r.kunye.mersisNo ?? null,
+            ticaretSicilNo: r.kunye.ticaretSicilNo ?? null,
+            kepAdresi: r.kunye.kepAdresi ?? null,
+          }
+        : null,
     }
   }, null)
 }

@@ -11,9 +11,17 @@ import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 
 interface SiteSettings {
+  sirketAdi?: string;
   iletisim?: { tel?: string; email?: string; adres?: { tr: string; en: string } };
   calismaSaatleri?: { tr: string; en: string };
+  kunye?: {
+    mersisNo?: string | null;
+    ticaretSicilNo?: string | null;
+    kepAdresi?: string | null;
+  } | null;
 }
+
+const PLACEHOLDER = '[DOLDURULACAK]';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -62,6 +70,11 @@ export default async function IletisimPage({
   const calismaSaatleri =
     (settings?.calismaSaatleri ? pick(settings.calismaSaatleri, loc) : undefined) ??
     (isTr ? 'Pazartesi–Cuma 09:00–18:00' : 'Monday–Friday 09:00–18:00');
+
+  const sirketAdi = settings?.sirketAdi ?? PLACEHOLDER;
+  const mersisNo = settings?.kunye?.mersisNo ?? PLACEHOLDER;
+  const ticaretSicilNo = settings?.kunye?.ticaretSicilNo ?? PLACEHOLDER;
+  const kepAdresi = settings?.kunye?.kepAdresi ?? PLACEHOLDER;
 
   const pageBaslik = isTr ? 'İletişim' : 'Contact';
   const pageAciklama = isTr
@@ -154,6 +167,79 @@ export default async function IletisimPage({
               {isTr ? 'Harita / Map' : 'Map / Harita'}
             </div>
           </div>
+        </div>
+      </Section>
+
+      {/* ── Künye / Yasal Bilgiler ────────────────────────────────────────────── */}
+      <Section id="kunye">
+        <div className="rounded-xl border border-border bg-surface p-6 sm:p-8">
+          <h2 className="mb-6 font-display text-xl font-bold sm:text-2xl">
+            {isTr ? 'Künye / Yasal Bilgiler' : 'Legal Information'}
+          </h2>
+
+          <dl className="grid gap-x-8 gap-y-4 text-sm sm:grid-cols-2">
+            {/* Ticaret Unvanı */}
+            <div>
+              <dt className="font-medium text-foreground">
+                {isTr ? 'Ticaret Unvanı' : 'Trade Name'}
+              </dt>
+              <dd className="mt-0.5 text-muted">{sirketAdi}</dd>
+            </div>
+
+            {/* Açık Adres */}
+            <div>
+              <dt className="font-medium text-foreground">
+                {isTr ? 'Açık Adres' : 'Registered Address'}
+              </dt>
+              <dd className="mt-0.5 text-muted">{adres}</dd>
+            </div>
+
+            {/* Telefon */}
+            <div>
+              <dt className="font-medium text-foreground">
+                {isTr ? 'Telefon' : 'Phone'}
+              </dt>
+              <dd className="mt-0.5 text-muted">{tel}</dd>
+            </div>
+
+            {/* E-posta */}
+            <div>
+              <dt className="font-medium text-foreground">
+                {isTr ? 'E-posta' : 'Email'}
+              </dt>
+              <dd className="mt-0.5 text-muted">{email}</dd>
+            </div>
+
+            {/* KEP Adresi */}
+            <div>
+              <dt className="font-medium text-foreground">
+                {isTr ? 'KEP Adresi' : 'Registered Email (KEP)'}
+              </dt>
+              <dd className={`mt-0.5 ${kepAdresi === PLACEHOLDER ? 'text-warning italic' : 'text-muted'}`}>
+                {kepAdresi}
+              </dd>
+            </div>
+
+            {/* MERSİS No */}
+            <div>
+              <dt className="font-medium text-foreground">
+                {isTr ? 'MERSİS No' : 'MERSIS No'}
+              </dt>
+              <dd className={`mt-0.5 ${mersisNo === PLACEHOLDER ? 'text-warning italic' : 'text-muted'}`}>
+                {mersisNo}
+              </dd>
+            </div>
+
+            {/* Ticaret Sicil No */}
+            <div>
+              <dt className="font-medium text-foreground">
+                {isTr ? 'Ticaret Sicil No' : 'Trade Registry No'}
+              </dt>
+              <dd className={`mt-0.5 ${ticaretSicilNo === PLACEHOLDER ? 'text-warning italic' : 'text-muted'}`}>
+                {ticaretSicilNo}
+              </dd>
+            </div>
+          </dl>
         </div>
       </Section>
     </>
