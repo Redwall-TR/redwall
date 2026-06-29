@@ -9,6 +9,17 @@ const nextConfig: NextConfig = {
   // The runner stage copies only this + .next/static + public.
   output: 'standalone',
 
+  experimental: {
+    serverActions: {
+      // Server Action origin allowlist — proxy arkasında spoofed Host ile
+      // same-origin kontrolünün gevşetilmesini engeller (localhost dev zaten
+      // same-origin olduğu için etkilenmez).
+      allowedOrigins: ['redwall.tr', 'www.redwall.tr'],
+      // Form gönderimleri küçük; oversized payload'ları sınırla (DoS amplifikasyonu).
+      bodySizeLimit: '100kb',
+    },
+  },
+
   // Güvenlik yanıt başlıkları (tüm rotalar). Tam CSP bilinçli olarak eklenmedi
   // (Payload /admin'in inline script/style'larını ve next'i bozabilir); clickjacking
   // koruması frame-ancestors 'self' + X-Frame-Options ile sağlanır. Kendi sitemizin

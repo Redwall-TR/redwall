@@ -38,6 +38,17 @@ async function main() {
 
   // ── 1. Admin user ─────────────────────────────────────────────────────────
 
+  // GÜVENLİK: Üretimde varsayılan admin kimlik bilgisi ASLA kullanılmaz.
+  // Env verilmezse seed başarısız olur (aksi halde herkesçe bilinen bir
+  // admin@redwall.tr / redwall-dev-admin hesabı oluşur — kritik açık).
+  if (
+    process.env.NODE_ENV === 'production' &&
+    (!process.env.PAYLOAD_SEED_ADMIN_EMAIL || !process.env.PAYLOAD_SEED_ADMIN_PASSWORD)
+  ) {
+    throw new Error(
+      'Üretimde admin seed için PAYLOAD_SEED_ADMIN_EMAIL ve PAYLOAD_SEED_ADMIN_PASSWORD zorunludur.',
+    )
+  }
   const adminEmail =
     process.env.PAYLOAD_SEED_ADMIN_EMAIL ?? 'admin@redwall.tr'
   const adminPassword =

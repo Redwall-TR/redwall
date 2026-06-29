@@ -34,7 +34,8 @@ export default buildConfig({
   collections: [
     {
       slug: 'users',
-      auth: true,
+      // Brute-force koruması: 5 başarısız denemeden sonra 10 dk kilit.
+      auth: { maxLoginAttempts: 5, lockTime: 10 * 60 * 1000 },
       admin: { useAsTitle: 'email' },
       fields: [],
     },
