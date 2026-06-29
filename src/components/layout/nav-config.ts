@@ -18,7 +18,6 @@ export const PRIMARY = [
       { key: 'hakkimizda', href: '/kurumsal/hakkimizda' },
       { key: 'vizyonMisyon', href: '/kurumsal/vizyon-misyon' },
       { key: 'kaliteBelgeler', href: '/kurumsal/kalite-belgeler' },
-      { key: 'ekibimiz', href: '/kurumsal/ekibimiz' },
     ],
   },
   {

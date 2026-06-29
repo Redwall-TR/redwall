@@ -114,7 +114,6 @@ export default async function Footer({ locale }: { locale: string }) {
     { href: '/kurumsal/hakkimizda', label: t('hakkimizda') },
     { href: '/kurumsal/vizyon-misyon', label: t('vizyonMisyon') },
     { href: '/kurumsal/kalite-belgeler', label: t('kaliteBelgeler') },
-    { href: '/kurumsal/ekibimiz', label: t('ekibimiz') },
   ];
   const dahaFazla = [
     { href: '/cozumler', label: t('cozumler') },

@@ -1,20 +1,21 @@
 /**
- * Idempotent seed script — kurumsal içerik (çözümler / ekip / doküman)
+ * Idempotent seed script — kurumsal içerik (çözümler / doküman)
  *
  * Usage:  npm run payload:seed-kurumsal
  *
  * Oluşturur / günceller:
  *  • solution:    kamu-cozumleri, muteahhit-insaat-cozumleri,
  *                 saglik-yapilari, sanayi-enerji  (TR + EN)
- *  • teamMember:  3 placeholder üye (/admin'de gerçekleştirilecek)
  *  • document:    3 placeholder doküman (dosya /admin'de yüklenecek)
  *
- * İdempotentlik: solution slug ile, teamMember `ad` ile, document
- * başlık (tr) ile bulunur; yoksa create (locale:tr), her durumda
- * update (locale:en).
+ * İdempotentlik: solution slug ile, document başlık (tr) ile bulunur;
+ * yoksa create (locale:tr), her durumda update (locale:en).
  *
- * NOT: Ekip üyeleri ve dokümanlar PLACEHOLDER'dır; gerçek ad/foto/
- * dosya bilgileri Payload admin panelinden (/admin) doldurulmalıdır.
+ * NOT: Dokümanlar PLACEHOLDER'dır; gerçek dosya bilgileri Payload
+ * admin panelinden (/admin) yüklenmelidir.
+ *
+ * NOT: TeamMember koleksiyonu Payload'da durur ancak sitede ekip
+ * sayfası şimdilik gösterilmiyor; bu seed ekip üyesi oluşturmaz.
  */
 
 import { config as dotenvConfig } from 'dotenv'
@@ -319,50 +320,6 @@ const solutions: SolutionSeed[] = [
   },
 ]
 
-// ── Ekip (placeholder) ──────────────────────────────────────────────────────
-
-type TeamSeed = {
-  ad: string
-  sira: number
-  unvanTR: string
-  unvanEN: string
-  bioTR: string
-  bioEN: string
-}
-
-const team: TeamSeed[] = [
-  {
-    ad: '[Ad Soyad 1]',
-    sira: 1,
-    unvanTR: 'Kurucu ve Genel Müdür',
-    unvanEN: 'Founder & General Manager',
-    bioTR:
-      'PLACEHOLDER — Bu alanı /admin panelinden gerçek ekip üyesi bilgisiyle güncelleyin. Yangın güvenliği danışmanlığı ve yazılım geliştirme alanındaki deneyim özeti buraya yazılır.',
-    bioEN:
-      'PLACEHOLDER — Update this field with real team member information from the /admin panel. A summary of experience in fire-safety consultancy and software development goes here.',
-  },
-  {
-    ad: '[Ad Soyad 2]',
-    sira: 2,
-    unvanTR: 'Yangın Güvenliği Mühendisi',
-    unvanEN: 'Fire Safety Engineer',
-    bioTR:
-      'PLACEHOLDER — Mühendislik projelendirme ve mevzuata uygunluk denetimi sorumlusu. Gerçek bilgiyi /admin panelinden ekleyin.',
-    bioEN:
-      'PLACEHOLDER — Responsible for engineering design and regulatory compliance auditing. Add real information from the /admin panel.',
-  },
-  {
-    ad: '[Ad Soyad 3]',
-    sira: 3,
-    unvanTR: 'Yazılım Geliştirme Lideri',
-    unvanEN: 'Software Development Lead',
-    bioTR:
-      'PLACEHOLDER — YangınPro ve MekanikPro ürünlerinin geliştirme sorumlusu. Gerçek bilgiyi /admin panelinden ekleyin.',
-    bioEN:
-      'PLACEHOLDER — Responsible for the development of YangınPro and MekanikPro products. Add real information from the /admin panel.',
-  },
-]
-
 // ── Dokümanlar (placeholder — dosya /admin'de yüklenir) ───────────────────────
 
 type DocSeed = {
@@ -476,47 +433,6 @@ async function main() {
       overrideAccess: true,
     })
     console.log(`  ✓ solution[${s.slug}] EN locale yazıldı`)
-  }
-
-  // ── Ekip ──
-  for (const m of team) {
-    const existing = await payload.find({
-      collection: 'teamMember',
-      where: { ad: { equals: m.ad } },
-      limit: 1,
-      overrideAccess: true,
-    })
-
-    let docId: string | number
-    if (existing.totalDocs === 0) {
-      const doc = await payload.create({
-        collection: 'teamMember',
-        locale: 'tr',
-        data: { ad: m.ad, sira: m.sira, unvan: m.unvanTR, bio: m.bioTR },
-        overrideAccess: true,
-      })
-      docId = doc.id
-      console.log(`  ✓ teamMember[${m.ad}] oluşturuldu (TR)`)
-    } else {
-      docId = existing.docs[0].id
-      await payload.update({
-        collection: 'teamMember',
-        id: docId,
-        locale: 'tr',
-        data: { sira: m.sira, unvan: m.unvanTR, bio: m.bioTR },
-        overrideAccess: true,
-      })
-      console.log(`  – teamMember[${m.ad}] zaten var, TR güncellendi.`)
-    }
-
-    await payload.update({
-      collection: 'teamMember',
-      id: docId,
-      locale: 'en',
-      data: { unvan: m.unvanEN, bio: m.bioEN },
-      overrideAccess: true,
-    })
-    console.log(`  ✓ teamMember[${m.ad}] EN locale yazıldı`)
   }
 
   // ── Dokümanlar ──
