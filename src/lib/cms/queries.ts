@@ -396,6 +396,99 @@ export async function getRichPagesByCategory(kategori: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Solutions
+// ---------------------------------------------------------------------------
+
+export async function getSolutions() {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'solution',
+      sort: 'sira',
+      locale: 'all',
+      depth: 2,
+      limit: 100,
+    })
+    return docs.map((r) => ({
+      slug: r.slug,
+      baslik: r.baslik,
+      ozet: r.ozet,
+      ikon: (r as unknown as Record<string, unknown>).ikon,
+    }))
+  }, [])
+}
+
+export async function getSolution(slug: string) {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'solution',
+      where: { slug: { equals: slug } },
+      locale: 'all',
+      depth: 2,
+      limit: 1,
+    })
+    const r = docs[0]
+    if (!r) return null
+    return {
+      slug: r.slug,
+      baslik: r.baslik,
+      ozet: r.ozet,
+      icerik: (r as unknown as Record<string, unknown>).icerik,
+      ikon: (r as unknown as Record<string, unknown>).ikon,
+      hedefKitle: (r as unknown as Record<string, unknown>).hedefKitle,
+    }
+  }, null)
+}
+
+// ---------------------------------------------------------------------------
+// Team
+// ---------------------------------------------------------------------------
+
+export async function getTeam() {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'teamMember',
+      sort: 'sira',
+      locale: 'all',
+      depth: 2,
+      limit: 100,
+    })
+    return docs.map((r) => ({
+      ad: r.ad,
+      unvan: (r as unknown as Record<string, unknown>).unvan,
+      foto: (r as unknown as Record<string, unknown>).foto,
+      bio: (r as unknown as Record<string, unknown>).bio,
+      linkedin: (r as unknown as Record<string, unknown>).linkedin,
+    }))
+  }, [])
+}
+
+// ---------------------------------------------------------------------------
+// Documents
+// ---------------------------------------------------------------------------
+
+export async function getDocuments() {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'document',
+      sort: 'sira',
+      locale: 'all',
+      depth: 2,
+      limit: 100,
+    })
+    return docs.map((r) => ({
+      baslik: r.baslik,
+      aciklama: (r as unknown as Record<string, unknown>).aciklama,
+      dosya: (r as unknown as Record<string, unknown>).dosya,
+      kategori: (r as unknown as Record<string, unknown>).kategori,
+    }))
+  }, [])
+}
+
+// ---------------------------------------------------------------------------
 // Globals
 // ---------------------------------------------------------------------------
 
