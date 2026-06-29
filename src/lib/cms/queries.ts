@@ -350,6 +350,51 @@ export async function getPage(slug: string) {
 }
 
 // ---------------------------------------------------------------------------
+// Rich Pages
+// ---------------------------------------------------------------------------
+
+export async function getRichPage(slug: string) {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const r = (
+      await p.find({
+        collection: 'richPage',
+        where: { slug: { equals: slug } },
+        locale: 'all',
+        depth: 1,
+        limit: 1,
+      })
+    ).docs[0] as unknown as Record<string, unknown>
+    if (!r) return null
+    return {
+      slug: r.slug,
+      baslik: r.baslik,
+      icerik: r.icerik,
+      kategori: r.kategori,
+      sonGuncelleme: r.sonGuncelleme,
+    }
+  }, null)
+}
+
+export async function getRichPagesByCategory(kategori: string) {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    return (
+      await p.find({
+        collection: 'richPage',
+        where: { kategori: { equals: kategori } },
+        locale: 'all',
+        depth: 0,
+        limit: 50,
+      })
+    ).docs.map((r) => {
+      const doc = r as unknown as Record<string, unknown>
+      return { slug: doc.slug, baslik: doc.baslik, kategori: doc.kategori }
+    })
+  }, [])
+}
+
+// ---------------------------------------------------------------------------
 // Globals
 // ---------------------------------------------------------------------------
 
