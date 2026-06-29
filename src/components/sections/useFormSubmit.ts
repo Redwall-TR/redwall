@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { submitForm, type FormGonderimInput } from '@/app/actions/form-gonderim';
+import { submitForm } from '@/app/actions/form-gonderim';
+import type { FormGonderimInput } from '@/lib/formRecord';
 
 export type GenelHata = false | 'genel' | 'rate' | 'turnstile';
 

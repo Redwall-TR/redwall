@@ -7,8 +7,6 @@ import { validateContact, validateQuote, validateDemo, validateKvkkBasvuru } fro
 import { sendFormBildirim } from '@/lib/email'
 import { buildRecord, type FormGonderimInput } from '@/lib/formRecord'
 
-export type { FormGonderimInput }
-
 export interface FormGonderimSonuc {
   ok: boolean
   errors?: Record<string, string>
