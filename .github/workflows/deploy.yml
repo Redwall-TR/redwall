@@ -94,11 +94,18 @@ jobs:
           MINIO_ROOT_PASSWORD: ${{ secrets.MINIO_ROOT_PASSWORD }}
           DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+          # SMTP (form bildirimleri) — boş bırakılırsa e-posta atlanır, kayıt yine yapılır
+          SMTP_HOST: ${{ vars.SMTP_HOST }}
+          SMTP_PORT: ${{ vars.SMTP_PORT }}
+          SMTP_USER: ${{ vars.SMTP_USER }}
+          SMTP_PASS: ${{ secrets.SMTP_PASS }}
+          SMTP_FROM: ${{ vars.SMTP_FROM }}
+          FORM_NOTIFY_TO: ${{ vars.FORM_NOTIFY_TO }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          envs: WEB_IMAGE,TOOLS_IMAGE,SITE_HOST,PAYLOAD_SECRET,POSTGRES_PASSWORD,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN
+          envs: WEB_IMAGE,TOOLS_IMAGE,SITE_HOST,PAYLOAD_SECRET,POSTGRES_PASSWORD,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,SMTP_FROM,FORM_NOTIFY_TO
           command_timeout: 15m
           script: |
             set -e
