@@ -1,10 +1,9 @@
 'use client';
 
-// TODO(Resend): server action ile gönderim — roadmap
-
 import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { validateDemo } from '@/lib/form';
+import { submitForm } from '@/app/actions/form-gonderim';
 import { Button } from '@/components/ui';
 import type { Locale } from '@/types';
 
@@ -38,6 +37,8 @@ export default function DemoForm({ locale }: { locale: Locale }) {
   const [values, setValues] = useState<FormValues>(INITIAL);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [genelHata, setGenelHata] = useState(false);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -52,17 +53,25 @@ export default function DemoForm({ locale }: { locale: Locale }) {
       });
   }
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const errs = validateDemo(values);
     if (Object.keys(errs).length > 0) {
       setErrors(errs);
       return;
     }
-    // TODO(Resend): server action ile e-posta gönderimi burada yapılacak
-    console.log('demo form', values);
-    setSubmitted(true);
-    setValues(INITIAL);
+    setSubmitting(true);
+    setGenelHata(false);
+    const res = await submitForm({ tur: 'demo', ...values });
+    setSubmitting(false);
+    if (res.ok) {
+      setSubmitted(true);
+      setValues(INITIAL);
+    } else if (res.errors && !res.errors._genel) {
+      setErrors(res.errors);
+    } else {
+      setGenelHata(true);
+    }
   }
 
   if (submitted) {
@@ -186,7 +195,14 @@ export default function DemoForm({ locale }: { locale: Locale }) {
         />
       </div>
 
-      <Button type="submit">{tc('gonder')}</Button>
+      {genelHata && (
+        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+          {t('genelHata')}
+        </p>
+      )}
+      <Button type="submit" disabled={submitting}>
+        {submitting ? tc('yukleniyor') : tc('gonder')}
+      </Button>
     </form>
   );
 }

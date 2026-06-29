@@ -81,6 +81,7 @@ export interface Config {
     solution: Solution;
     teamMember: TeamMember;
     document: Document;
+    formGonderimi: FormGonderimi;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -102,6 +103,7 @@ export interface Config {
     solution: SolutionSelect<false> | SolutionSelect<true>;
     teamMember: TeamMemberSelect<false> | TeamMemberSelect<true>;
     document: DocumentSelect<false> | DocumentSelect<true>;
+    formGonderimi: FormGonderimiSelect<false> | FormGonderimiSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -612,6 +614,25 @@ export interface Document {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "formGonderimi".
+ */
+export interface FormGonderimi {
+  id: number;
+  tur: 'iletisim' | 'teklif' | 'demo';
+  ad: string;
+  email: string;
+  telefon?: string | null;
+  kurum?: string | null;
+  isKolu?: string | null;
+  il?: string | null;
+  metrekare?: string | null;
+  urun?: string | null;
+  mesaj?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -689,6 +710,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'document';
         value: number | Document;
+      } | null)
+    | ({
+        relationTo: 'formGonderimi';
+        value: number | FormGonderimi;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -1026,6 +1051,24 @@ export interface DocumentSelect<T extends boolean = true> {
   dosya?: T;
   kategori?: T;
   sira?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "formGonderimi_select".
+ */
+export interface FormGonderimiSelect<T extends boolean = true> {
+  tur?: T;
+  ad?: T;
+  email?: T;
+  telefon?: T;
+  kurum?: T;
+  isKolu?: T;
+  il?: T;
+  metrekare?: T;
+  urun?: T;
+  mesaj?: T;
   updatedAt?: T;
   createdAt?: T;
 }

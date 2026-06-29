@@ -6,6 +6,7 @@ import * as migration_20260628_155709_collections2 from './20260628_155709_colle
 import * as migration_20260629_095057_richpage_kunye from './20260629_095057_richpage_kunye';
 import * as migration_20260629_101844_product_yayinda from './20260629_101844_product_yayinda';
 import * as migration_20260629_150619_kurumsal_koleksiyonlar from './20260629_150619_kurumsal_koleksiyonlar';
+import * as migration_20260629_161326_form_gonderimi from './20260629_161326_form_gonderimi';
 
 export const migrations = [
   {
@@ -46,6 +47,11 @@ export const migrations = [
   {
     up: migration_20260629_150619_kurumsal_koleksiyonlar.up,
     down: migration_20260629_150619_kurumsal_koleksiyonlar.down,
-    name: '20260629_150619_kurumsal_koleksiyonlar'
+    name: '20260629_150619_kurumsal_koleksiyonlar',
+  },
+  {
+    up: migration_20260629_161326_form_gonderimi.up,
+    down: migration_20260629_161326_form_gonderimi.down,
+    name: '20260629_161326_form_gonderimi'
   },
 ];

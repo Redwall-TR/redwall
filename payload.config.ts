@@ -18,6 +18,7 @@ import { RichPage } from './src/collections/RichPage'
 import { Solution } from './src/collections/Solution'
 import { TeamMember } from './src/collections/TeamMember'
 import { Document } from './src/collections/Document'
+import { FormGonderimi } from './src/collections/FormGonderimi'
 import { SiteSettings } from './src/globals/SiteSettings'
 import { Navigation } from './src/globals/Navigation'
 import { HomePage } from './src/globals/HomePage'
@@ -50,6 +51,7 @@ export default buildConfig({
     Solution,
     TeamMember,
     Document,
+    FormGonderimi,
   ],
   globals: [SiteSettings, Navigation, HomePage],
   plugins: [
