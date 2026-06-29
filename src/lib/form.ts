@@ -15,3 +15,20 @@ export function validateQuote(v: { ad?: string; email?: string; isKolu?: string 
   if (!v.isKolu?.trim()) e.isKolu = 'zorunlu';
   return e;
 }
+export function validateKvkkBasvuru(v: {
+  adSoyad?: string;
+  iletisim?: string;
+  basvuruSahibiSifati?: string;
+  talepTuru?: string;
+  aciklama?: string;
+  kvkkOnay?: boolean;
+}): Record<string, string> {
+  const e: Record<string, string> = {};
+  if (!v.adSoyad?.trim()) e.adSoyad = 'zorunlu';
+  if (!v.iletisim?.trim()) e.iletisim = 'zorunlu';
+  if (!v.basvuruSahibiSifati?.trim()) e.basvuruSahibiSifati = 'zorunlu';
+  if (!v.talepTuru?.trim()) e.talepTuru = 'zorunlu';
+  if (!v.aciklama?.trim()) e.aciklama = 'zorunlu';
+  if (!v.kvkkOnay) e.kvkkOnay = 'zorunlu';
+  return e;
+}
