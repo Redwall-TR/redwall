@@ -306,14 +306,14 @@ async function main() {
     {
       isKolu: 'danismanlik',
       tr: {
-        baslik: 'Yangın Danışmanlığı',
+        baslik: 'Yangın Güvenliği Danışmanlığı',
         ozet:
-          'Kurumlar, müteahhitler ve kamu projeleri için bütünleşik yangın danışmanlığı.',
+          'Kamu kurumlarından bina yönetimlerine, mal sahiplerinden müteahhitlere; mevzuata uygunluk, olumsuz itfaiye raporlarının olumluya çevrilmesi, doğru projelendirme ve uçtan uca süreç yönetiminde uzman desteği sunuyoruz.',
       },
       en: {
-        baslik: 'Fire Consulting',
+        baslik: 'Fire Safety Consulting',
         ozet:
-          'Integrated fire consulting for institutions, contractors, and public projects.',
+          'From public institutions to building managements, property owners to contractors — expert support on regulatory compliance, turning negative fire-department reports positive, sound project design, and end-to-end process management.',
       },
       sira: 2,
     },

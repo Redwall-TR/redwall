@@ -47,116 +47,100 @@ const DANISMANLIK_FALLBACK = {
   accent: '#38bdf8',
   eyebrow: { tr: 'Danışmanlık', en: 'Consulting' },
   chips: {
-    tr: ['İtfaiye Onayı', 'Mevzuat Uygunluğu', 'Projelendirme', 'Denetim Desteği'],
-    en: ['Fire-Dept Approval', 'Compliance', 'Project Design', 'Inspection Support'],
+    tr: ['Kamu kurumları', 'Bina yönetimleri & mal sahipleri', 'Müteahhitler', 'Anahtar teslim süreç'],
+    en: ['Public institutions', 'Building managements & owners', 'Contractors', 'Turnkey process'],
   },
   baslik: {
-    tr: 'Yangın Danışmanlığı',
-    en: 'Fire Consulting',
+    tr: 'Yangın Güvenliği Danışmanlığı',
+    en: 'Fire Safety Consulting',
   },
   ozet: {
-    tr: 'Kurumlar, müteahhitler ve mal sahipleri için itfaiye onay süreci, mevzuat uygunluğu ve projelendirme danışmanlığı.',
-    en: 'Fire-department approval process, regulatory compliance, and project design consulting for institutions, contractors, and property owners.',
+    tr: 'Kamu kurumlarından bina yönetimlerine, mal sahiplerinden müteahhitlere; mevzuata uygunluk, olumsuz itfaiye raporlarının olumluya çevrilmesi, doğru projelendirme ve uçtan uca süreç yönetiminde uzman desteği sunuyoruz.',
+    en: 'From public institutions to building managements, property owners to contractors — expert support on regulatory compliance, turning negative fire-department reports positive, sound project design, and end-to-end process management.',
   },
   intro: {
     tr: [
-      'Redwall Danışmanlık; inşaat süreçlerinde ve mevcut yapılarda yangın güvenliği mevzuatına uyumu sağlamak, itfaiyeden olumlu rapor almak ve projelendirme süreçlerini doğru yönetmek isteyen her paydaş için profesyonel destek sunmaktadır.',
-      'Yönetmelik gerekliliklerini tam anlamıyla karşılayan projeler tasarlıyor, eksik evrak ve teknik yetersizliklerden kaynaklanan gecikmeleri ortadan kaldırıyor, itfaiye denetimlerinde başarıyla çıkmanızı sağlıyoruz.',
+      'Her kurumun ve yapının yangın güvenliği gereksinimi farklıdır; çoğu zaman asıl ihtiyaç, mevzuata tam uyum ile hukuki güvenceyi birlikte sağlamaktır.',
+      'Yangın güvenliği mevzuatına hâkim uzman ekibimizle kurumunuzun, binanızın veya projenizin koşullarına özel danışmanlık sunarız. Tek seferlik bir uygunluk denetiminden olumsuz bir itfaiye raporunun olumluya çevrilmesine, sıfırdan olumlu rapora kadar tüm sürecin yönetimine değin; işi sizin adınıza, yazılı ve denetlenebilir çıktılarla yürütürüz.',
     ],
     en: [
-      'Redwall Consulting provides professional support for all stakeholders who need to achieve regulatory compliance in construction processes and existing structures, obtain a positive fire-department report, and manage project design correctly.',
-      'We design projects that fully meet regulatory requirements, eliminate delays caused by missing documents and technical deficiencies, and ensure you pass fire-department inspections successfully.',
+      'Every institution and building has different fire-safety needs; the real requirement is often achieving full regulatory compliance and legal assurance together.',
+      "With our team's command of fire-safety legislation, we offer consulting tailored to the circumstances of your institution, building, or project. From a one-time compliance audit, to turning a negative fire-department report positive, to managing the entire process from zero to a positive report — we carry out the work on your behalf, with written and auditable outputs.",
     ],
   },
   altHizmetler: [
     {
-      icon: 'shield-check',
-      baslik: { tr: 'İtfaiye Onay Danışmanlığı', en: 'Fire-Department Approval Consulting' },
+      icon: 'building',
+      baslik: { tr: 'Kamu Kurumları Danışmanlığı', en: 'Public Institution Consulting' },
       aciklama: {
-        tr: 'İtfaiye raporu sürecini uçtan uca yönetiyor; eksik evrakları tamamlıyor, teknik itirazları yanıtlıyor ve olumlu raporu almanızı hızlandırıyoruz.',
-        en: 'We manage the fire-department report process end-to-end: completing missing documents, responding to technical objections, and accelerating your path to a positive report.',
+        tr: "İşyeri Açma ve Çalışma Ruhsatları Yönetmeliği'nin 5/h maddesi kapsamında itfaiye tarafından rapor düzenlenmesi gerekmeyen; ancak Binaların Yangından Korunması Hakkında Yönetmelik uyarınca gerekli tedbirlerin alınması zorunlu olan binalarda, kurum adına yerinde denetim gerçekleştiririz. Talep doğrultusunda düzenlediğimiz uygunluk raporuyla, kurumun ilgili mevzuat karşısındaki hukuki sorumluluk riskini asgariye indiririz.",
+        en: 'For buildings that do not require a fire-department report under Article 5/h of the Workplace Opening and Operating Licenses Regulation, yet must implement measures under the Regulation on Fire Protection of Buildings, we conduct on-site inspections on the institution\'s behalf. With the compliance report we issue on request, we minimize the institution\'s legal-liability risk against the relevant legislation.',
       },
     },
     {
-      icon: 'clipboard',
-      baslik: { tr: 'Mevzuat Uygunluk Analizi', en: 'Regulatory Compliance Analysis' },
+      icon: 'shield-check',
+      baslik: { tr: 'İtfaiye Raporu Düzeltme (Olumsuz → Olumlu)', en: 'Fire-Department Report Remediation (Negative → Positive)' },
       aciklama: {
-        tr: 'Binanızı veya projenizi geçerli yangın güvenliği yönetmeliklerine göre değerlendiriyor, uyumsuzluk noktalarını tespit ediyor ve çözüm yollarını raporluyoruz.',
-        en: 'We evaluate your building or project against current fire-safety regulations, identify non-compliance points, and report the path to resolution.',
+        tr: 'Hakkında olumsuz itfaiye raporu düzenlenmiş binalarda, bina yönetimleri ve/veya mal sahipleri adına süreci yürütürüz. Raporda belirtilen eksiklikler doğrultusunda binayı detaylı biçimde analiz eder, yönetmeliğe uygun çözümleri önceliklendirir ve raporun olumluya çevrilmesi için izlenecek yol haritasını netleştiririz.',
+        en: 'For buildings with a negative fire-department report, we manage the process on behalf of building managements and/or owners. In line with the deficiencies cited in the report, we analyze the building in detail, prioritize regulation-compliant solutions, and clarify the roadmap to turn the report positive.',
       },
     },
     {
       icon: 'ruler',
-      baslik: { tr: 'Projelendirme Hizmetleri', en: 'Project Design Services' },
+      baslik: { tr: 'Müteahhit & Proje Danışmanlığı', en: 'Contractor & Project Consulting' },
       aciklama: {
-        tr: 'Yangın algılama, söndürme ve tahliye sistemleri için yönetmeliğe uygun teknik projeler hazırlıyor; uygulama çizimlerini ve hesap raporlarını sunuyoruz.',
-        en: 'We prepare technically compliant projects for fire detection, suppression, and evacuation systems, delivering construction drawings and calculation reports.',
+        tr: 'İnşaat firmaları ve müteahhitler için proje aşamasında devreye gireriz. Yangın güvenliği sistemlerini yönetmeliğe tam uyumlu, maliyeti optimize eden ve kaynakları verimli kullanan bir yaklaşımla projelendirir; ileride doğabilecek revizyon ve maliyetleri önceden önleriz.',
+        en: 'For construction firms and contractors, we engage at the design stage. We design fire-safety systems in full regulatory compliance with an approach that optimizes cost and uses resources efficiently, preventing future revisions and expenses in advance.',
       },
     },
     {
-      icon: 'hard-hat',
-      baslik: { tr: 'Müteahhit Desteği', en: 'Contractor Support' },
+      icon: 'clipboard',
+      baslik: { tr: 'Uçtan Uca Süreç Yönetimi (Anahtar Teslim)', en: 'End-to-End Process Management (Turnkey)' },
       aciklama: {
-        tr: 'Yapım sürecinde ortaya çıkan yangın güvenliği sorunlarını hızla çözüyor; müteahhitlerin teslim takvimine uymasına yardımcı oluyoruz.',
-        en: 'We quickly resolve fire-safety issues that arise during construction, helping contractors meet their delivery schedule.',
-      },
-    },
-    {
-      icon: 'key',
-      baslik: { tr: 'Mal Sahibi Danışmanlığı', en: 'Property Owner Consulting' },
-      aciklama: {
-        tr: 'Yeni yapı veya mevcut bina sahiplerine; denetim öncesi hazırlık, eksiklik giderme ve belge yönetimi konularında kapsamlı rehberlik sağlıyoruz.',
-        en: 'We provide comprehensive guidance to owners of new or existing buildings on pre-inspection preparation, deficiency remediation, and document management.',
-      },
-    },
-    {
-      icon: 'building',
-      baslik: { tr: 'Kurum Danışmanlığı', en: 'Institutional Consulting' },
-      aciklama: {
-        tr: 'Hastane, okul, AVM ve sanayi tesisleri gibi büyük kurumlara; mevzuat takibi, periyodik denetim desteği ve acil müdahale planlaması konularında uzman danışmanlık sunuyoruz.',
-        en: 'We offer expert consulting to large institutions such as hospitals, schools, shopping centers, and industrial facilities on regulation monitoring, periodic inspection support, and emergency response planning.',
+        tr: 'Talebiniz hâlinde tüm süreci uçtan uca yönetiriz. Sıfırdan başlayıp olumlu rapor alınıncaya kadar gereken tüm iş ve işlemleri — keşif, projelendirme, başvuru ve kurum/itfaiye takibi dâhil — kurumunuz adına yürütür, tek muhatap olarak süreci sonuca taşırız.',
+        en: 'On request, we manage the entire process end-to-end. From zero until a positive report is obtained, we carry out all required work and procedures — including survey, design, application, and institution/fire-department follow-up — on your behalf, taking the process to conclusion as your single point of contact.',
       },
     },
   ],
   surec: [
     {
       adim: 1,
-      baslik: { tr: 'Başvuru & Ön Değerlendirme', en: 'Application & Pre-Assessment' },
+      baslik: { tr: 'Keşif & Etüt', en: 'Survey & Assessment' },
       aciklama: {
-        tr: 'Proje belgelerinizi ve mevcut durumunuzu inceliyoruz; gereksinimleri ve kritik eksiklikleri belirliyoruz.',
-        en: 'We review your project documents and current status, identifying requirements and critical deficiencies.',
+        tr: 'Yapıyı veya projeyi yerinde inceler; mevcut durumu ve mevzuat gereksinimlerini eksiksiz tespit ederiz.',
+        en: 'We inspect the building or project on site, fully identifying the current status and regulatory requirements.',
       },
     },
     {
       adim: 2,
-      baslik: { tr: 'Uygunluk Raporu', en: 'Compliance Report' },
+      baslik: { tr: 'Uygunluk & Çözüm Raporu', en: 'Compliance & Solution Report' },
       aciklama: {
-        tr: 'Yapıyı yönetmelikle karşılaştırarak ayrıntılı bir uygunluk raporu hazırlıyoruz.',
-        en: 'We prepare a detailed compliance report, comparing the structure against current regulations.',
+        tr: 'Tespit edilen eksiklik ve riskleri raporlar, yönetmeliğe uygun çözümleri önceliklendiririz.',
+        en: 'We report identified deficiencies and risks, prioritizing regulation-compliant solutions.',
       },
     },
     {
       adim: 3,
-      baslik: { tr: 'Proje Tasarımı', en: 'Project Design' },
+      baslik: { tr: 'Projelendirme', en: 'Engineering Design' },
       aciklama: {
-        tr: 'Tespit edilen eksiklikleri gidermek için teknik projeleri ve hesap raporlarını hazırlıyoruz.',
-        en: 'We prepare technical projects and calculation reports to address identified deficiencies.',
+        tr: 'Gerekli yangın güvenliği sistemlerini mevzuata uygun ve maliyet-etkin biçimde projelendiririz.',
+        en: 'We design the required fire-safety systems in a compliant and cost-effective manner.',
       },
     },
     {
       adim: 4,
-      baslik: { tr: 'İtfaiye Başvurusu', en: 'Fire-Department Submission' },
+      baslik: { tr: 'Kurum/İtfaiye Başvurusu & Takip', en: 'Institution & Fire-Department Submission & Follow-up' },
       aciklama: {
-        tr: 'Tüm belgelerle birlikte itfaiye başvurusunu yapıyor ve süreci takip ediyoruz.',
-        en: 'We submit the application to the fire department with all documents and follow up throughout the process.',
+        tr: 'Başvuru dosyasını hazırlar; kurum ve itfaiye nezdindeki süreçleri sizin adınıza titizlikle takip ederiz.',
+        en: 'We prepare the application file and meticulously follow up the processes before the institution and fire department on your behalf.',
       },
     },
     {
       adim: 5,
       baslik: { tr: 'Olumlu Rapor & Teslim', en: 'Positive Report & Handover' },
       aciklama: {
-        tr: 'İtfaiye onayını alıyor ve belge setini eksiksiz şekilde teslim ediyoruz.',
-        en: 'We obtain fire-department approval and deliver the complete documentation set.',
+        tr: 'Süreci olumlu rapor/uygunluk belgesiyle sonuçlandırır, tüm çıktıları teslim ederiz.',
+        en: 'We conclude the process with a positive report/compliance document and deliver all outputs.',
       },
     },
   ],
