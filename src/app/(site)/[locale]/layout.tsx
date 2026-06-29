@@ -6,7 +6,6 @@ import Header from '@/components/layout/Header';
 import Footer from '@/components/layout/Footer';
 import CookieConsent from '@/components/layout/CookieConsent';
 import { getProducts } from '@/lib/cms/queries';
-import { pick, type Locale } from '@/lib/locales';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -21,17 +20,17 @@ export default async function LocaleLayout({
 
   // Yazılım menüsü yalnızca yayındaki ürünlerden üretilir (getProducts
   // zaten yayinda=true filtreler). Yayından kaldırılan ürün menüde de çıkmaz.
-  const loc: Locale = locale === 'en' ? 'en' : 'tr';
+  // NOT: product.ad yerelleştirilmemiş düz bir string'tir (ör. "YangınPro").
   const products = (await getProducts()) as unknown as Array<{
     slug?: string;
-    ad?: { tr: string; en: string };
+    ad?: string;
   }> | null;
   const softwareItems = (products ?? [])
-    .filter((p): p is { slug: string; ad?: { tr: string; en: string } } => !!p?.slug)
+    .filter((p): p is { slug: string; ad?: string } => !!p?.slug)
     .map((p) => ({
       key: p.slug,
       href: `/yazilim/${p.slug}`,
-      label: (p.ad ? pick(p.ad, loc) : p.slug) ?? p.slug,
+      label: p.ad ?? p.slug,
     }));
 
   return (
