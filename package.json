@@ -12,7 +12,8 @@
     "test:watch": "vitest",
     "payload:seed": "tsx src/payload/seed.ts",
     "payload:seed-legal": "tsx src/payload/seed-legal.ts",
-    "payload:seed-kurumsal": "tsx src/payload/seed-kurumsal.ts"
+    "payload:seed-kurumsal": "tsx src/payload/seed-kurumsal.ts",
+    "payload:seed-redwall": "tsx src/payload/seed-redwall.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.85.1",
