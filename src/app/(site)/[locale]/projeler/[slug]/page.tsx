@@ -3,9 +3,9 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 
-import { isLocale, pick, LOCALES } from '@/lib/locales';
+import { isLocale, pick } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { getProject, getProjects } from '@/lib/cms/queries';
+import { getProject } from '@/lib/cms/queries';
 import { mediaUrl } from '@/lib/cms/image';
 import { Section, Badge, Cta } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
@@ -35,21 +35,10 @@ interface ProjectData {
   gorseller?: unknown[];
 }
 
-interface ProjectsListItem {
-  slug: string;
-}
-
-// ── Static params ─────────────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const projects = (await getProjects()) as ProjectsListItem[];
-
-  if (!projects.length) return [];
-
-  return projects
-    .filter((p) => p.slug)
-    .flatMap((p) => LOCALES.map((locale) => ({ locale, slug: p.slug })));
-}
+// ── Rendering ───────────────────────────────────────────────────────────────
+// CMS-backed sayfa: Payload Local API i18n için headers() okur → statik üretim
+// DYNAMIC_SERVER_USAGE verir. Detay tamamen dinamik (on-demand) render edilir.
+export const dynamic = 'force-dynamic';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 

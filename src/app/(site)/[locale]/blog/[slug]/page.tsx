@@ -3,9 +3,9 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import Image from 'next/image';
 
-import { isLocale, pick, LOCALES, type Locale } from '@/lib/locales';
+import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { getPost, getPosts } from '@/lib/cms/queries';
+import { getPost } from '@/lib/cms/queries';
 import { mediaUrl } from '@/lib/cms/image';
 import { Section, Cta } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
@@ -27,21 +27,10 @@ interface PostData {
   icerik?: Record<string, unknown>;
 }
 
-interface PostSlug {
-  slug: string;
-}
-
-// ── Static params ─────────────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const posts = (await getPosts()) as PostSlug[];
-
-  if (!posts.length) return [];
-
-  return posts
-    .filter((p) => p.slug)
-    .flatMap((p) => LOCALES.map((locale) => ({ locale, slug: p.slug })));
-}
+// ── Rendering ───────────────────────────────────────────────────────────────
+// CMS-backed sayfa: Payload Local API i18n için headers() okur → statik üretim
+// DYNAMIC_SERVER_USAGE verir. Detay tamamen dinamik (on-demand) render edilir.
+export const dynamic = 'force-dynamic';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 

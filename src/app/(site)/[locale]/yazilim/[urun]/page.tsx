@@ -2,9 +2,9 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-import { isLocale, pick, LOCALES } from '@/lib/locales';
+import { isLocale, pick } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
-import { getProduct, getProducts } from '@/lib/cms/queries';
+import { getProduct } from '@/lib/cms/queries';
 import { Section, Cta } from '@/components/ui';
 import { ServiceIcon } from '@/components/ui/icons';
 import { PageHero } from '@/components/sections/PageHero';
@@ -175,20 +175,10 @@ const FALLBACK: Record<KnownSlug, { ad: string; slogan: LocaleString; aciklama: 
   },
 };
 
-// ── Static params ─────────────────────────────────────────────────────────────
-
-export async function generateStaticParams() {
-  const products = await getProducts();
-
-  const slugs: string[] =
-    products.length > 0
-      ? products.map((p) => p.slug).filter(Boolean)
-      : [...KNOWN_SLUGS];
-
-  return slugs.flatMap((slug) =>
-    LOCALES.map((locale) => ({ locale, urun: slug }))
-  );
-}
+// ── Rendering ───────────────────────────────────────────────────────────────
+// CMS-backed sayfa: Payload Local API i18n için headers() okur → statik üretim
+// DYNAMIC_SERVER_USAGE verir. Detay tamamen dinamik (on-demand) render edilir.
+export const dynamic = 'force-dynamic';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
