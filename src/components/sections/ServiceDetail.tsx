@@ -146,6 +146,54 @@ const DANISMANLIK_FALLBACK = {
   ],
 };
 
+// Danışmanlık — her teklifin AYRI süreci (koda gömülü; CMS'te tek surec dizisi
+// 4 farklı süreci taşıyamadığından danışmanlığa özel burada tutulur).
+type SurecBlok = {
+  baslik: { tr: string; en: string };
+  steps: { baslik: { tr: string; en: string }; aciklama: { tr: string; en: string } }[];
+};
+
+const DANISMANLIK_SURECLER: SurecBlok[] = [
+  {
+    baslik: { tr: 'Kamu Kurumları — Süreç', en: 'Public Institutions — Process' },
+    steps: [
+      { baslik: { tr: 'Keşif & Yerinde Denetim', en: 'Survey & On-Site Inspection' }, aciklama: { tr: 'Kurumun yapısını yerinde inceler, mevcut durumu yürürlükteki mevzuatla karşılaştırırız.', en: "We inspect the institution's building on site and compare the current status against applicable legislation." } },
+      { baslik: { tr: 'Mevzuat Uygunluk Değerlendirmesi', en: 'Regulatory Compliance Assessment' }, aciklama: { tr: 'Binaların Yangından Korunması Hakkında Yönetmelik kapsamında alınması gereken tedbirleri belirleriz.', en: 'We determine the measures required under the Regulation on Fire Protection of Buildings.' } },
+      { baslik: { tr: 'Uygunluk Raporu', en: 'Compliance Report' }, aciklama: { tr: 'Talep doğrultusunda; tespitleri ve önerilen tedbirleri yazılı, denetlenebilir bir raporla sunarız.', en: 'On request, we present findings and recommended measures in a written, auditable report.' } },
+      { baslik: { tr: 'Hukuki Güvence & Takip', en: 'Legal Assurance & Follow-up' }, aciklama: { tr: 'Kurumun mevzuat karşısındaki sorumluluk riskini asgariye indirir, gereken iyileştirmeleri takip ederiz.', en: "We minimize the institution's liability risk and follow up on the necessary improvements." } },
+    ],
+  },
+  {
+    baslik: { tr: 'İtfaiye Raporu Düzeltme — Süreç', en: 'Report Remediation — Process' },
+    steps: [
+      { baslik: { tr: 'Olumsuz Raporun İncelenmesi', en: 'Review of the Negative Report' }, aciklama: { tr: 'Raporda belirtilen tüm eksiklik ve gerekçeleri ayrıntılı biçimde analiz ederiz.', en: 'We analyze all deficiencies and grounds cited in the report in detail.' } },
+      { baslik: { tr: 'Bina Analizi & Çözüm Planı', en: 'Building Analysis & Solution Plan' }, aciklama: { tr: 'Sahada inceler, yönetmeliğe uygun çözümleri önceliklendirir ve bir yol haritası oluştururuz.', en: 'We inspect on site, prioritize regulation-compliant solutions, and build a roadmap.' } },
+      { baslik: { tr: 'Projelendirme & İyileştirme', en: 'Design & Remediation' }, aciklama: { tr: 'Gerekli sistem ve düzenlemeleri projelendirir, uygulamayı yönlendiririz.', en: 'We design the required systems and arrangements and guide the implementation.' } },
+      { baslik: { tr: 'Yeniden Başvuru & Takip', en: 'Re-application & Follow-up' }, aciklama: { tr: 'İtfaiye nezdinde yeniden değerlendirme sürecini sizin adınıza yürütürüz.', en: 'We carry out the re-assessment process before the fire department on your behalf.' } },
+      { baslik: { tr: 'Olumlu Rapor', en: 'Positive Report' }, aciklama: { tr: 'Eksiklikler giderildiğinde raporun olumluya çevrilmesini sağlarız.', en: 'Once deficiencies are resolved, we ensure the report is turned positive.' } },
+    ],
+  },
+  {
+    baslik: { tr: 'Müteahhit & Proje — Süreç', en: 'Contractor & Project — Process' },
+    steps: [
+      { baslik: { tr: 'Proje İncelemesi', en: 'Project Review' }, aciklama: { tr: 'Mevcut mimari ve mekanik projeleri yangın güvenliği açısından değerlendiririz.', en: 'We evaluate existing architectural and mechanical projects from a fire-safety perspective.' } },
+      { baslik: { tr: 'Mevzuata Uygun Tasarım', en: 'Compliant Design' }, aciklama: { tr: 'Yangın güvenliği sistemlerini yönetmeliğe tam uyumlu biçimde planlarız.', en: 'We plan fire-safety systems in full regulatory compliance.' } },
+      { baslik: { tr: 'Maliyet Optimizasyonu', en: 'Cost Optimization' }, aciklama: { tr: 'Kaynakları verimli kullanan, gereksiz maliyeti azaltan çözümler öneririz.', en: 'We propose solutions that use resources efficiently and reduce unnecessary cost.' } },
+      { baslik: { tr: 'Projelendirme & Teslim', en: 'Engineering & Handover' }, aciklama: { tr: 'Uygulama projelerini ve hesap raporlarını hazırlar, eksiksiz teslim ederiz.', en: 'We prepare construction projects and calculation reports and deliver them in full.' } },
+    ],
+  },
+  {
+    baslik: { tr: 'Uçtan Uca Süreç Yönetimi — Süreç', en: 'End-to-End Management — Process' },
+    steps: [
+      { baslik: { tr: 'Keşif & Etüt', en: 'Survey & Assessment' }, aciklama: { tr: 'Yapıyı veya projeyi yerinde inceler, gereksinimleri ve eksiklikleri tespit ederiz.', en: 'We inspect the building or project on site and identify requirements and deficiencies.' } },
+      { baslik: { tr: 'Uygunluk & Çözüm Raporu', en: 'Compliance & Solution Report' }, aciklama: { tr: 'Mevcut durumu raporlar, yönetmeliğe uygun çözümleri önceliklendiririz.', en: 'We report the current status and prioritize regulation-compliant solutions.' } },
+      { baslik: { tr: 'Projelendirme', en: 'Engineering Design' }, aciklama: { tr: 'Gerekli tüm sistemleri mevzuata uygun biçimde projelendiririz.', en: 'We design all required systems in compliance with regulations.' } },
+      { baslik: { tr: 'Başvuru & Kurum/İtfaiye Takibi', en: 'Application & Institution/Fire-Dept Follow-up' }, aciklama: { tr: 'Başvuru dosyasını hazırlar, kurum ve itfaiye süreçlerini sizin adınıza yürütürüz.', en: 'We prepare the application file and run the institution and fire-department processes on your behalf.' } },
+      { baslik: { tr: 'Olumlu Rapor & Teslim', en: 'Positive Report & Handover' }, aciklama: { tr: 'Süreci olumlu rapor/uygunluk ile sonuçlandırır, tüm çıktıları teslim ederiz.', en: 'We conclude the process with a positive report/compliance and deliver all outputs.' } },
+    ],
+  },
+];
+
 const MUHENDISLIK_FALLBACK = {
   accent: '#f59e0b',
   eyebrow: { tr: 'Mühendislik & Uygulama', en: 'Engineering & Application' },
@@ -350,7 +398,7 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
             title={hizmetlerBaslik}
             accent={accent}
           />
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className={`grid gap-6 sm:grid-cols-2 ${altHizmetler.length === 4 ? 'lg:grid-cols-2' : 'lg:grid-cols-3'}`}>
             {altHizmetler.map((h, i) => (
               <FeatureCard
                 key={i}
@@ -363,16 +411,36 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
           </div>
         </Section>
 
-        {/* Süreç */}
-        <Section>
-          <SectionHeading
-            eyebrow={locale === 'tr' ? 'Nasıl Çalışıyoruz' : 'How We Work'}
-            title={surecBaslik}
-            description={surecAciklama}
-            accent={accent}
-          />
-          <ProcessTimeline steps={surecSteps} accent={accent} />
-        </Section>
+        {/* Süreç — danışmanlıkta her teklif için ayrı timeline; mühendislikte tek */}
+        {isKolu === 'danismanlik' ? (
+          DANISMANLIK_SURECLER.map((sb, bi) => (
+            <Section key={bi} tone={bi % 2 === 1 ? 'muted' : undefined}>
+              <SectionHeading
+                eyebrow={bi === 0 ? (locale === 'tr' ? 'Süreçlerimiz' : 'Our Processes') : undefined}
+                title={sb.baslik[locale]}
+                accent={accent}
+              />
+              <ProcessTimeline
+                steps={sb.steps.map((s, si) => ({
+                  num: si + 1,
+                  title: s.baslik[locale],
+                  description: s.aciklama[locale],
+                }))}
+                accent={accent}
+              />
+            </Section>
+          ))
+        ) : (
+          <Section>
+            <SectionHeading
+              eyebrow={locale === 'tr' ? 'Nasıl Çalışıyoruz' : 'How We Work'}
+              title={surecBaslik}
+              description={surecAciklama}
+              accent={accent}
+            />
+            <ProcessTimeline steps={surecSteps} accent={accent} />
+          </Section>
+        )}
 
         <Cta
           baslik={
