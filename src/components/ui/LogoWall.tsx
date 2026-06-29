@@ -1,4 +1,5 @@
 // Kurum kartı: üstte logo (gri→hover renkli) veya baş harf monogramı, altta ad.
+import Image from 'next/image';
 
 function initials(ad: string): string {
   return ad
@@ -18,14 +19,19 @@ export function LogoWall({ logos }: { logos: { ad: string; src?: string }[] }) {
           key={i}
           className="group flex h-36 flex-col items-center justify-center gap-3 rounded-2xl border border-border bg-background p-6 transition-all duration-200 hover:-translate-y-0.5 hover:border-primary/30 hover:shadow-md"
         >
-          <div className="flex h-12 items-center justify-center">
+          <div className="flex h-12 w-full items-center justify-center">
             {logo.src ? (
-              // eslint-disable-next-line @next/next/no-img-element -- URL Sanity CDN'den gelir; remotePatterns kapsam dışı
-              <img
-                src={logo.src}
-                alt={logo.ad}
-                className="max-h-12 w-auto max-w-full object-contain opacity-70 grayscale transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
-              />
+              // Same-origin /api/media URL'i; next/image kaynağı (2000px) görünen
+              // boyuta optimize eder.
+              <div className="relative h-12 w-full">
+                <Image
+                  src={logo.src}
+                  alt={logo.ad}
+                  fill
+                  sizes="200px"
+                  className="object-contain opacity-70 grayscale transition duration-200 group-hover:opacity-100 group-hover:grayscale-0"
+                />
+              </div>
             ) : (
               <span className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 font-display text-base font-bold text-primary">
                 {initials(logo.ad)}
