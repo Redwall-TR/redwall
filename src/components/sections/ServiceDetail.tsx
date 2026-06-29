@@ -414,17 +414,20 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
         {/* Süreç — danışmanlıkta 4 teklif 2x2 grid (4 adımlılar / 5 adımlılar
             adım sayısına göre aynı satırda); mühendislikte tek timeline */}
         {isKolu === 'danismanlik' ? (
-          <Section>
+          <Section tone="muted">
             <SectionHeading
               eyebrow={locale === 'tr' ? 'Nasıl Çalışıyoruz' : 'How We Work'}
               title={locale === 'tr' ? 'Danışmanlık Süreçlerimiz' : 'Our Consulting Processes'}
               accent={accent}
             />
-            <div className="grid gap-x-12 gap-y-14 lg:grid-cols-2">
+            <div className="grid gap-8 lg:grid-cols-2">
               {[...DANISMANLIK_SURECLER]
                 .sort((a, b) => a.steps.length - b.steps.length)
                 .map((sb, bi) => (
-                  <div key={bi}>
+                  <div
+                    key={bi}
+                    className="rounded-2xl border border-border bg-background p-6 sm:p-8"
+                  >
                     <h3 className="mb-6 font-display text-lg font-bold sm:text-xl">{sb.baslik[locale]}</h3>
                     <ProcessTimeline
                       steps={sb.steps.map((s, si) => ({
