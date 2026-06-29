@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { submitForm, type FormGonderimInput } from '@/app/actions/form-gonderim';
 
-export type GenelHata = false | 'genel' | 'rate';
+export type GenelHata = false | 'genel' | 'rate' | 'turnstile';
 
 /**
  * Form gönderim mantığını paylaşır: state (values/errors/submitted/submitting/
@@ -21,6 +21,7 @@ export function useFormSubmit<V extends Record<string, unknown>>(opts: {
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [genelHata, setGenelHata] = useState<GenelHata>(false);
+  const [turnstileToken, setToken] = useState('');
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -45,7 +46,7 @@ export function useFormSubmit<V extends Record<string, unknown>>(opts: {
     }
     setSubmitting(true);
     setGenelHata(false);
-    const res = await submitForm(opts.toInput(values));
+    const res = await submitForm({ ...opts.toInput(values), turnstileToken });
     setSubmitting(false);
     if (res.ok) {
       setSubmitted(true);
@@ -53,9 +54,10 @@ export function useFormSubmit<V extends Record<string, unknown>>(opts: {
     } else if (res.errors && !res.errors._genel) {
       setErrors(res.errors);
     } else {
-      setGenelHata(res.errors?._genel === 'rate' ? 'rate' : 'genel');
+      const code = res.errors?._genel;
+      setGenelHata(code === 'rate' || code === 'turnstile' ? code : 'genel');
     }
   }
 
-  return { values, setValues, errors, submitted, submitting, genelHata, handleChange, handleSubmit };
+  return { values, setValues, errors, submitted, submitting, genelHata, setToken, handleChange, handleSubmit };
 }

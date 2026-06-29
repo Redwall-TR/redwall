@@ -87,6 +87,8 @@ services:
       SMTP_PASS: ${SMTP_PASS}
       SMTP_FROM: ${SMTP_FROM}
       FORM_NOTIFY_TO: ${FORM_NOTIFY_TO}
+      # Turnstile (bot doğrulaması) — sunucu tarafı siteverify. Boşsa doğrulama atlanır.
+      TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
     networks:
       - traefik-public
       - app-internal

@@ -47,6 +47,7 @@ jobs:
             ${{ env.IMAGE }}:${{ steps.meta.outputs.tag }}
           build-args: |
             NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -62,6 +63,7 @@ jobs:
             ${{ env.TOOLS_IMAGE }}:${{ steps.meta.outputs.tag }}
           build-args: |
             NEXT_PUBLIC_SITE_URL=${{ vars.NEXT_PUBLIC_SITE_URL }}
+            NEXT_PUBLIC_TURNSTILE_SITE_KEY=${{ vars.NEXT_PUBLIC_TURNSTILE_SITE_KEY }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
@@ -101,11 +103,12 @@ jobs:
           SMTP_PASS: ${{ secrets.SMTP_PASS }}
           SMTP_FROM: ${{ vars.SMTP_FROM }}
           FORM_NOTIFY_TO: ${{ vars.FORM_NOTIFY_TO }}
+          TURNSTILE_SECRET_KEY: ${{ secrets.TURNSTILE_SECRET_KEY }}
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          envs: WEB_IMAGE,TOOLS_IMAGE,SITE_HOST,PAYLOAD_SECRET,POSTGRES_PASSWORD,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,SMTP_FROM,FORM_NOTIFY_TO
+          envs: WEB_IMAGE,TOOLS_IMAGE,SITE_HOST,PAYLOAD_SECRET,POSTGRES_PASSWORD,MINIO_ROOT_USER,MINIO_ROOT_PASSWORD,DOCKERHUB_USERNAME,DOCKERHUB_TOKEN,SMTP_HOST,SMTP_PORT,SMTP_USER,SMTP_PASS,SMTP_FROM,FORM_NOTIFY_TO,TURNSTILE_SECRET_KEY
           command_timeout: 15m
           script: |
             set -e

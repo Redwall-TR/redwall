@@ -37,6 +37,29 @@ function rateLimited(ip: string): boolean {
   return false
 }
 
+/**
+ * Cloudflare Turnstile token doğrulaması. TURNSTILE_SECRET_KEY tanımlı değilse
+ * doğrulama atlanır (özellik kapalı). Tanımlıysa token geçersizse false döner.
+ */
+async function verifyTurnstile(token: string | undefined, ip: string): Promise<boolean> {
+  const secret = process.env.TURNSTILE_SECRET_KEY
+  if (!secret) return true // özellik yapılandırılmamış → atla
+  if (!token) return false
+  try {
+    const body = new URLSearchParams({ secret, response: token })
+    if (ip && ip !== 'unknown') body.set('remoteip', ip)
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      body,
+    })
+    const data = (await r.json()) as { success?: boolean }
+    return data.success === true
+  } catch (err) {
+    console.error('[turnstile] doğrulama isteği başarısız:', err)
+    return false
+  }
+}
+
 function dogrula(input: FormGonderimInput): Record<string, string> {
   switch (input.tur) {
     case 'teklif':
@@ -68,12 +91,18 @@ export async function submitForm(input: FormGonderimInput): Promise<FormGonderim
   // (kaydetme/e-posta yok; bota ipucu vermemek için hata da göstermeyiz).
   if (input.hp && input.hp.trim()) return { ok: true }
 
-  // Hız sınırı
   const h = await headers()
   const ip =
     h.get('cf-connecting-ip') ||
     h.get('x-forwarded-for')?.split(',')[0]?.trim() ||
     'unknown'
+
+  // Cloudflare Turnstile (bot doğrulaması) — yapılandırılmışsa zorunlu.
+  if (!(await verifyTurnstile(input.turnstileToken, ip))) {
+    return { ok: false, errors: { _genel: 'turnstile' } }
+  }
+
+  // Hız sınırı
   if (rateLimited(ip)) {
     return { ok: false, errors: { _genel: 'rate' } }
   }

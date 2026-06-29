@@ -19,7 +19,8 @@
     "basarili": "Your request has been received. We'll get back to you shortly.",
     "genelHata": "Something went wrong while submitting. Please try again.",
     "cokUzun": "Input is too long, please shorten it.",
-    "cokFazla": "Too many attempts. Please try again in a few minutes."
+    "cokFazla": "Too many attempts. Please try again in a few minutes.",
+    "dogrulamaHatasi": "Security verification failed. Please refresh the page and try again."
   },
   "footer": {
     "isKollarimiz": "Our Services",

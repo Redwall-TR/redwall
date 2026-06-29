@@ -10,6 +10,7 @@ import {
   Honeypot,
   SuccessBanner,
   GenelHataMesaji,
+  FormTurnstile,
 } from '@/components/sections/FormFields';
 import { KVKK_SIFAT_OPTIONS, KVKK_TALEP_OPTIONS } from '@/lib/kvkk';
 import { Button } from '@/components/ui';
@@ -39,7 +40,7 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
   const t = useTranslations('form');
   const tc = useTranslations('common');
   const isTr = locale === 'tr';
-  const { values, errors, submitted, submitting, genelHata, handleChange, handleSubmit } =
+  const { values, errors, submitted, submitting, genelHata, setToken, handleChange, handleSubmit } =
     useFormSubmit<FormValues>({
       initial: INITIAL,
       validate: (v) => validateKvkkBasvuru(v),
@@ -108,6 +109,7 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
       </div>
 
       <Honeypot value={values.hp} onChange={handleChange} />
+      <FormTurnstile onToken={setToken} />
       <GenelHataMesaji kind={genelHata} />
       <Button type="submit" disabled={submitting}>
         {submitting ? tc('yukleniyor') : tc('gonder')}

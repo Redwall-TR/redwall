@@ -1,6 +1,7 @@
 'use client';
 
 import { useTranslations } from 'next-intl';
+import { Turnstile } from '@marsidev/react-turnstile';
 import type { GenelHata } from '@/components/sections/useFormSubmit';
 
 // Form alanları için paylaşılan sunum bileşenleri — label + input + hata +
@@ -143,9 +144,28 @@ export function SuccessBanner() {
 export function GenelHataMesaji({ kind }: { kind: GenelHata }) {
   const t = useTranslations('form');
   if (!kind) return null;
+  const key = kind === 'rate' ? 'cokFazla' : kind === 'turnstile' ? 'dogrulamaHatasi' : 'genelHata';
   return (
     <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-      {t(kind === 'rate' ? 'cokFazla' : 'genelHata')}
+      {t(key)}
     </p>
+  );
+}
+
+/**
+ * Cloudflare Turnstile widget'ı. NEXT_PUBLIC_TURNSTILE_SITE_KEY tanımlı değilse
+ * hiçbir şey render etmez (özellik kapalı; form yine çalışır).
+ */
+export function FormTurnstile({ onToken }: { onToken: (token: string) => void }) {
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
+  if (!siteKey) return null;
+  return (
+    <Turnstile
+      siteKey={siteKey}
+      options={{ theme: 'auto' }}
+      onSuccess={(token) => onToken(token)}
+      onExpire={() => onToken('')}
+      onError={() => onToken('')}
+    />
   );
 }

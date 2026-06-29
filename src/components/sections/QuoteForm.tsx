@@ -10,6 +10,7 @@ import {
   Honeypot,
   SuccessBanner,
   GenelHataMesaji,
+  FormTurnstile,
 } from '@/components/sections/FormFields';
 import { isKoluLabel } from '@/lib/labels';
 import { Button } from '@/components/ui';
@@ -47,7 +48,7 @@ export default function QuoteForm({ locale }: { locale: Locale }) {
   const t = useTranslations('form');
   const tc = useTranslations('common');
   const isTr = locale === 'tr';
-  const { values, errors, submitted, submitting, genelHata, handleChange, handleSubmit } =
+  const { values, errors, submitted, submitting, genelHata, setToken, handleChange, handleSubmit } =
     useFormSubmit<FormValues>({
       initial: INITIAL,
       validate: (v) => validateQuote(v),
@@ -89,6 +90,7 @@ export default function QuoteForm({ locale }: { locale: Locale }) {
       <TextField id="qf-telefon" name="telefon" type="tel" label={t('telefon')} value={values.telefon} onChange={handleChange} error={errors.telefon} autoComplete="tel" />
       <TextareaField id="qf-mesaj" name="mesaj" label={t('mesaj')} value={values.mesaj} onChange={handleChange} error={errors.mesaj} />
       <Honeypot value={values.hp} onChange={handleChange} />
+      <FormTurnstile onToken={setToken} />
       <GenelHataMesaji kind={genelHata} />
       <Button type="submit" disabled={submitting}>
         {submitting ? tc('yukleniyor') : tc('teklifAl')}

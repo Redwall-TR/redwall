@@ -10,6 +10,7 @@ import {
   Honeypot,
   SuccessBanner,
   GenelHataMesaji,
+  FormTurnstile,
 } from '@/components/sections/FormFields';
 import { Button } from '@/components/ui';
 import type { Locale } from '@/types';
@@ -27,7 +28,7 @@ export default function DemoForm({ locale }: { locale: Locale }) {
   const t = useTranslations('form');
   const tc = useTranslations('common');
   const isTr = locale === 'tr';
-  const { values, errors, submitted, submitting, genelHata, handleChange, handleSubmit } =
+  const { values, errors, submitted, submitting, genelHata, setToken, handleChange, handleSubmit } =
     useFormSubmit<FormValues>({
       initial: INITIAL,
       validate: (v) => validateDemo(v),
@@ -51,6 +52,7 @@ export default function DemoForm({ locale }: { locale: Locale }) {
       <TextField id="df-email" name="email" type="email" label={t('email')} required value={values.email} onChange={handleChange} error={errors.email} autoComplete="email" />
       <TextareaField id="df-mesaj" name="mesaj" label={isTr ? 'İhtiyacınız' : 'Your needs'} value={values.mesaj} onChange={handleChange} error={errors.mesaj} />
       <Honeypot value={values.hp} onChange={handleChange} />
+      <FormTurnstile onToken={setToken} />
       <GenelHataMesaji kind={genelHata} />
       <Button type="submit" disabled={submitting}>
         {submitting ? tc('yukleniyor') : tc('gonder')}

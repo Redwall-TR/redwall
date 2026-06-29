@@ -19,7 +19,8 @@
     "basarili": "Talebiniz alındı. En kısa sürede dönüş yapacağız.",
     "genelHata": "Gönderim sırasında bir hata oluştu. Lütfen tekrar deneyin.",
     "cokUzun": "Girdi çok uzun, lütfen kısaltın.",
-    "cokFazla": "Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin."
+    "cokFazla": "Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin.",
+    "dogrulamaHatasi": "Güvenlik doğrulaması tamamlanamadı. Sayfayı yenileyip tekrar deneyin."
   },
   "footer": {
     "isKollarimiz": "İş Kollarımız",

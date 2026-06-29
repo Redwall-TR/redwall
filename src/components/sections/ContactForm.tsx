@@ -9,6 +9,7 @@ import {
   Honeypot,
   SuccessBanner,
   GenelHataMesaji,
+  FormTurnstile,
 } from '@/components/sections/FormFields';
 import { Button } from '@/components/ui';
 
@@ -18,7 +19,7 @@ const INITIAL: FormValues = { ad: '', kurum: '', email: '', telefon: '', mesaj: 
 export default function ContactForm() {
   const t = useTranslations('form');
   const tc = useTranslations('common');
-  const { values, errors, submitted, submitting, genelHata, handleChange, handleSubmit } =
+  const { values, errors, submitted, submitting, genelHata, setToken, handleChange, handleSubmit } =
     useFormSubmit<FormValues>({
       initial: INITIAL,
       validate: (v) => validateContact(v),
@@ -35,6 +36,7 @@ export default function ContactForm() {
       <TextField id="cf-telefon" name="telefon" type="tel" label={t('telefon')} value={values.telefon} onChange={handleChange} error={errors.telefon} autoComplete="tel" />
       <TextareaField id="cf-mesaj" name="mesaj" label={t('mesaj')} required rows={5} value={values.mesaj} onChange={handleChange} error={errors.mesaj} />
       <Honeypot value={values.hp} onChange={handleChange} />
+      <FormTurnstile onToken={setToken} />
       <GenelHataMesaji kind={genelHata} />
       <Button type="submit" disabled={submitting}>
         {submitting ? tc('yukleniyor') : tc('gonder')}

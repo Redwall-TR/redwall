@@ -21,6 +21,8 @@ export interface FormGonderimInput {
   kvkkOnay?: boolean
   // Honeypot
   hp?: string
+  // Cloudflare Turnstile token (sunucuda doğrulanır; kayda yazılmaz)
+  turnstileToken?: string
 }
 
 /**
