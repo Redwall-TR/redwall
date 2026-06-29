@@ -70,8 +70,8 @@ export default async function IletisimPage({
   // Harita: OpenStreetMap embed (anahtarsız + güvenilir frame'lenir; Google'ın
   // anahtarsız embed'i X-Frame-Options ile reddedildiği için OSM tercih edildi).
   // Koordinatlar şirketin resmi adresine göre sabittir (Kurtuluş Mah., Adapazarı/Sakarya).
-  const HARITA_LAT = 40.7820688;
-  const HARITA_LON = 30.397067;
+  const HARITA_LAT = 40.78021641245962;
+  const HARITA_LON = 30.400269386519778;
   const bbox = [HARITA_LON - 0.006, HARITA_LAT - 0.003, HARITA_LON + 0.006, HARITA_LAT + 0.003]
     .map((n) => n.toFixed(6))
     .join('%2C');
