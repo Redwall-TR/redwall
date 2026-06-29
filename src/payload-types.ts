@@ -77,6 +77,7 @@ export interface Config {
     post: Post;
     job: Job;
     project: Project;
+    richPage: RichPage;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -94,6 +95,7 @@ export interface Config {
     post: PostSelect<false> | PostSelect<true>;
     job: JobSelect<false> | JobSelect<true>;
     project: ProjectSelect<false> | ProjectSelect<true>;
+    richPage: RichPageSelect<false> | RichPageSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -496,6 +498,34 @@ export interface Project {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "richPage".
+ */
+export interface RichPage {
+  id: number;
+  slug: string;
+  kategori?: ('legal' | 'kurumsal' | 'redwall') | null;
+  baslik: string;
+  icerik?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  sonGuncelleme?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -557,6 +587,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'project';
         value: number | Project;
+      } | null)
+    | ({
+        relationTo: 'richPage';
+        value: number | RichPage;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -843,6 +877,19 @@ export interface ProjectSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "richPage_select".
+ */
+export interface RichPageSelect<T extends boolean = true> {
+  slug?: T;
+  kategori?: T;
+  baslik?: T;
+  icerik?: T;
+  sonGuncelleme?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -918,6 +965,14 @@ export interface SiteSetting {
   seo?: {
     baslik?: string | null;
     aciklama?: string | null;
+  };
+  /**
+   * Şirketin resmi yasal tanımlayıcı bilgileri. Yerelleştirilmez.
+   */
+  kunye?: {
+    mersisNo?: string | null;
+    ticaretSicilNo?: string | null;
+    kepAdresi?: string | null;
   };
   updatedAt?: string | null;
   createdAt?: string | null;
@@ -1029,6 +1084,13 @@ export interface SiteSettingsSelect<T extends boolean = true> {
     | {
         baslik?: T;
         aciklama?: T;
+      };
+  kunye?:
+    | T
+    | {
+        mersisNo?: T;
+        ticaretSicilNo?: T;
+        kepAdresi?: T;
       };
   updatedAt?: T;
   createdAt?: T;

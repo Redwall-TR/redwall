@@ -59,5 +59,16 @@ export const SiteSettings: GlobalConfig = {
         { name: 'aciklama', type: 'textarea', label: 'Açıklama', localized: true },
       ],
     },
+    {
+      name: 'kunye',
+      type: 'group',
+      label: 'Künye (Yasal Kimlik)',
+      admin: { description: 'Şirketin resmi yasal tanımlayıcı bilgileri. Yerelleştirilmez.' },
+      fields: [
+        { name: 'mersisNo', type: 'text', label: 'MERSİS No' },
+        { name: 'ticaretSicilNo', type: 'text', label: 'Ticaret Sicil No' },
+        { name: 'kepAdresi', type: 'text', label: 'KEP Adresi' },
+      ],
+    },
   ],
 }

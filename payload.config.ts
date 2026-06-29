@@ -14,6 +14,7 @@ import { Faq } from './src/collections/Faq'
 import { Post } from './src/collections/Post'
 import { Job } from './src/collections/Job'
 import { Project } from './src/collections/Project'
+import { RichPage } from './src/collections/RichPage'
 import { SiteSettings } from './src/globals/SiteSettings'
 import { Navigation } from './src/globals/Navigation'
 import { HomePage } from './src/globals/HomePage'
@@ -42,6 +43,7 @@ export default buildConfig({
     Post,
     Job,
     Project,
+    RichPage,
   ],
   globals: [SiteSettings, Navigation, HomePage],
   plugins: [
