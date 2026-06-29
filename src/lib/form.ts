@@ -15,6 +15,13 @@ export function validateQuote(v: { ad?: string; email?: string; isKolu?: string 
   if (!v.isKolu?.trim()) e.isKolu = 'zorunlu';
   return e;
 }
+export function validateDemo(v: { urun?: string; ad?: string; kurum?: string; email?: string; mesaj?: string }): Record<string, string> {
+  const e: Record<string, string> = {};
+  if (!v.ad?.trim()) e.ad = 'zorunlu';
+  if (!v.email?.trim()) e.email = 'zorunlu'; else if (!isEmail(v.email)) e.email = 'gecersizEmail';
+  if (!v.urun?.trim()) e.urun = 'zorunlu';
+  return e;
+}
 export function validateKvkkBasvuru(v: {
   adSoyad?: string;
   iletisim?: string;

@@ -14,7 +14,7 @@
   },
   "form": {
     "ad": "Ad Soyad", "kurum": "Kurum", "email": "E-posta", "telefon": "Telefon",
-    "mesaj": "Mesaj", "isKolu": "İlgili Hizmet", "il": "İl", "metrekare": "Bina m²",
+    "mesaj": "Mesaj", "isKolu": "İlgili Hizmet", "il": "İl", "metrekare": "Bina m²", "urun": "Ürün",
     "zorunlu": "Bu alan zorunludur", "gecersizEmail": "Geçerli bir e-posta girin",
     "basarili": "Talebiniz alındı. En kısa sürede dönüş yapacağız."
   },

@@ -14,7 +14,7 @@
   },
   "form": {
     "ad": "Full Name", "kurum": "Company", "email": "Email", "telefon": "Phone",
-    "mesaj": "Message", "isKolu": "Related Service", "il": "City", "metrekare": "Building m²",
+    "mesaj": "Message", "isKolu": "Related Service", "il": "City", "metrekare": "Building m²", "urun": "Product",
     "zorunlu": "This field is required", "gecersizEmail": "Enter a valid email",
     "basarili": "Your request has been received. We'll get back to you shortly."
   },
