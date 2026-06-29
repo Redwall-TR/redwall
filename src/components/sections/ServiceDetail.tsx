@@ -155,7 +155,7 @@ type SurecBlok = {
 
 const DANISMANLIK_SURECLER: SurecBlok[] = [
   {
-    baslik: { tr: 'Kamu Kurumları — Süreç', en: 'Public Institutions — Process' },
+    baslik: { tr: 'Kamu Kurumları', en: 'Public Institutions' },
     steps: [
       { baslik: { tr: 'Keşif & Yerinde Denetim', en: 'Survey & On-Site Inspection' }, aciklama: { tr: 'Kurumun yapısını yerinde inceler, mevcut durumu yürürlükteki mevzuatla karşılaştırırız.', en: "We inspect the institution's building on site and compare the current status against applicable legislation." } },
       { baslik: { tr: 'Mevzuat Uygunluk Değerlendirmesi', en: 'Regulatory Compliance Assessment' }, aciklama: { tr: 'Binaların Yangından Korunması Hakkında Yönetmelik kapsamında alınması gereken tedbirleri belirleriz.', en: 'We determine the measures required under the Regulation on Fire Protection of Buildings.' } },
@@ -164,7 +164,7 @@ const DANISMANLIK_SURECLER: SurecBlok[] = [
     ],
   },
   {
-    baslik: { tr: 'İtfaiye Raporu Düzeltme — Süreç', en: 'Report Remediation — Process' },
+    baslik: { tr: 'İtfaiye Raporu Düzeltme', en: 'Report Remediation' },
     steps: [
       { baslik: { tr: 'Olumsuz Raporun İncelenmesi', en: 'Review of the Negative Report' }, aciklama: { tr: 'Raporda belirtilen tüm eksiklik ve gerekçeleri ayrıntılı biçimde analiz ederiz.', en: 'We analyze all deficiencies and grounds cited in the report in detail.' } },
       { baslik: { tr: 'Bina Analizi & Çözüm Planı', en: 'Building Analysis & Solution Plan' }, aciklama: { tr: 'Sahada inceler, yönetmeliğe uygun çözümleri önceliklendirir ve bir yol haritası oluştururuz.', en: 'We inspect on site, prioritize regulation-compliant solutions, and build a roadmap.' } },
@@ -174,7 +174,7 @@ const DANISMANLIK_SURECLER: SurecBlok[] = [
     ],
   },
   {
-    baslik: { tr: 'Müteahhit & Proje — Süreç', en: 'Contractor & Project — Process' },
+    baslik: { tr: 'Müteahhit & Proje', en: 'Contractor & Project' },
     steps: [
       { baslik: { tr: 'Proje İncelemesi', en: 'Project Review' }, aciklama: { tr: 'Mevcut mimari ve mekanik projeleri yangın güvenliği açısından değerlendiririz.', en: 'We evaluate existing architectural and mechanical projects from a fire-safety perspective.' } },
       { baslik: { tr: 'Mevzuata Uygun Tasarım', en: 'Compliant Design' }, aciklama: { tr: 'Yangın güvenliği sistemlerini yönetmeliğe tam uyumlu biçimde planlarız.', en: 'We plan fire-safety systems in full regulatory compliance.' } },
@@ -183,7 +183,7 @@ const DANISMANLIK_SURECLER: SurecBlok[] = [
     ],
   },
   {
-    baslik: { tr: 'Uçtan Uca Süreç Yönetimi — Süreç', en: 'End-to-End Management — Process' },
+    baslik: { tr: 'Uçtan Uca Süreç Yönetimi', en: 'End-to-End Management' },
     steps: [
       { baslik: { tr: 'Keşif & Etüt', en: 'Survey & Assessment' }, aciklama: { tr: 'Yapıyı veya projeyi yerinde inceler, gereksinimleri ve eksiklikleri tespit ederiz.', en: 'We inspect the building or project on site and identify requirements and deficiencies.' } },
       { baslik: { tr: 'Uygunluk & Çözüm Raporu', en: 'Compliance & Solution Report' }, aciklama: { tr: 'Mevcut durumu raporlar, yönetmeliğe uygun çözümleri önceliklendiririz.', en: 'We report the current status and prioritize regulation-compliant solutions.' } },
@@ -411,25 +411,33 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
           </div>
         </Section>
 
-        {/* Süreç — danışmanlıkta her teklif için ayrı timeline; mühendislikte tek */}
+        {/* Süreç — danışmanlıkta 4 teklif 2x2 grid (4 adımlılar / 5 adımlılar
+            adım sayısına göre aynı satırda); mühendislikte tek timeline */}
         {isKolu === 'danismanlik' ? (
-          DANISMANLIK_SURECLER.map((sb, bi) => (
-            <Section key={bi} tone={bi % 2 === 1 ? 'muted' : undefined}>
-              <SectionHeading
-                eyebrow={bi === 0 ? (locale === 'tr' ? 'Süreçlerimiz' : 'Our Processes') : undefined}
-                title={sb.baslik[locale]}
-                accent={accent}
-              />
-              <ProcessTimeline
-                steps={sb.steps.map((s, si) => ({
-                  num: si + 1,
-                  title: s.baslik[locale],
-                  description: s.aciklama[locale],
-                }))}
-                accent={accent}
-              />
-            </Section>
-          ))
+          <Section>
+            <SectionHeading
+              eyebrow={locale === 'tr' ? 'Nasıl Çalışıyoruz' : 'How We Work'}
+              title={locale === 'tr' ? 'Danışmanlık Süreçlerimiz' : 'Our Consulting Processes'}
+              accent={accent}
+            />
+            <div className="grid gap-x-12 gap-y-14 lg:grid-cols-2">
+              {[...DANISMANLIK_SURECLER]
+                .sort((a, b) => a.steps.length - b.steps.length)
+                .map((sb, bi) => (
+                  <div key={bi}>
+                    <h3 className="mb-6 font-display text-lg font-bold sm:text-xl">{sb.baslik[locale]}</h3>
+                    <ProcessTimeline
+                      steps={sb.steps.map((s, si) => ({
+                        num: si + 1,
+                        title: s.baslik[locale],
+                        description: s.aciklama[locale],
+                      }))}
+                      accent={accent}
+                    />
+                  </div>
+                ))}
+            </div>
+          </Section>
         ) : (
           <Section>
             <SectionHeading
