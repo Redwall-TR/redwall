@@ -18,7 +18,8 @@
     "zorunlu": "This field is required", "gecersizEmail": "Enter a valid email",
     "basarili": "Your request has been received. We'll get back to you shortly.",
     "genelHata": "Something went wrong while submitting. Please try again.",
-    "cokUzun": "Input is too long, please shorten it."
+    "cokUzun": "Input is too long, please shorten it.",
+    "cokFazla": "Too many attempts. Please try again in a few minutes."
   },
   "footer": {
     "isKollarimiz": "Our Services",

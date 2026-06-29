@@ -4,6 +4,7 @@ import { headers } from 'next/headers'
 import { getPayloadClient } from '@/lib/cms/client'
 import { validateContact, validateQuote, validateDemo, validateKvkkBasvuru } from '@/lib/form'
 import { sendFormBildirim, type FormBildirim } from '@/lib/email'
+import { KVKK_SIFAT_OPTIONS, KVKK_TALEP_OPTIONS, kvkkLabelTr } from '@/lib/kvkk'
 
 export interface FormGonderimInput {
   tur: 'iletisim' | 'teklif' | 'demo' | 'kvkk'
@@ -54,19 +55,6 @@ function rateLimited(ip: string): boolean {
   return false
 }
 
-const KVKK_SIFAT: Record<string, string> = {
-  'ilgili-kisi': 'İlgili kişi',
-  vekil: 'Vekil',
-  'yasal-temsilci': 'Yasal temsilci',
-}
-const KVKK_TALEP: Record<string, string> = {
-  'bilgi-talebi': 'Bilgi talebi',
-  duzeltme: 'Düzeltme',
-  'silme-yok-etme': 'Silme/Yok etme',
-  'islemeye-itiraz': 'İşlemeye itiraz',
-  diger: 'Diğer',
-}
-
 function dogrula(input: FormGonderimInput): Record<string, string> {
   switch (input.tur) {
     case 'teklif':
@@ -85,6 +73,39 @@ function dogrula(input: FormGonderimInput): Record<string, string> {
     case 'iletisim':
     default:
       return validateContact({ ad: input.ad, email: input.email, mesaj: input.mesaj })
+  }
+}
+
+/**
+ * Doğrulanmış girdiyi saklanacak/e-postalanacak kayda dönüştürür (saf fonksiyon).
+ * KVKK başvurusu yapılandırılmış alanları okunabilir bir `mesaj` bloğuna katlar.
+ */
+function buildRecord(input: FormGonderimInput): FormBildirim {
+  if (input.tur === 'kvkk') {
+    return {
+      tur: 'kvkk',
+      ad: (input.ad ?? '').trim(),
+      email: (input.iletisim ?? '').trim(),
+      mesaj: [
+        `Başvuru sahibinin sıfatı: ${kvkkLabelTr(KVKK_SIFAT_OPTIONS, input.basvuruSahibiSifati)}`,
+        `Talep türü: ${kvkkLabelTr(KVKK_TALEP_OPTIONS, input.talepTuru)}`,
+        `KVKK onayı: ${input.kvkkOnay ? 'Evet' : 'Hayır'}`,
+        '',
+        (input.aciklama ?? '').trim(),
+      ].join('\n'),
+    }
+  }
+  return {
+    tur: input.tur,
+    ad: (input.ad ?? '').trim(),
+    email: (input.email ?? '').trim(),
+    telefon: input.telefon?.trim() || undefined,
+    kurum: input.kurum?.trim() || undefined,
+    isKolu: input.isKolu?.trim() || undefined,
+    il: input.il?.trim() || undefined,
+    metrekare: input.metrekare?.trim() || undefined,
+    urun: input.urun?.trim() || undefined,
+    mesaj: input.mesaj?.trim() || undefined,
   }
 }
 
@@ -113,33 +134,7 @@ export async function submitForm(input: FormGonderimInput): Promise<FormGonderim
     return { ok: false, errors }
   }
 
-  // KVKK başvurusu yapılandırılmış alanları taşıyacak şekilde derlenir.
-  const data =
-    input.tur === 'kvkk'
-      ? {
-          tur: 'kvkk' as const,
-          ad: (input.ad ?? '').trim(),
-          email: (input.iletisim ?? '').trim(),
-          mesaj: [
-            `Başvuru sahibinin sıfatı: ${KVKK_SIFAT[input.basvuruSahibiSifati ?? ''] ?? input.basvuruSahibiSifati ?? '-'}`,
-            `Talep türü: ${KVKK_TALEP[input.talepTuru ?? ''] ?? input.talepTuru ?? '-'}`,
-            `KVKK onayı: ${input.kvkkOnay ? 'Evet' : 'Hayır'}`,
-            '',
-            (input.aciklama ?? '').trim(),
-          ].join('\n'),
-        }
-      : {
-          tur: input.tur,
-          ad: (input.ad ?? '').trim(),
-          email: (input.email ?? '').trim(),
-          telefon: input.telefon?.trim() || undefined,
-          kurum: input.kurum?.trim() || undefined,
-          isKolu: input.isKolu?.trim() || undefined,
-          il: input.il?.trim() || undefined,
-          metrekare: input.metrekare?.trim() || undefined,
-          urun: input.urun?.trim() || undefined,
-          mesaj: input.mesaj?.trim() || undefined,
-        }
+  const data = buildRecord(input)
 
   try {
     const payload = await getPayloadClient()
@@ -154,7 +149,7 @@ export async function submitForm(input: FormGonderimInput): Promise<FormGonderim
   }
 
   // Bildirim e-postası — best-effort (hata kaydı etkilemez).
-  await sendFormBildirim(data as FormBildirim)
+  await sendFormBildirim(data)
 
   return { ok: true }
 }

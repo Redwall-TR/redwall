@@ -18,7 +18,8 @@
     "zorunlu": "Bu alan zorunludur", "gecersizEmail": "Geçerli bir e-posta girin",
     "basarili": "Talebiniz alındı. En kısa sürede dönüş yapacağız.",
     "genelHata": "Gönderim sırasında bir hata oluştu. Lütfen tekrar deneyin.",
-    "cokUzun": "Girdi çok uzun, lütfen kısaltın."
+    "cokUzun": "Girdi çok uzun, lütfen kısaltın.",
+    "cokFazla": "Çok fazla deneme yapıldı. Lütfen birkaç dakika sonra tekrar deneyin."
   },
   "footer": {
     "isKollarimiz": "İş Kollarımız",

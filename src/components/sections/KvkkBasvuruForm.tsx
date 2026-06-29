@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { validateKvkkBasvuru } from '@/lib/form';
 import { submitForm } from '@/app/actions/form-gonderim';
+import { KVKK_SIFAT_OPTIONS, KVKK_TALEP_OPTIONS } from '@/lib/kvkk';
 import { Button } from '@/components/ui';
 import type { Locale } from '@/types';
 
@@ -27,36 +28,6 @@ const INITIAL: FormValues = {
   hp: '',
 };
 
-const BASVURU_SAHIBI_SIFATI = {
-  tr: [
-    { value: 'ilgili-kisi', label: 'İlgili kişi' },
-    { value: 'vekil', label: 'Vekil' },
-    { value: 'yasal-temsilci', label: 'Yasal temsilci' },
-  ],
-  en: [
-    { value: 'ilgili-kisi', label: 'Data subject' },
-    { value: 'vekil', label: 'Authorized representative' },
-    { value: 'yasal-temsilci', label: 'Legal representative' },
-  ],
-};
-
-const TALEP_TURU = {
-  tr: [
-    { value: 'bilgi-talebi', label: 'Bilgi talebi' },
-    { value: 'duzeltme', label: 'Düzeltme' },
-    { value: 'silme-yok-etme', label: 'Silme/Yok etme' },
-    { value: 'islemeye-itiraz', label: 'İşlemeye itiraz' },
-    { value: 'diger', label: 'Diğer' },
-  ],
-  en: [
-    { value: 'bilgi-talebi', label: 'Access request' },
-    { value: 'duzeltme', label: 'Rectification' },
-    { value: 'silme-yok-etme', label: 'Erasure/Destruction' },
-    { value: 'islemeye-itiraz', label: 'Objection to processing' },
-    { value: 'diger', label: 'Other' },
-  ],
-};
-
 export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
   const t = useTranslations('form');
   const tc = useTranslations('common');
@@ -66,7 +37,7 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [genelHata, setGenelHata] = useState(false);
+  const [genelHata, setGenelHata] = useState<false | 'genel' | 'rate'>(false);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -108,7 +79,7 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
     } else if (res.errors && !res.errors._genel) {
       setErrors(res.errors);
     } else {
-      setGenelHata(true);
+      setGenelHata(res.errors?._genel === 'rate' ? 'rate' : 'genel');
     }
   }
 
@@ -123,8 +94,8 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
     );
   }
 
-  const sifatOptions = BASVURU_SAHIBI_SIFATI[locale];
-  const talepOptions = TALEP_TURU[locale];
+  const sifatOptions = KVKK_SIFAT_OPTIONS;
+  const talepOptions = KVKK_TALEP_OPTIONS;
 
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-5">
@@ -194,7 +165,7 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
           <option value="">{isTr ? 'Seçiniz' : 'Select'}</option>
           {sifatOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
-              {opt.label}
+              {isTr ? opt.tr : opt.en}
             </option>
           ))}
         </select>
@@ -223,7 +194,7 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
           <option value="">{isTr ? 'Seçiniz' : 'Select'}</option>
           {talepOptions.map((opt) => (
             <option key={opt.value} value={opt.value}>
-              {opt.label}
+              {isTr ? opt.tr : opt.en}
             </option>
           ))}
         </select>
@@ -300,7 +271,7 @@ export default function KvkkBasvuruForm({ locale }: { locale: Locale }) {
 
       {genelHata && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {t('genelHata')}
+          {t(genelHata === 'rate' ? 'cokFazla' : 'genelHata')}
         </p>
       )}
       <Button type="submit" disabled={submitting}>

@@ -44,7 +44,7 @@ export default function QuoteForm({ locale }: { locale: Locale }) {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [submitted, setSubmitted] = useState(false);
   const [submitting, setSubmitting] = useState(false);
-  const [genelHata, setGenelHata] = useState(false);
+  const [genelHata, setGenelHata] = useState<false | 'genel' | 'rate'>(false);
 
   function handleChange(
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>,
@@ -90,7 +90,7 @@ export default function QuoteForm({ locale }: { locale: Locale }) {
     } else if (res.errors && !res.errors._genel) {
       setErrors(res.errors);
     } else {
-      setGenelHata(true);
+      setGenelHata(res.errors?._genel === 'rate' ? 'rate' : 'genel');
     }
   }
 
@@ -289,7 +289,7 @@ export default function QuoteForm({ locale }: { locale: Locale }) {
       />
       {genelHata && (
         <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {t('genelHata')}
+          {t(genelHata === 'rate' ? 'cokFazla' : 'genelHata')}
         </p>
       )}
       <Button type="submit" disabled={submitting}>
