@@ -67,6 +67,17 @@ export default async function IletisimPage({
   const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
   const adres =
     (settings?.iletisim?.adres ? pick(settings.iletisim.adres, loc) : undefined) ?? 'İstanbul, Türkiye';
+  // Harita: OpenStreetMap embed (anahtarsız + güvenilir frame'lenir; Google'ın
+  // anahtarsız embed'i X-Frame-Options ile reddedildiği için OSM tercih edildi).
+  // Koordinatlar şirketin resmi adresine göre sabittir (Kurtuluş Mah., Adapazarı/Sakarya).
+  const HARITA_LAT = 40.7820688;
+  const HARITA_LON = 30.397067;
+  const bbox = [HARITA_LON - 0.006, HARITA_LAT - 0.003, HARITA_LON + 0.006, HARITA_LAT + 0.003]
+    .map((n) => n.toFixed(6))
+    .join('%2C');
+  const haritaSrc = `https://www.openstreetmap.org/export/embed.html?bbox=${bbox}&layer=mapnik&marker=${HARITA_LAT}%2C${HARITA_LON}`;
+  // "Google Haritalar'da aç" linki için kanonik TR adresi (metin tabanlı arama).
+  const haritaAdres = settings?.iletisim?.adres?.tr || adres;
   const calismaSaatleri =
     (settings?.calismaSaatleri ? pick(settings.calismaSaatleri, loc) : undefined) ??
     (isTr ? 'Pazartesi–Cuma 09:00–18:00' : 'Monday–Friday 09:00–18:00');
@@ -158,14 +169,24 @@ export default async function IletisimPage({
               </ul>
             </div>
 
-            {/* Map Placeholder */}
-            <div
-              className="flex h-56 items-center justify-center rounded-xl border border-border bg-surface text-sm text-muted"
-              role="img"
-              aria-label={isTr ? 'Harita alanı' : 'Map area'}
+            {/* Konum haritası (Google Maps embed — API anahtarı gerektirmez) */}
+            <iframe
+              title={isTr ? 'Konum haritası' : 'Location map'}
+              src={haritaSrc}
+              className="h-56 w-full rounded-xl border border-border"
+              style={{ border: 0 }}
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+            <a
+              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(haritaAdres)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sm font-medium text-primary hover:underline"
             >
-              {isTr ? 'Harita / Map' : 'Map / Harita'}
-            </div>
+              {isTr ? 'Google Haritalar\'da aç →' : 'Open in Google Maps →'}
+            </a>
           </div>
         </div>
       </Section>
