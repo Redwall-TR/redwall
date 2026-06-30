@@ -1,13 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { Link } from '@/i18n/navigation';
-import { Badge } from '@/components/ui';
-import { pick, type Locale } from '@/lib/locales';
 import { isKoluLabel } from '@/lib/labels';
+import { type Locale } from '@/lib/locales';
 import { filterProjects, type ProjectCard } from '@/lib/projects';
 import { cn } from '@/lib/utils';
 import type { IsKolu, ProjeDurumu } from '@/types';
+import { ProjectCardLink } from './ProjectCardLink';
 
 // ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -16,11 +15,6 @@ const IS_KOLU_LIST: IsKolu[] = ['yazilim', 'danismanlik', 'muhendislik'];
 const DURUM_LABELS: Record<ProjeDurumu, Record<Locale, string>> = {
   'devam-eden': { tr: 'Devam Eden', en: 'Ongoing' },
   tamamlandi: { tr: 'Tamamlandı', en: 'Completed' },
-};
-
-const DURUM_TONE: Record<ProjeDurumu, 'amber' | 'green'> = {
-  'devam-eden': 'amber',
-  tamamlandi: 'green',
 };
 
 const DURUM_LIST: ProjeDurumu[] = ['devam-eden', 'tamamlandi'];
@@ -118,47 +112,9 @@ export default function ProjectsExplorer({ projects, locale }: ProjectsExplorerP
         </div>
       ) : (
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map((project) => {
-            const title = pick(project.baslik, locale) ?? project.baslik.tr;
-
-            return (
-              <Link
-                key={project.slug}
-                href={`/projeler/${project.slug}`}
-                className={cn(
-                  'group relative flex flex-col rounded-2xl border border-border bg-surface overflow-hidden',
-                  'transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary/40',
-                )}
-              >
-                <div className="flex flex-1 flex-col p-5">
-                  {/* Durum badge */}
-                  <div className="mb-3 flex flex-wrap gap-2">
-                    <Badge tone={DURUM_TONE[project.durum]}>
-                      {DURUM_LABELS[project.durum][locale]}
-                    </Badge>
-                    <Badge tone="navy">{isKoluLabel(project.isKolu, locale)}</Badge>
-                  </div>
-
-                  {/* Title */}
-                  <h3 className="font-display text-base font-bold text-foreground mb-1 line-clamp-2">
-                    {title}
-                  </h3>
-
-                  {/* Müşteri */}
-                  {project.musteri && (
-                    <p className="text-sm text-muted mt-1">{project.musteri}</p>
-                  )}
-
-                  {/* Yıl & İl */}
-                  {(project.yil || project.il) && (
-                    <p className="mt-auto pt-4 text-xs text-muted">
-                      {[project.yil, project.il].filter(Boolean).join(' · ')}
-                    </p>
-                  )}
-                </div>
-              </Link>
-            );
-          })}
+          {filtered.map((project) => (
+            <ProjectCardLink key={project.slug} project={project} locale={locale} />
+          ))}
         </div>
       )}
     </div>
