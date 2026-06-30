@@ -321,6 +321,10 @@ export interface Product {
 export interface Referan {
   id: number;
   ad: string;
+  /**
+   * URL eki. Boş bırakılırsa addan otomatik üretilir.
+   */
+  slug?: string | null;
   logo?: (number | null) | Media;
   anasayfada?: boolean | null;
   gorus?: {
@@ -477,6 +481,10 @@ export interface Project {
   slug: string;
   baslik: string;
   musteri?: string | null;
+  /**
+   * Bu proje bir referans kaydına bağlanırsa referans detay sayfasında listelenir ve proje detayında referansa link verilir. Opsiyonel.
+   */
+  referans?: (number | null) | Referan;
   isKolu?: ('yazilim' | 'danismanlik' | 'muhendislik') | null;
   durum?: ('devam-eden' | 'tamamlandi') | null;
   yil?: number | null;
@@ -880,6 +888,7 @@ export interface ProductSelect<T extends boolean = true> {
  */
 export interface ReferansSelect<T extends boolean = true> {
   ad?: T;
+  slug?: T;
   logo?: T;
   anasayfada?: T;
   gorus?:
@@ -985,6 +994,7 @@ export interface ProjectSelect<T extends boolean = true> {
   slug?: T;
   baslik?: T;
   musteri?: T;
+  referans?: T;
   isKolu?: T;
   durum?: T;
   yil?: T;

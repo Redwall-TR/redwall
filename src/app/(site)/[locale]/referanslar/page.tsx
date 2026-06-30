@@ -2,10 +2,11 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
-import { getReferences } from '@/lib/cms/queries';
+import { getReferences, getReferenceProjectCounts } from '@/lib/cms/queries';
 import { mediaUrl } from '@/lib/cms/image';
 import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
+import { referansHref } from '@/lib/references';
 import { Section, Cta } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
 import PaginatedLogoWall from '@/components/sections/PaginatedLogoWall';
@@ -14,7 +15,9 @@ import { ServiceIcon } from '@/components/ui/icons';
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 interface Reference {
+  id: string;
   ad: string;
+  slug?: string;
   logo?: unknown;
   gorus?: {
     metin: { tr: string; en: string };
@@ -61,6 +64,7 @@ export default async function ReferanslarPage({
 
   const loc: Locale = locale;
   const references = (await getReferences()) as unknown as Reference[];
+  const counts = await getReferenceProjectCounts();
 
   const heading = loc === 'tr' ? 'Referanslar' : 'References';
   const description =
@@ -71,6 +75,7 @@ export default async function ReferanslarPage({
   const logoItems = references.map((ref) => ({
     ad: ref.ad,
     src: mediaUrl(ref.logo),
+    href: referansHref({ id: ref.id, slug: ref.slug }, counts),
   }));
 
   const testimonials = references.filter((ref) => ref.gorus);

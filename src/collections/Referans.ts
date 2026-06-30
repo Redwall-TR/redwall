@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { slugify } from '@/lib/slug'
 
 export const Referans: CollectionConfig = {
   slug: 'referans',
@@ -7,6 +8,26 @@ export const Referans: CollectionConfig = {
   access: { read: () => true },
   fields: [
     { name: 'ad', type: 'text', required: true },
+    {
+      name: 'slug',
+      type: 'text',
+      unique: true,
+      index: true,
+      admin: {
+        position: 'sidebar',
+        description: 'URL eki. Boş bırakılırsa addan otomatik üretilir.',
+      },
+      hooks: {
+        beforeValidate: [
+          ({ value, data }) => {
+            const v = (value as string | undefined)?.trim()
+            if (v) return slugify(v)
+            const ad = (data?.ad as string | undefined) ?? ''
+            return slugify(ad)
+          },
+        ],
+      },
+    },
     { name: 'logo', type: 'upload', relationTo: 'media' },
     {
       name: 'anasayfada',

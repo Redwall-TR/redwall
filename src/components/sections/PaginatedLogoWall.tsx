@@ -5,7 +5,7 @@ import { LogoWall } from '@/components/ui';
 import { cn } from '@/lib/utils';
 
 interface PaginatedLogoWallProps {
-  logos: { ad: string; src?: string }[];
+  logos: { ad: string; src?: string; href?: string }[];
   perPage?: number;
   locale: string;
 }
