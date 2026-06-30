@@ -126,25 +126,17 @@ function DropdownItem({
   );
 }
 
-type SoftwareItem = { key: string; href: string; label: string };
-
 export default function Header({
   locale,
-  softwareItems = [],
 }: {
   locale: string;
-  softwareItems?: SoftwareItem[];
 }) {
   const t = useTranslations('nav');
   const ta = useTranslations('a11y');
   const [mobileOpen, setMobileOpen] = useState(false);
 
-  // "Yazılım" alt menüsü yayındaki ürünlerden üretilir. Ürün yoksa düz link.
-  const navItems: NavItem[] = (PRIMARY as readonly NavItem[]).map((item) => {
-    if (item.key !== 'yazilim') return item;
-    if (softwareItems.length === 0) return { key: item.key, href: item.href };
-    return { ...item, children: softwareItems };
-  });
+  // "Yazılım" düz link → /yazilim (ürünler zaten o sayfada aktifliğe göre listelenir).
+  const navItems = PRIMARY as readonly NavItem[];
 
   return (
     <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
@@ -217,7 +209,7 @@ export default function Header({
         </div>
       </div>
 
-      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} locale={locale} softwareItems={softwareItems} />
+      <MobileNav open={mobileOpen} onClose={() => setMobileOpen(false)} locale={locale} />
     </header>
   );
 }

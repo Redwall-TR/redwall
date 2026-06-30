@@ -1,7 +1,5 @@
 export const PRIMARY = [
-  // "Yazılım" alt menüsü çalışma zamanında yayındaki ürünlerden üretilir
-  // (Header/MobileNav, layout'tan gelen softwareItems ile). Burada sabit
-  // ürün listesi tutulmaz; yayından kaldırılan ürün menüde de görünmez.
+  // "Yazılım" düz link → /yazilim sayfası (ürünler orada aktifliğe göre listelenir).
   { key: 'yazilim', href: '/yazilim' },
   { key: 'danismanlik', href: '/danismanlik' },
   { key: 'muhendislik', href: '/muhendislik' },

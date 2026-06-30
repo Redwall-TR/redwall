@@ -92,28 +92,20 @@ function MobileNavItem({
   );
 }
 
-type SoftwareItem = { key: string; href: string; label: string };
-
 export default function MobileNav({
   open,
   onClose,
   locale,
-  softwareItems = [],
 }: {
   open: boolean;
   onClose: () => void;
   locale: string;
-  softwareItems?: SoftwareItem[];
 }) {
   const t = useTranslations('nav');
   const ta = useTranslations('a11y');
 
-  // "Yazılım" alt menüsü yayındaki ürünlerden üretilir. Ürün yoksa düz link.
-  const navItems: NavItem[] = (PRIMARY as readonly NavItem[]).map((item) => {
-    if (item.key !== 'yazilim') return item;
-    if (softwareItems.length === 0) return { key: item.key, href: item.href };
-    return { ...item, children: softwareItems };
-  });
+  // "Yazılım" düz link → /yazilim (ürünler zaten o sayfada aktifliğe göre listelenir).
+  const navItems = PRIMARY as readonly NavItem[];
 
   // Close on Escape key
   useEffect(() => {
