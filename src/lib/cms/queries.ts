@@ -50,9 +50,11 @@ export async function getProject(slug: string) {
     })
     const r = docs[0]
     if (!r) return null
+    const ref = (r as unknown as { referans?: { ad?: string; slug?: string } }).referans
     return {
       baslik: r.baslik,
       musteri: r.musteri,
+      referans: ref && ref.slug ? { ad: ref.ad ?? '', slug: ref.slug } : null,
       isKolu: r.isKolu,
       durum: r.durum,
       yil: r.yil,
@@ -201,7 +203,9 @@ export async function getReferences() {
       limit: 100,
     })
     return docs.map((r) => ({
+      id: String(r.id),
       ad: r.ad,
+      slug: (r as unknown as { slug?: string }).slug,
       logo: r.logo,
       gorus: r.gorus,
     }))
@@ -222,6 +226,73 @@ export async function getFeaturedReferences() {
     return docs.map((r) => ({
       ad: r.ad,
       logo: r.logo,
+    }))
+  }, [])
+}
+
+export async function getReferenceProjectCounts() {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'project',
+      depth: 0,
+      limit: 0,
+      pagination: false,
+    })
+    const counts: Record<string, number> = {}
+    for (const r of docs) {
+      const ref = (r as unknown as { referans?: string | number | { id?: string | number } }).referans
+      if (ref == null) continue
+      const id = String(typeof ref === 'object' ? ref.id : ref)
+      if (!id || id === 'undefined') continue
+      counts[id] = (counts[id] ?? 0) + 1
+    }
+    return counts
+  }, {} as Record<string, number>)
+}
+
+export async function getReference(slug: string) {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'referans',
+      where: { slug: { equals: slug } },
+      locale: 'all',
+      depth: 2,
+      limit: 1,
+    })
+    const r = docs[0]
+    if (!r) return null
+    return {
+      id: String(r.id),
+      ad: r.ad,
+      slug: (r as unknown as { slug?: string }).slug,
+      logo: r.logo,
+      gorus: r.gorus,
+    }
+  }, null)
+}
+
+export async function getProjectsByReference(refId: string) {
+  return safe(async () => {
+    const p = await getPayloadClient()
+    const { docs } = await p.find({
+      collection: 'project',
+      where: { referans: { equals: refId } },
+      sort: '-yil',
+      locale: 'all',
+      depth: 2,
+      limit: 100,
+    })
+    return docs.map((r) => ({
+      slug: r.slug,
+      baslik: r.baslik,
+      musteri: r.musteri,
+      isKolu: r.isKolu,
+      durum: r.durum,
+      yil: r.yil,
+      il: r.il,
+      ozet: r.ozet,
     }))
   }, [])
 }
