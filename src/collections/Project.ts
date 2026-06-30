@@ -26,6 +26,17 @@ export const Project: CollectionConfig = {
       label: 'Müşteri',
     },
     {
+      name: 'referans',
+      type: 'relationship',
+      relationTo: 'referans',
+      hasMany: false,
+      label: 'Referans (müşteri kaydı)',
+      admin: {
+        description:
+          'Bu proje bir referans kaydına bağlanırsa referans detay sayfasında listelenir ve proje detayında referansa link verilir. Opsiyonel.',
+      },
+    },
+    {
       name: 'isKolu',
       type: 'select',
       label: 'İş Kolu',
