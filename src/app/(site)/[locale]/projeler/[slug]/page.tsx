@@ -33,6 +33,7 @@ interface ProjectData {
   ozet?: LocaleString;
   aciklama?: unknown;
   gorseller?: unknown[];
+  referans?: { ad: string; slug: string } | null;
 }
 
 // ── Rendering ───────────────────────────────────────────────────────────────
@@ -138,12 +139,23 @@ export default async function ProjeDetayPage({
       <Section tone="muted">
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           {/* Müşteri */}
-          {data.musteri && (
+          {(data.referans || data.musteri) && (
             <div className="rounded-xl border border-border bg-background px-5 py-4">
               <dt className="text-xs uppercase tracking-wider text-muted mb-1">
                 {isTr ? 'Müşteri' : 'Client'}
               </dt>
-              <dd className="text-sm font-medium text-foreground">{data.musteri}</dd>
+              <dd className="text-sm font-medium text-foreground">
+                {data.referans ? (
+                  <Link
+                    href={`/referanslar/${data.referans.slug}` as Parameters<typeof Link>[0]['href']}
+                    className="text-primary hover:underline"
+                  >
+                    {data.referans.ad || data.musteri}
+                  </Link>
+                ) : (
+                  data.musteri
+                )}
+              </dd>
             </div>
           )}
 
