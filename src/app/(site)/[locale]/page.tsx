@@ -2,7 +2,7 @@ import { setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import type { Metadata } from 'next';
 
-import { getHome, getServices, getFeaturedProjects, getFeaturedReferences, getSiteSettings } from '@/lib/cms/queries';
+import { getHome, getServices, getFeaturedProjects, getFeaturedReferences, getReferenceProjectCounts, getSiteSettings } from '@/lib/cms/queries';
 import { pick, isLocale, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { Button, Section, Stat } from '@/components/ui';
@@ -67,11 +67,12 @@ export default async function HomePage({
   if (!isLocale(locale)) notFound();
   setRequestLocale(locale);
 
-  const [home, services, featured, refs, settings] = await Promise.all([
+  const [home, services, featured, refs, refCounts, settings] = await Promise.all([
     getHome(),
     getServices(),
     getFeaturedProjects(),
     getFeaturedReferences(),
+    getReferenceProjectCounts(),
     getSiteSettings(),
   ]);
 
@@ -163,7 +164,7 @@ export default async function HomePage({
 
       {/* ── Reference strip ───────────────────────────────────── */}
       {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-      <ReferenceStrip references={refs as any} locale={locale} />
+      <ReferenceStrip references={refs as any} counts={refCounts} locale={locale} />
 
       {/* ── Closing CTA ───────────────────────────────────────── */}
       <Section tone="dark">

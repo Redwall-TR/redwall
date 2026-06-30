@@ -1,16 +1,20 @@
 import { type Locale } from '@/lib/locales';
 import { mediaUrl } from '@/lib/cms/image';
 import { LogoWall } from '@/components/ui';
+import { referansHref } from '@/lib/references';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
 export interface Ref {
+  id: string;
   ad: string;
+  slug?: string;
   logo?: unknown;
 }
 
 interface ReferenceStripProps {
   references: Ref[];
+  counts: Record<string, number>;
   locale: Locale;
 }
 
@@ -18,7 +22,7 @@ const ACCENT = '#e63950';
 
 // ── Component ────────────────────────────────────────────────────────────────
 
-export default function ReferenceStrip({ references, locale }: ReferenceStripProps) {
+export default function ReferenceStrip({ references, counts, locale }: ReferenceStripProps) {
   if (references.length === 0) return null;
 
   const isTr = locale === 'tr';
@@ -28,6 +32,7 @@ export default function ReferenceStrip({ references, locale }: ReferenceStripPro
   const logos = references.map((ref) => ({
     ad: ref.ad,
     src: ref.logo ? mediaUrl(ref.logo) : undefined,
+    href: referansHref({ id: ref.id, slug: ref.slug }, counts),
   }));
 
   return (

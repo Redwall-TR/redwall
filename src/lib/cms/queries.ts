@@ -224,7 +224,9 @@ export async function getFeaturedReferences() {
       limit: 100,
     })
     return docs.map((r) => ({
+      id: String(r.id),
       ad: r.ad,
+      slug: (r as unknown as { slug?: string }).slug,
       logo: r.logo,
     }))
   }, [])
