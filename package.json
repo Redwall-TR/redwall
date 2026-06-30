@@ -14,7 +14,8 @@
     "payload:seed-legal": "tsx src/payload/seed-legal.ts",
     "payload:seed-kurumsal": "tsx src/payload/seed-kurumsal.ts",
     "payload:seed-redwall": "tsx src/payload/seed-redwall.ts",
-    "payload:seed-danismanlik": "tsx src/payload/seed-danismanlik.ts"
+    "payload:seed-danismanlik": "tsx src/payload/seed-danismanlik.ts",
+    "payload:backfill-referans-slug": "tsx src/payload/backfill-referans-slug.ts"
   },
   "dependencies": {
     "@marsidev/react-turnstile": "^1.5.3",
