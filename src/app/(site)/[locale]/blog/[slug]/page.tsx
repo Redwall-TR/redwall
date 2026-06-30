@@ -136,7 +136,7 @@ export default async function BlogDetayPage({
       {/* Article content */}
       {icerikLexical && (
         <Section>
-          <div className="max-w-3xl prose prose-neutral dark:prose-invert">
+          <div className="mx-auto max-w-3xl prose prose-neutral dark:prose-invert">
             <RichText data={icerikLexical as unknown as Parameters<typeof RichText>[0]['data']} />
           </div>
         </Section>
