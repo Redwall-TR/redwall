@@ -9,6 +9,7 @@ import * as migration_20260629_150619_kurumsal_koleksiyonlar from './20260629_15
 import * as migration_20260629_161326_form_gonderimi from './20260629_161326_form_gonderimi';
 import * as migration_20260629_175116_form_gonderimi_kvkk from './20260629_175116_form_gonderimi_kvkk';
 import * as migration_20260629_183442_form_gonderimi_kvkk_alanlar from './20260629_183442_form_gonderimi_kvkk_alanlar';
+import * as migration_20260630_194401_referans_slug_project_referans from './20260630_194401_referans_slug_project_referans';
 
 export const migrations = [
   {
@@ -64,6 +65,11 @@ export const migrations = [
   {
     up: migration_20260629_183442_form_gonderimi_kvkk_alanlar.up,
     down: migration_20260629_183442_form_gonderimi_kvkk_alanlar.down,
-    name: '20260629_183442_form_gonderimi_kvkk_alanlar'
+    name: '20260629_183442_form_gonderimi_kvkk_alanlar',
+  },
+  {
+    up: migration_20260630_194401_referans_slug_project_referans.up,
+    down: migration_20260630_194401_referans_slug_project_referans.down,
+    name: '20260630_194401_referans_slug_project_referans'
   },
 ];
