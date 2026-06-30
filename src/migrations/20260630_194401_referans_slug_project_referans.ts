@@ -10,7 +10,10 @@ export async function up({ db, payload, req }: MigrateUpArgs): Promise<void> {
   CREATE INDEX "project_referans_idx" ON "project" USING btree ("referans_id");`)
 
   // Mevcut referans satırlarına benzersiz slug doldur.
-  await backfillReferansSlugs(payload)
+  // req MUTLAKA geçilir → backfill bu migration'ın transaction'ında çalışır;
+  // ayrı bağlantı açıp ALTER/CREATE INDEX'in ACCESS EXCLUSIVE kilidiyle
+  // deadlock olmaz (önceki deploy bu yüzden 14dk asılıp timeout olmuştu).
+  await backfillReferansSlugs(payload, req)
 }
 
 export async function down({ db, payload, req }: MigrateDownArgs): Promise<void> {
