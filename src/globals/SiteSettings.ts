@@ -12,6 +12,19 @@ export const SiteSettings: GlobalConfig = {
       required: true,
     },
     {
+      name: 'marka',
+      type: 'group',
+      label: 'Logo & Favicon',
+      admin: { description: 'Boş bırakılan görsel için sitedeki mevcut varsayılan logo/favicon kullanılır.' },
+      fields: [
+        { name: 'navbarLogoAcik', type: 'upload', relationTo: 'media', label: 'Navbar logosu (açık tema)' },
+        { name: 'navbarLogoKoyu', type: 'upload', relationTo: 'media', label: 'Navbar logosu (koyu tema)' },
+        { name: 'footerLogoAcik', type: 'upload', relationTo: 'media', label: 'Footer logosu (açık tema)' },
+        { name: 'footerLogoKoyu', type: 'upload', relationTo: 'media', label: 'Footer logosu (koyu tema)' },
+        { name: 'favicon', type: 'upload', relationTo: 'media', label: 'Favicon (PNG/SVG önerilir)' },
+      ],
+    },
+    {
       name: 'iletisim',
       type: 'group',
       label: 'İletişim',

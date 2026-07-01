@@ -505,6 +505,15 @@ export async function getSiteSettings() {
             kepAdresi: r.kunye.kepAdresi ?? null,
           }
         : null,
+      marka: (r as unknown as { marka?: Record<string, unknown> }).marka
+        ? {
+            navbarLogoAcik: (r as unknown as { marka: Record<string, unknown> }).marka.navbarLogoAcik ?? null,
+            navbarLogoKoyu: (r as unknown as { marka: Record<string, unknown> }).marka.navbarLogoKoyu ?? null,
+            footerLogoAcik: (r as unknown as { marka: Record<string, unknown> }).marka.footerLogoAcik ?? null,
+            footerLogoKoyu: (r as unknown as { marka: Record<string, unknown> }).marka.footerLogoKoyu ?? null,
+            favicon: (r as unknown as { marka: Record<string, unknown> }).marka.favicon ?? null,
+          }
+        : null,
     }
   }, null)
 }
