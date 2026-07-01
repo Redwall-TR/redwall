@@ -328,7 +328,21 @@ export interface Referan {
   logo?: (number | null) | Media;
   anasayfada?: boolean | null;
   gorus?: {
-    metin?: string | null;
+    metin?: {
+      root: {
+        type: string;
+        children: {
+          type: any;
+          version: number;
+          [k: string]: unknown;
+        }[];
+        direction: ('ltr' | 'rtl') | null;
+        format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+        indent: number;
+        version: number;
+      };
+      [k: string]: unknown;
+    } | null;
     kisi?: string | null;
     unvan?: string | null;
   };

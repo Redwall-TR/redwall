@@ -13,6 +13,7 @@ import { ServiceIcon } from '@/components/ui/icons';
 import { ProjectCardLink } from '@/components/sections/ProjectCardLink';
 import type { ProjectCard } from '@/lib/projects';
 import Image from 'next/image';
+import { RichContent } from '@/components/ui/RichContent';
 
 export const dynamic = 'force-dynamic';
 
@@ -22,7 +23,7 @@ interface ReferenceData {
   slug?: string;
   logo?: unknown;
   gorus?: {
-    metin?: { tr: string; en: string };
+    metin?: { tr: unknown; en: unknown };
     kisi?: string;
     unvan?: { tr: string; en: string };
   };
@@ -68,7 +69,7 @@ export default async function ReferansDetayPage({
   const logoSrc = data.logo ? mediaUrl(data.logo) ?? null : null;
   const projects = (await getProjectsByReference(data.id)) as unknown as ProjectCard[];
 
-  const gorusMetin = data.gorus?.metin ? pick(data.gorus.metin, locale) ?? '' : '';
+  const gorusMetinRaw = data.gorus?.metin ?? null;
   const gorusUnvan = data.gorus?.unvan ? pick(data.gorus.unvan, locale) ?? '' : '';
 
   return (
@@ -102,12 +103,12 @@ export default async function ReferansDetayPage({
       </div>
 
       {/* Görüş */}
-      {gorusMetin && (
+      {gorusMetinRaw && (
         <Section>
           <figure className="relative mx-auto max-w-3xl rounded-xl border border-border bg-surface p-6 pl-8 overflow-hidden">
             <span className="absolute left-0 top-0 h-full w-1 rounded-l-xl" style={{ backgroundColor: '#e63950' }} aria-hidden />
             <blockquote className="relative text-base leading-relaxed text-foreground/80">
-              &ldquo;{gorusMetin}&rdquo;
+              <RichContent value={pick(gorusMetinRaw as Record<'tr'|'en', unknown>, locale)} className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0" />
             </blockquote>
             {(data.gorus?.kisi || gorusUnvan) && (
               <figcaption className="mt-4 border-t border-border pt-4">

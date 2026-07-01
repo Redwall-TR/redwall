@@ -18,6 +18,8 @@
 import { config as dotenvConfig } from 'dotenv'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { plainToLexical } from '../lib/lexical/plainToLexical'
+import type { Referan } from '../payload-types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -504,7 +506,7 @@ async function main() {
           ad: r.ad,
           anasayfada: r.anasayfada,
           gorus: {
-            metin: r.tr.gorus.metin,
+            metin: plainToLexical(r.tr.gorus.metin) as NonNullable<Referan['gorus']>['metin'],
             kisi: r.tr.gorus.kisi,
             unvan: r.tr.gorus.unvan,
           },
@@ -520,7 +522,7 @@ async function main() {
       locale: 'en',
       data: {
         gorus: {
-          metin: r.en.gorus.metin,
+          metin: plainToLexical(r.en.gorus.metin) as NonNullable<Referan['gorus']>['metin'],
           unvan: r.en.gorus.unvan,
         },
       },
