@@ -21,7 +21,7 @@ interface Reference {
   slug?: string;
   logo?: unknown;
   gorus?: {
-    metin: { tr: string; en: string };
+    metin: { tr: unknown; en: unknown };
     kisi: string;
     unvan: { tr: string; en: string };
   };

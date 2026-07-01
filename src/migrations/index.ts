@@ -10,6 +10,7 @@ import * as migration_20260629_161326_form_gonderimi from './20260629_161326_for
 import * as migration_20260629_175116_form_gonderimi_kvkk from './20260629_175116_form_gonderimi_kvkk';
 import * as migration_20260629_183442_form_gonderimi_kvkk_alanlar from './20260629_183442_form_gonderimi_kvkk_alanlar';
 import * as migration_20260630_194401_referans_slug_project_referans from './20260630_194401_referans_slug_project_referans';
+import * as migration_20260701_181840_referans_gorus_richtext from './20260701_181840_referans_gorus_richtext';
 
 export const migrations = [
   {
@@ -70,6 +71,11 @@ export const migrations = [
   {
     up: migration_20260630_194401_referans_slug_project_referans.up,
     down: migration_20260630_194401_referans_slug_project_referans.down,
-    name: '20260630_194401_referans_slug_project_referans'
+    name: '20260630_194401_referans_slug_project_referans',
+  },
+  {
+    up: migration_20260701_181840_referans_gorus_richtext.up,
+    down: migration_20260701_181840_referans_gorus_richtext.down,
+    name: '20260701_181840_referans_gorus_richtext'
   },
 ];
