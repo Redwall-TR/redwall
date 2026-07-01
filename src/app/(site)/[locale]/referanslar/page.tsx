@@ -11,6 +11,7 @@ import { Section, Cta } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
 import PaginatedLogoWall from '@/components/sections/PaginatedLogoWall';
 import { ServiceIcon } from '@/components/ui/icons';
+import { RichContent } from '@/components/ui/RichContent';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -123,7 +124,6 @@ export default async function ReferanslarPage({
           </h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((ref) => {
-              const metin = pick(ref.gorus!.metin, loc) ?? '';
               const unvan = pick(ref.gorus!.unvan, loc) ?? '';
               return (
                 <figure
@@ -145,7 +145,7 @@ export default async function ReferanslarPage({
                     &ldquo;
                   </span>
                   <blockquote className="relative flex-1 text-base leading-relaxed text-foreground/80">
-                    &ldquo;{metin}&rdquo;
+                    <RichContent value={pick(ref.gorus!.metin, loc)} className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0" />
                   </blockquote>
                   <figcaption className="border-t border-border pt-4">
                     <p className="font-semibold">{ref.gorus!.kisi}</p>
