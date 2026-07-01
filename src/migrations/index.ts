@@ -12,6 +12,7 @@ import * as migration_20260629_183442_form_gonderimi_kvkk_alanlar from './202606
 import * as migration_20260630_194401_referans_slug_project_referans from './20260630_194401_referans_slug_project_referans';
 import * as migration_20260701_181840_referans_gorus_richtext from './20260701_181840_referans_gorus_richtext';
 import * as migration_20260701_190945_faq_cevap_richtext from './20260701_190945_faq_cevap_richtext';
+import * as migration_20260701_192053_product_richtext from './20260701_192053_product_richtext';
 
 export const migrations = [
   {
@@ -82,6 +83,11 @@ export const migrations = [
   {
     up: migration_20260701_190945_faq_cevap_richtext.up,
     down: migration_20260701_190945_faq_cevap_richtext.down,
-    name: '20260701_190945_faq_cevap_richtext'
+    name: '20260701_190945_faq_cevap_richtext',
+  },
+  {
+    up: migration_20260701_192053_product_richtext.up,
+    down: migration_20260701_192053_product_richtext.down,
+    name: '20260701_192053_product_richtext'
   },
 ];

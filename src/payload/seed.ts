@@ -19,7 +19,7 @@ import { config as dotenvConfig } from 'dotenv'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { plainToLexical } from '../lib/lexical/plainToLexical'
-import type { Referan, Faq } from '../payload-types'
+import type { Referan, Faq, Product } from '../payload-types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -427,7 +427,7 @@ async function main() {
         slug: p.slug,
         ad: p.ad,
         slogan: p.tr.slogan,
-        aciklama: p.tr.aciklama,
+        aciklama: plainToLexical(p.tr.aciklama) as NonNullable<Product['aciklama']>,
         sira: p.sira,
       },
       overrideAccess: true,
@@ -436,7 +436,10 @@ async function main() {
       collection: 'product',
       id: doc.id,
       locale: 'en',
-      data: { slogan: p.en.slogan, aciklama: p.en.aciklama },
+      data: {
+        slogan: p.en.slogan,
+        aciklama: plainToLexical(p.en.aciklama) as NonNullable<Product['aciklama']>,
+      },
       overrideAccess: true,
     })
     console.log(`  ✓ product[${p.slug}] oluşturuldu`)

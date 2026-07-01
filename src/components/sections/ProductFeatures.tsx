@@ -1,10 +1,11 @@
 import { pick, type Locale } from '@/lib/locales';
+import { RichContent } from '@/components/ui/RichContent';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
 export interface Feature {
   baslik: { tr: string; en: string };
-  aciklama: { tr: string; en: string };
+  aciklama: { tr: unknown; en: unknown };
   icon?: string;
 }
 
@@ -42,7 +43,6 @@ export default function ProductFeatures({ features, locale }: ProductFeaturesPro
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       {features.map((feature, i) => {
         const baslik = pick(feature.baslik, locale) ?? feature.baslik.tr;
-        const aciklama = pick(feature.aciklama, locale) ?? feature.aciklama.tr;
 
         return (
           <div
@@ -60,9 +60,10 @@ export default function ProductFeatures({ features, locale }: ProductFeaturesPro
             </h3>
 
             {/* Description */}
-            <p className="text-sm leading-relaxed text-muted flex-1">
-              {aciklama}
-            </p>
+            <RichContent
+              value={pick(feature.aciklama as Record<'tr' | 'en', unknown>, locale)}
+              className="text-sm leading-relaxed text-muted flex-1 prose prose-sm max-w-none dark:prose-invert prose-p:my-0"
+            />
           </div>
         );
       })}

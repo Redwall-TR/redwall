@@ -272,7 +272,21 @@ export interface Product {
    */
   yayinda?: boolean | null;
   slogan?: string | null;
-  aciklama?: string | null;
+  aciklama?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   ozellikler?:
     | {
         icon?:
@@ -294,7 +308,21 @@ export interface Product {
             )
           | null;
         baslik?: string | null;
-        aciklama?: string | null;
+        aciklama?: {
+          root: {
+            type: string;
+            children: {
+              type: any;
+              version: number;
+              [k: string]: unknown;
+            }[];
+            direction: ('ltr' | 'rtl') | null;
+            format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+            indent: number;
+            version: number;
+          };
+          [k: string]: unknown;
+        } | null;
         id?: string | null;
       }[]
     | null;
