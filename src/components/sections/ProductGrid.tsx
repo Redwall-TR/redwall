@@ -1,6 +1,7 @@
 import { pick, type Locale } from '@/lib/locales';
 import { Link } from '@/i18n/navigation';
 import { Badge } from '@/components/ui';
+import { RichContent } from '@/components/ui/RichContent';
 import { cn } from '@/lib/utils';
 
 // ── Types ────────────────────────────────────────────────────────────────────
@@ -14,7 +15,7 @@ export interface ProductCard {
   slug: string;
   ad: string;
   slogan?: LocaleString;
-  aciklama?: LocaleString;
+  aciklama?: { tr: unknown; en: unknown };
   ozellikler?: Array<{
     baslik?: LocaleString;
     aciklama?: LocaleString;
@@ -120,10 +121,10 @@ export default function ProductGrid({ products, locale }: ProductGridProps) {
             )}
 
             {/* Description */}
-            {aciklama && (
-              <p className="flex-1 text-sm leading-relaxed text-muted">
-                {aciklama}
-              </p>
+            {aciklama != null && (
+              <div className="flex-1 text-sm leading-relaxed text-muted">
+                <RichContent value={aciklama} className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0" />
+              </div>
             )}
 
             {/* Arrow link */}
