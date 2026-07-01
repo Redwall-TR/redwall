@@ -7,3 +7,4 @@ export { Accordion } from './Accordion';
 export { Breadcrumb } from './Breadcrumb';
 export { Stat } from './Stat';
 export { LogoWall } from './LogoWall';
+export { RichContent } from './RichContent';
