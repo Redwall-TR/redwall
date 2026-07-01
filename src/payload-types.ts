@@ -417,7 +417,21 @@ export interface Faq {
   id: number;
   kategori?: ('genel' | 'yazilim' | 'danismanlik' | 'muhendislik') | null;
   soru: string;
-  cevap?: string | null;
+  cevap?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
   sira?: number | null;
   updatedAt: string;
   createdAt: string;

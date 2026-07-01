@@ -1,4 +1,5 @@
 import type { CollectionConfig } from 'payload'
+import { fullEditor } from '@/payload/lexical'
 
 export const Faq: CollectionConfig = {
   slug: 'faq',
@@ -26,7 +27,8 @@ export const Faq: CollectionConfig = {
     },
     {
       name: 'cevap',
-      type: 'textarea',
+      type: 'richText',
+      editor: fullEditor,
       label: 'Cevap',
       localized: true,
     },

@@ -19,7 +19,7 @@ import { config as dotenvConfig } from 'dotenv'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { plainToLexical } from '../lib/lexical/plainToLexical'
-import type { Referan } from '../payload-types'
+import type { Referan, Faq } from '../payload-types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -664,7 +664,7 @@ async function main() {
       data: {
         kategori: faq.kategori,
         soru: faq.tr.soru,
-        cevap: faq.tr.cevap,
+        cevap: plainToLexical(faq.tr.cevap) as NonNullable<Faq['cevap']>,
         sira: faq.sira,
       },
       overrideAccess: true,
@@ -673,7 +673,10 @@ async function main() {
       collection: 'faq',
       id: doc.id,
       locale: 'en',
-      data: { soru: faq.en.soru, cevap: faq.en.cevap },
+      data: {
+        soru: faq.en.soru,
+        cevap: plainToLexical(faq.en.cevap) as NonNullable<Faq['cevap']>,
+      },
       overrideAccess: true,
     })
     console.log(`  ✓ faq oluşturuldu: ${faq.tr.soru.slice(0, 40)}`)

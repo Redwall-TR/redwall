@@ -7,6 +7,7 @@ import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { Section, Cta } from '@/components/ui';
 import { Accordion } from '@/components/ui/Accordion';
+import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading } from '@/components/sections/page-blocks';
 import { ServiceIcon } from '@/components/ui/icons';
@@ -18,7 +19,7 @@ type FaqKategori = 'genel' | 'yazilim' | 'danismanlik' | 'muhendislik';
 interface FaqItem {
   kategori: FaqKategori;
   soru: { tr: string; en: string };
-  cevap: { tr: string; en: string };
+  cevap: { tr: unknown; en: unknown };
 }
 
 // ── Fallback FAQs ─────────────────────────────────────────────────────────────
@@ -222,7 +223,12 @@ export default async function SssPage({
             const label = KATEGORI_LABELS[kat][loc];
             const accordionItems = items.map((f) => ({
               soru: pick(f.soru, loc) ?? '',
-              cevap: pick(f.cevap, loc) ?? '',
+              cevap: (
+                <RichContent
+                  value={pick(f.cevap, loc)}
+                  className="prose prose-sm max-w-none dark:prose-invert"
+                />
+              ),
             }));
             return (
               <div key={kat}>

@@ -1,6 +1,6 @@
 'use client';
-import { useState } from 'react';
-export function Accordion({ items }: { items: { soru: string; cevap: string }[] }) {
+import { useState, type ReactNode } from 'react';
+export function Accordion({ items }: { items: { soru: string; cevap: ReactNode }[] }) {
   const [open, setOpen] = useState<number | null>(null);
   return (
     <div className="divide-y divide-border rounded-xl border border-border">
