@@ -14,6 +14,7 @@ import * as migration_20260701_181840_referans_gorus_richtext from './20260701_1
 import * as migration_20260701_190945_faq_cevap_richtext from './20260701_190945_faq_cevap_richtext';
 import * as migration_20260701_192053_product_richtext from './20260701_192053_product_richtext';
 import * as migration_20260701_193609_service_richtext from './20260701_193609_service_richtext';
+import * as migration_20260701_210926_sitesettings_marka from './20260701_210926_sitesettings_marka';
 
 export const migrations = [
   {
@@ -94,6 +95,11 @@ export const migrations = [
   {
     up: migration_20260701_193609_service_richtext.up,
     down: migration_20260701_193609_service_richtext.down,
-    name: '20260701_193609_service_richtext'
+    name: '20260701_193609_service_richtext',
+  },
+  {
+    up: migration_20260701_210926_sitesettings_marka.up,
+    down: migration_20260701_210926_sitesettings_marka.down,
+    name: '20260701_210926_sitesettings_marka'
   },
 ];

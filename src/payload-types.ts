@@ -1247,6 +1247,16 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface SiteSetting {
   id: number;
   sirketAdi: string;
+  /**
+   * Boş bırakılan görsel için sitedeki mevcut varsayılan logo/favicon kullanılır.
+   */
+  marka?: {
+    navbarLogoAcik?: (number | null) | Media;
+    navbarLogoKoyu?: (number | null) | Media;
+    footerLogoAcik?: (number | null) | Media;
+    footerLogoKoyu?: (number | null) | Media;
+    favicon?: (number | null) | Media;
+  };
   iletisim?: {
     tel?: string | null;
     email?: string | null;
@@ -1366,6 +1376,15 @@ export interface HomePage {
  */
 export interface SiteSettingsSelect<T extends boolean = true> {
   sirketAdi?: T;
+  marka?:
+    | T
+    | {
+        navbarLogoAcik?: T;
+        navbarLogoKoyu?: T;
+        footerLogoAcik?: T;
+        footerLogoKoyu?: T;
+        favicon?: T;
+      };
   iletisim?:
     | T
     | {
