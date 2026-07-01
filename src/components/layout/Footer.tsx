@@ -86,7 +86,15 @@ function FooterColumn({ title, links }: { title: string; links: { href: string; 
 
 // ── Footer ────────────────────────────────────────────────────────────────────
 
-export default async function Footer({ locale }: { locale: string }) {
+export default async function Footer({
+  locale,
+  logoAcik,
+  logoKoyu,
+}: {
+  locale: string;
+  logoAcik?: string | null;
+  logoKoyu?: string | null;
+}) {
   const t = await getTranslations({ locale, namespace: 'nav' });
   const tf = await getTranslations({ locale, namespace: 'footer' });
 
@@ -143,11 +151,18 @@ export default async function Footer({ locale }: { locale: string }) {
               className="inline-flex rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
             >
               <Image
-                src="/redwall-logo-footer-dark.svg"
+                src={logoAcik ?? '/redwall-logo-footer-dark.svg'}
                 alt="Redwall"
                 width={130}
                 height={42}
-                className="h-24 w-auto"
+                className="h-24 w-auto block dark:hidden"
+              />
+              <Image
+                src={logoKoyu ?? '/redwall-logo-footer-dark.svg'}
+                alt="Redwall"
+                width={130}
+                height={42}
+                className="h-24 w-auto hidden dark:block"
               />
             </Link>
             <p className="mt-5 max-w-xs text-sm leading-relaxed text-white/55">{tf('tagline')}</p>

@@ -128,8 +128,12 @@ function DropdownItem({
 
 export default function Header({
   locale,
+  logoAcik,
+  logoKoyu,
 }: {
   locale: string;
+  logoAcik?: string | null;
+  logoKoyu?: string | null;
 }) {
   const t = useTranslations('nav');
   const ta = useTranslations('a11y');
@@ -144,7 +148,7 @@ export default function Header({
         {/* Logo */}
         <Link href="/" className="flex-shrink-0 flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary rounded-md">
           <Image
-            src="/redwall-logo-light.svg"
+            src={logoAcik ?? '/redwall-logo-light.svg'}
             alt="Redwall"
             width={111}
             height={36}
@@ -152,7 +156,7 @@ export default function Header({
             className="h-9 w-auto block dark:hidden"
           />
           <Image
-            src="/redwall-logo-dark.svg"
+            src={logoKoyu ?? '/redwall-logo-dark.svg'}
             alt="Redwall"
             width={111}
             height={36}
