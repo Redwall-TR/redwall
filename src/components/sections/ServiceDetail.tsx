@@ -4,6 +4,7 @@ import { Section, Cta } from '@/components/ui';
 import { ServiceIcon } from '@/components/ui/icons';
 import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading, FeatureCard, ProcessTimeline, IntroLead } from '@/components/sections/page-blocks';
+import { RichContent } from '@/components/ui/RichContent';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -14,15 +15,22 @@ interface LocaleString {
   en: string;
 }
 
+// girisLead / girisParagraflar[].paragraf / altHizmetler[].aciklama / surec[].aciklama
+// artık richText (Lexical state veya eski düz string) — render RichContent üzerinden.
+interface LocaleRichText {
+  tr: unknown;
+  en: unknown;
+}
+
 interface AltHizmet {
   baslik?: LocaleString;
-  aciklama?: LocaleString;
+  aciklama?: LocaleRichText;
   icon?: string;
 }
 
 interface SurecAdim {
   baslik?: LocaleString;
-  aciklama?: LocaleString;
+  aciklama?: LocaleRichText;
 }
 
 interface ServiceData {
@@ -30,8 +38,8 @@ interface ServiceData {
   baslik?: LocaleString;
   ozet?: LocaleString;
   chips?: LocaleString[];
-  girisLead?: LocaleString;
-  girisParagraflar?: LocaleString[];
+  girisLead?: LocaleRichText;
+  girisParagraflar?: LocaleRichText[];
   altHizmetler?: AltHizmet[];
   surec?: SurecAdim[];
 }
@@ -323,10 +331,10 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
         ? data.chips.map((c) => pick(c, locale) ?? c.tr)
         : fb.chips[locale];
 
-    // intro (lead + paragraflar)
-    const introLead =
+    // intro (lead + paragraflar) — CMS'den gelirse richText (Lexical/unknown), yoksa fallback string
+    const introLead: unknown =
       (data?.girisLead ? pick(data.girisLead, locale) : undefined) ?? fb.intro[locale][0];
-    const introBody =
+    const introBody: unknown[] =
       data?.girisParagraflar && data.girisParagraflar.length > 0
         ? data.girisParagraflar.map((p) => pick(p, locale) ?? p.tr)
         : fb.intro[locale].slice(1);
@@ -335,7 +343,8 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
       data?.altHizmetler && data.altHizmetler.length > 0 ? data.altHizmetler : fb.altHizmetler;
 
     // süreç adımları — Sanity'de 'adim' yok, sıra index'ten gelir
-    const surecSteps =
+    // description: CMS'den gelirse richText (unknown), yoksa fallback string — RichContent ikisini de işler
+    const surecSteps = (
       data?.surec && data.surec.length > 0
         ? data.surec.map((s, i) => ({
             num: i + 1,
@@ -346,7 +355,8 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
             num: s.adim,
             title: pick(s.baslik, locale) ?? s.baslik.tr,
             description: pick(s.aciklama, locale) ?? s.aciklama.tr,
-          }));
+          }))
+    ).map((s) => ({ ...s, description: <RichContent value={s.description} /> }));
 
     const hizmetlerBaslik =
       isKolu === 'danismanlik'
@@ -388,7 +398,11 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
 
         {/* Intro */}
         <Section>
-          <IntroLead lead={introLead} body={introBody} accent={accent} />
+          <IntroLead
+            lead={<RichContent value={introLead} />}
+            body={introBody.map((p, i) => <RichContent key={i} value={p} />)}
+            accent={accent}
+          />
         </Section>
 
         {/* Hizmetler grid */}
@@ -405,7 +419,11 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
                 icon={h.icon}
                 accent={accent}
                 title={(h.baslik ? pick(h.baslik, locale) : undefined) ?? h.baslik?.tr ?? ''}
-                description={(h.aciklama ? pick(h.aciklama, locale) : undefined) ?? h.aciklama?.tr ?? ''}
+                description={
+                  <RichContent
+                    value={(h.aciklama ? pick(h.aciklama, locale) : undefined) ?? h.aciklama?.tr}
+                  />
+                }
               />
             ))}
           </div>
@@ -433,7 +451,7 @@ export default async function ServiceDetail({ isKolu, locale }: ServiceDetailPro
                       steps={sb.steps.map((s, si) => ({
                         num: si + 1,
                         title: s.baslik[locale],
-                        description: s.aciklama[locale],
+                        description: <RichContent value={s.aciklama[locale]} />,
                       }))}
                       accent={accent}
                     />

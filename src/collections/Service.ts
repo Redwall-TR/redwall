@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { ICON_OPTIONS } from './iconOptions'
+import { fullEditor, liteEditor } from '@/payload/lexical'
 
 export const Service: CollectionConfig = {
   slug: 'service',
@@ -47,7 +48,8 @@ export const Service: CollectionConfig = {
     },
     {
       name: 'girisLead',
-      type: 'textarea',
+      type: 'richText',
+      editor: liteEditor,
       label: 'Giriş — Vurgulu Cümle',
       localized: true,
     },
@@ -58,7 +60,8 @@ export const Service: CollectionConfig = {
       fields: [
         {
           name: 'paragraf',
-          type: 'textarea',
+          type: 'richText',
+          editor: fullEditor,
           label: 'Paragraf',
           localized: true,
         },
@@ -83,7 +86,8 @@ export const Service: CollectionConfig = {
         },
         {
           name: 'aciklama',
-          type: 'textarea',
+          type: 'richText',
+          editor: liteEditor,
           label: 'Açıklama',
           localized: true,
         },
@@ -103,7 +107,8 @@ export const Service: CollectionConfig = {
         },
         {
           name: 'aciklama',
-          type: 'textarea',
+          type: 'richText',
+          editor: liteEditor,
           label: 'Adım Açıklaması',
           localized: true,
         },

@@ -47,7 +47,7 @@ export function FeatureCard({
 }: {
   icon?: string;
   title: string;
-  description: string;
+  description: ReactNode;
   accent: string;
 }) {
   return (
@@ -75,7 +75,7 @@ export function ProcessTimeline({
   steps,
   accent,
 }: {
-  steps: { num: number; title: string; description: string }[];
+  steps: { num: number; title: string; description: ReactNode }[];
   accent: string;
 }) {
   return (
@@ -105,8 +105,8 @@ export function IntroLead({
   accent,
   children,
 }: {
-  lead: string;
-  body?: string[];
+  lead: ReactNode;
+  body?: ReactNode[];
   accent: string;
   children?: ReactNode;
 }) {
