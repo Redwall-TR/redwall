@@ -47,7 +47,7 @@ export function FeatureCard({
 }: {
   icon?: string;
   title: string;
-  description: string;
+  description: ReactNode;
   accent: string;
 }) {
   return (
@@ -66,7 +66,7 @@ export function FeatureCard({
         </div>
       )}
       <h3 className="font-display text-lg font-bold text-foreground">{title}</h3>
-      <p className="mt-2.5 text-sm leading-relaxed text-muted">{description}</p>
+      <div className="mt-2.5 text-sm leading-relaxed text-muted">{description}</div>
     </div>
   );
 }
@@ -75,7 +75,7 @@ export function ProcessTimeline({
   steps,
   accent,
 }: {
-  steps: { num: number; title: string; description: string }[];
+  steps: { num: number; title: string; description: ReactNode }[];
   accent: string;
 }) {
   return (
@@ -91,7 +91,7 @@ export function ProcessTimeline({
           </span>
           <div className="pt-1.5">
             <h3 className="font-display text-base font-bold text-foreground">{s.title}</h3>
-            <p className="mt-1.5 text-sm leading-relaxed text-muted">{s.description}</p>
+            <div className="mt-1.5 text-sm leading-relaxed text-muted">{s.description}</div>
           </div>
         </li>
       ))}
@@ -105,23 +105,23 @@ export function IntroLead({
   accent,
   children,
 }: {
-  lead: string;
-  body?: string[];
+  lead: ReactNode;
+  body?: ReactNode[];
   accent: string;
   children?: ReactNode;
 }) {
   return (
     <div className="mx-auto max-w-4xl">
-      <p
+      <div
         className="border-l-2 pl-6 font-display text-xl font-medium leading-snug text-foreground sm:text-2xl"
         style={{ borderColor: accent }}
       >
         {lead}
-      </p>
+      </div>
       {body?.map((p, i) => (
-        <p key={i} className="mt-6 max-w-3xl text-base leading-relaxed text-muted">
+        <div key={i} className="mt-6 max-w-3xl text-base leading-relaxed text-muted">
           {p}
-        </p>
+        </div>
       ))}
       {children}
     </div>

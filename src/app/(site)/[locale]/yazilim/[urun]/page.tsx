@@ -7,8 +7,9 @@ import { buildMetadata } from '@/lib/metadata';
 import { getProduct } from '@/lib/cms/queries';
 import { Section, Cta } from '@/components/ui';
 import { ServiceIcon } from '@/components/ui/icons';
+import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
-import { SectionHeading, FeatureCard } from '@/components/sections/page-blocks';
+import { SectionHeading } from '@/components/sections/page-blocks';
 import ProductFeatures, { type Feature } from '@/components/sections/ProductFeatures';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -18,11 +19,16 @@ interface LocaleString {
   en: string;
 }
 
+interface RichLocaleString {
+  tr: unknown;
+  en: unknown;
+}
+
 interface ProductData {
   ad: string;
   slogan?: LocaleString;
-  aciklama?: LocaleString;
-  ozellikler?: Array<{ baslik?: LocaleString; aciklama?: LocaleString; icon?: string }>;
+  aciklama?: RichLocaleString;
+  ozellikler?: Array<{ baslik?: LocaleString; aciklama?: RichLocaleString; icon?: string }>;
   hedefKitle?: LocaleString[];
   ekranGorselleri?: unknown[];
 }
@@ -384,7 +390,7 @@ export default async function UrunDetayPage({
     (data?.slogan ? pick(data.slogan, locale) : undefined) ??
     (fb?.slogan ? pick(fb.slogan, locale) : undefined) ??
     undefined;
-  const aciklama =
+  const aciklama: unknown =
     (data?.aciklama ? pick(data.aciklama, locale) : undefined) ??
     (fb?.aciklama ? pick(fb.aciklama, locale) : undefined) ??
     undefined;
@@ -428,11 +434,18 @@ export default async function UrunDetayPage({
       <PageHero
         eyebrow={isTr ? 'Yazılım Ürünü' : 'Software Product'}
         title={ad}
-        description={aciklama ?? slogan}
+        description={slogan}
         accent={ACCENT}
         chips={heroChips.length > 0 ? heroChips : undefined}
         glyph={<ServiceIcon name="gauge" className="h-[26rem] w-[26rem]" />}
       />
+
+      {/* Ürün Hakkında */}
+      {aciklama != null && (
+        <Section>
+          <RichContent value={aciklama} className="prose prose-neutral dark:prose-invert mx-auto max-w-3xl" />
+        </Section>
+      )}
 
       {/* Interface mockup */}
       <Section tone="dark">
@@ -453,13 +466,29 @@ export default async function UrunDetayPage({
           {iconList.length > 0 ? (
             <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {features.map((feature, i) => (
-                <FeatureCard
+                <div
                   key={i}
-                  icon={feature.icon ?? iconList[i] ?? 'gauge'}
-                  accent={ACCENT}
-                  title={pick(feature.baslik, locale) ?? feature.baslik.tr}
-                  description={pick(feature.aciklama, locale) ?? feature.aciklama.tr}
-                />
+                  className="group relative overflow-hidden rounded-2xl border border-border bg-surface p-7 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
+                >
+                  <span
+                    className="absolute inset-x-0 top-0 h-1 origin-left scale-x-0 transition-transform duration-200 group-hover:scale-x-100"
+                    style={{ backgroundColor: ACCENT }}
+                    aria-hidden
+                  />
+                  <div
+                    className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-xl"
+                    style={{ backgroundColor: `${ACCENT}14`, color: ACCENT }}
+                  >
+                    <ServiceIcon name={feature.icon ?? iconList[i] ?? 'gauge'} className="h-6 w-6" />
+                  </div>
+                  <h3 className="font-display text-lg font-bold text-foreground">
+                    {pick(feature.baslik, locale) ?? feature.baslik.tr}
+                  </h3>
+                  <RichContent
+                    value={pick(feature.aciklama as Record<'tr' | 'en', unknown>, locale)}
+                    className="mt-2.5 text-sm leading-relaxed text-muted prose prose-sm max-w-none dark:prose-invert prose-p:my-0"
+                  />
+                </div>
               ))}
             </div>
           ) : (

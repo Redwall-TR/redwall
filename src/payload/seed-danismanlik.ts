@@ -11,6 +11,7 @@
 import { config as dotenvConfig } from 'dotenv'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
+import { plainToLexical } from '../lib/lexical/plainToLexical'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -145,10 +146,14 @@ async function main() {
       baslik: TR.baslik,
       ozet: TR.ozet,
       chips: TR.chips.map((etiket) => ({ etiket })),
-      girisLead: TR.girisLead,
-      girisParagraflar: TR.paragraflar.map((paragraf) => ({ paragraf })),
-      altHizmetler: CARDS.map((c) => ({ icon: c.icon, baslik: c.tr.baslik, aciklama: c.tr.aciklama })),
-      surec: STEPS.map((s) => ({ baslik: s.tr.baslik, aciklama: s.tr.aciklama })),
+      girisLead: plainToLexical(TR.girisLead),
+      girisParagraflar: TR.paragraflar.map((paragraf) => ({ paragraf: plainToLexical(paragraf) })),
+      altHizmetler: CARDS.map((c) => ({
+        icon: c.icon,
+        baslik: c.tr.baslik,
+        aciklama: plainToLexical(c.tr.aciklama),
+      })),
+      surec: STEPS.map((s) => ({ baslik: s.tr.baslik, aciklama: plainToLexical(s.tr.aciklama) })),
     } as unknown as Record<string, unknown>,
   })
   console.log('  ✓ TR yazıldı')
@@ -177,10 +182,22 @@ async function main() {
       baslik: EN.baslik,
       ozet: EN.ozet,
       chips: (fresh.chips ?? []).map((it, i) => ({ id: it.id, etiket: EN.chips[i] })),
-      girisLead: EN.girisLead,
-      girisParagraflar: (fresh.girisParagraflar ?? []).map((it, i) => ({ id: it.id, paragraf: EN.paragraflar[i] })),
-      altHizmetler: (fresh.altHizmetler ?? []).map((it, i) => ({ id: it.id, icon: CARDS[i].icon, baslik: CARDS[i].en.baslik, aciklama: CARDS[i].en.aciklama })),
-      surec: (fresh.surec ?? []).map((it, i) => ({ id: it.id, baslik: STEPS[i].en.baslik, aciklama: STEPS[i].en.aciklama })),
+      girisLead: plainToLexical(EN.girisLead),
+      girisParagraflar: (fresh.girisParagraflar ?? []).map((it, i) => ({
+        id: it.id,
+        paragraf: plainToLexical(EN.paragraflar[i]),
+      })),
+      altHizmetler: (fresh.altHizmetler ?? []).map((it, i) => ({
+        id: it.id,
+        icon: CARDS[i].icon,
+        baslik: CARDS[i].en.baslik,
+        aciklama: plainToLexical(CARDS[i].en.aciklama),
+      })),
+      surec: (fresh.surec ?? []).map((it, i) => ({
+        id: it.id,
+        baslik: STEPS[i].en.baslik,
+        aciklama: plainToLexical(STEPS[i].en.aciklama),
+      })),
     } as unknown as Record<string, unknown>,
   })
   console.log('  ✓ EN yazıldı')

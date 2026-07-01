@@ -11,6 +11,9 @@ import * as migration_20260629_175116_form_gonderimi_kvkk from './20260629_17511
 import * as migration_20260629_183442_form_gonderimi_kvkk_alanlar from './20260629_183442_form_gonderimi_kvkk_alanlar';
 import * as migration_20260630_194401_referans_slug_project_referans from './20260630_194401_referans_slug_project_referans';
 import * as migration_20260701_181840_referans_gorus_richtext from './20260701_181840_referans_gorus_richtext';
+import * as migration_20260701_190945_faq_cevap_richtext from './20260701_190945_faq_cevap_richtext';
+import * as migration_20260701_192053_product_richtext from './20260701_192053_product_richtext';
+import * as migration_20260701_193609_service_richtext from './20260701_193609_service_richtext';
 
 export const migrations = [
   {
@@ -76,6 +79,21 @@ export const migrations = [
   {
     up: migration_20260701_181840_referans_gorus_richtext.up,
     down: migration_20260701_181840_referans_gorus_richtext.down,
-    name: '20260701_181840_referans_gorus_richtext'
+    name: '20260701_181840_referans_gorus_richtext',
+  },
+  {
+    up: migration_20260701_190945_faq_cevap_richtext.up,
+    down: migration_20260701_190945_faq_cevap_richtext.down,
+    name: '20260701_190945_faq_cevap_richtext',
+  },
+  {
+    up: migration_20260701_192053_product_richtext.up,
+    down: migration_20260701_192053_product_richtext.down,
+    name: '20260701_192053_product_richtext',
+  },
+  {
+    up: migration_20260701_193609_service_richtext.up,
+    down: migration_20260701_193609_service_richtext.down,
+    name: '20260701_193609_service_richtext'
   },
 ];
