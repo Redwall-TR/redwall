@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { ICON_OPTIONS } from './iconOptions'
-import { fullEditor, liteEditor } from '@/payload/lexical'
 
 export const Product: CollectionConfig = {
   slug: 'product',
@@ -41,7 +40,6 @@ export const Product: CollectionConfig = {
     {
       name: 'aciklama',
       type: 'richText',
-      editor: fullEditor,
       label: 'Açıklama',
       localized: true,
     },
@@ -65,7 +63,6 @@ export const Product: CollectionConfig = {
         {
           name: 'aciklama',
           type: 'richText',
-          editor: liteEditor,
           label: 'Açıklama',
           localized: true,
         },

@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { slugify } from '@/lib/slug'
-import { liteEditor } from '@/payload/lexical'
 
 export const Referans: CollectionConfig = {
   slug: 'referans',
@@ -41,7 +40,7 @@ export const Referans: CollectionConfig = {
       type: 'group',
       label: 'Görüş',
       fields: [
-        { name: 'metin', type: 'richText', editor: liteEditor, localized: true },
+        { name: 'metin', type: 'richText', localized: true },
         { name: 'kisi', type: 'text' },
         { name: 'unvan', type: 'text', localized: true },
       ],
