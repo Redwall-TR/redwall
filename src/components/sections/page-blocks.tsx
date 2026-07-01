@@ -111,7 +111,7 @@ export function IntroLead({
   children?: ReactNode;
 }) {
   return (
-    <div className="mx-auto max-w-4xl">
+    <div>
       <div
         className="border-l-2 pl-6 font-display text-xl font-medium leading-snug text-foreground sm:text-2xl"
         style={{ borderColor: accent }}
@@ -119,7 +119,7 @@ export function IntroLead({
         {lead}
       </div>
       {body?.map((p, i) => (
-        <div key={i} className="mt-6 max-w-3xl text-base leading-relaxed text-muted">
+        <div key={i} className="mt-6 text-base leading-relaxed text-muted">
           {p}
         </div>
       ))}

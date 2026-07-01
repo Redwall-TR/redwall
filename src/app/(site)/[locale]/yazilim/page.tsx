@@ -9,6 +9,7 @@ import { ServiceIcon } from '@/components/ui/icons';
 import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading, IntroLead } from '@/components/sections/page-blocks';
 import ProductGrid, { type ProductCard } from '@/components/sections/ProductGrid';
+import { RichContent } from '@/components/ui/RichContent';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -21,7 +22,9 @@ interface ServiceData {
   isKolu: string;
   baslik: LocaleString;
   ozet: LocaleString;
-  icerik?: unknown;
+  chips?: Array<Record<'tr' | 'en', unknown>>;
+  girisLead?: Record<'tr' | 'en', unknown>;
+  girisParagraflar?: Array<Record<'tr' | 'en', unknown>>;
 }
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
@@ -83,23 +86,35 @@ export default async function YazilimPage({
         ? 'Fikri mülkiyeti bize ait YangınPro ve MekanikPro — yangın ve mekanik mühendislik süreçlerini dijitalleştiren özgün yazılım çözümleri.'
         : 'YangınPro and MekanikPro — proprietary software solutions owned by Redwall that digitise fire and mechanical engineering workflows.';
 
-  const heroChips = isTr
-    ? ['YangınPro', 'MekanikPro', 'Bulut Tabanlı', 'Ar-Ge']
-    : ['YangınPro', 'MekanikPro', 'Cloud-Based', 'R&D'];
+  // Chips — CMS'ten (service.chips); yoksa varsayılan
+  const heroChips =
+    service?.chips && service.chips.length > 0
+      ? service.chips
+          .map((c) => pick(c, locale))
+          .filter((v): v is string => typeof v === 'string' && v.length > 0)
+      : isTr
+        ? ['YangınPro', 'MekanikPro', 'Bulut Tabanlı', 'Ar-Ge']
+        : ['YangınPro', 'MekanikPro', 'Cloud-Based', 'R&D'];
 
-  // Intro paragraphs (fallback when no service.icerik)
-  const introLead = isTr
-    ? 'Redwall Yazılım iş kolu, yangın ve mekanik mühendislik alanlarında kullanılan ve fikri mülkiyeti tamamen bize ait yazılım ürünleri geliştirmektedir.'
-    : "Redwall's Software arm develops engineering software products — fully owned intellectual property — for the fire-safety and mechanical engineering sectors.";
-  const introBody = isTr
-    ? [
-        'YangınPro ve MekanikPro, sektörün ihtiyaçlarından yola çıkılarak Ar-Ge süreçlerimizle tasarlanmış ve yerli mühendislik zekâsının ürünüdür.',
-        'Bu ürünleri geliştiriyor, markalaştırıyor ve pazarlıyoruz. Kullanıcılarımız; rutin hesaplamalardan mevzuat uyumu kontrolüne kadar her aşamada dijital desteğe kavuşurken, firmamız yazılım gelirleriyle sürdürülebilir Ar-Ge döngüsünü finanse etmektedir.',
-      ]
-    : [
-        'YangınPro and MekanikPro were conceived through our R&D process, built around real-world engineering needs, and represent homegrown engineering intelligence.',
-        'We develop, brand, and market these products ourselves. While users gain digital support at every stage — from routine calculations to regulatory compliance checks — the software revenue finances our sustainable R&D cycle.',
-      ];
+  // Intro (giriş) — CMS'ten (service.girisLead / girisParagraflar, richText); yoksa
+  // varsayılan metin. RichContent hem Lexical'i hem düz string fallback'i render eder.
+  const introLead: unknown =
+    (service?.girisLead ? pick(service.girisLead, locale) : undefined) ??
+    (isTr
+      ? 'Redwall Yazılım iş kolu, yangın ve mekanik mühendislik alanlarında kullanılan ve fikri mülkiyeti tamamen bize ait yazılım ürünleri geliştirmektedir.'
+      : "Redwall's Software arm develops engineering software products — fully owned intellectual property — for the fire-safety and mechanical engineering sectors.");
+  const introBody: unknown[] =
+    service?.girisParagraflar && service.girisParagraflar.length > 0
+      ? service.girisParagraflar.map((p) => pick(p, locale))
+      : isTr
+        ? [
+            'YangınPro ve MekanikPro, sektörün ihtiyaçlarından yola çıkılarak Ar-Ge süreçlerimizle tasarlanmış ve yerli mühendislik zekâsının ürünüdür.',
+            'Bu ürünleri geliştiriyor, markalaştırıyor ve pazarlıyoruz. Kullanıcılarımız; rutin hesaplamalardan mevzuat uyumu kontrolüne kadar her aşamada dijital desteğe kavuşurken, firmamız yazılım gelirleriyle sürdürülebilir Ar-Ge döngüsünü finanse etmektedir.',
+          ]
+        : [
+            'YangınPro and MekanikPro were conceived through our R&D process, built around real-world engineering needs, and represent homegrown engineering intelligence.',
+            'We develop, brand, and market these products ourselves. While users gain digital support at every stage — from routine calculations to regulatory compliance checks — the software revenue finances our sustainable R&D cycle.',
+          ];
 
   // Products section heading
   const productsEyebrow = isTr ? 'Ürünler' : 'Products';
@@ -125,7 +140,13 @@ export default async function YazilimPage({
 
       {/* Intro section */}
       <Section tone="muted">
-        <IntroLead lead={introLead} body={introBody} accent={ACCENT} />
+        <IntroLead
+          lead={<RichContent value={introLead} />}
+          body={introBody.map((p, i) => (
+            <RichContent key={i} value={p} />
+          ))}
+          accent={ACCENT}
+        />
       </Section>
 
       {/* Product grid */}
