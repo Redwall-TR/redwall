@@ -2,6 +2,7 @@ import type { CSSProperties } from 'react';
 import { getPage } from '@/lib/cms/queries';
 import { pick, type Locale } from '@/lib/locales';
 import { Section, Cta } from '@/components/ui';
+import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import {
   SectionHeading,
@@ -18,19 +19,19 @@ type LocaleString = { tr: string; en: string };
 interface PageCard {
   icon?: string;
   baslik?: LocaleString;
-  aciklama?: LocaleString;
+  aciklama?: unknown;
 }
 
 interface PageData {
   baslik?: LocaleString;
   altBaslik?: LocaleString;
   chips?: LocaleString[];
-  girisLead?: LocaleString;
-  girisParagraflar?: LocaleString[];
+  girisLead?: unknown;
+  girisParagraflar?: unknown[];
   vizyonBaslik?: LocaleString;
-  vizyonMetin?: LocaleString;
+  vizyonMetin?: unknown;
   misyonBaslik?: LocaleString;
-  misyonMetin?: LocaleString;
+  misyonMetin?: unknown;
   kartlarEyebrow?: LocaleString;
   kartlarBaslik?: LocaleString;
   kartlarAciklama?: LocaleString;
@@ -415,7 +416,12 @@ function StructuredBody({ data, locale }: { data: PageData; locale: Locale }) {
               <p className="font-display text-2xl font-bold leading-snug text-foreground sm:text-3xl">
                 {p(data.vizyonBaslik)}
               </p>
-              <p className="mt-5 text-base leading-relaxed text-muted">{p(data.vizyonMetin)}</p>
+              <div className="mt-5 text-base leading-relaxed text-muted">
+                <RichContent
+                  value={pick(data.vizyonMetin as Record<'tr' | 'en', unknown>, locale)}
+                  className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0"
+                />
+              </div>
             </div>
             <div className="rounded-2xl border border-border bg-surface p-8 lg:p-10">
               <div className="mb-4 flex items-center gap-3">
@@ -427,7 +433,12 @@ function StructuredBody({ data, locale }: { data: PageData; locale: Locale }) {
               <p className="font-display text-2xl font-bold leading-snug text-foreground sm:text-3xl">
                 {p(data.misyonBaslik)}
               </p>
-              <p className="mt-5 text-base leading-relaxed text-muted">{p(data.misyonMetin)}</p>
+              <div className="mt-5 text-base leading-relaxed text-muted">
+                <RichContent
+                  value={pick(data.misyonMetin as Record<'tr' | 'en', unknown>, locale)}
+                  className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0"
+                />
+              </div>
             </div>
           </div>
         </Section>
@@ -436,8 +447,10 @@ function StructuredBody({ data, locale }: { data: PageData; locale: Locale }) {
       {hasGiris && (
         <Section>
           <IntroLead
-            lead={p(data.girisLead) ?? ''}
-            body={(data.girisParagraflar ?? []).map((x) => p(x) ?? '')}
+            lead={<RichContent value={pick(data.girisLead as Record<'tr' | 'en', unknown>, locale)} />}
+            body={(data.girisParagraflar ?? []).map((x, i) => (
+              <RichContent key={i} value={pick(x as Record<'tr' | 'en', unknown>, locale)} />
+            ))}
             accent={ACCENT}
           />
         </Section>
@@ -457,7 +470,7 @@ function StructuredBody({ data, locale }: { data: PageData; locale: Locale }) {
                 key={i}
                 icon={k.icon}
                 title={p(k.baslik) ?? ''}
-                description={p(k.aciklama) ?? ''}
+                description={<RichContent value={pick(k.aciklama as Record<'tr' | 'en', unknown>, locale)} />}
                 accent={ACCENT}
               />
             ))}

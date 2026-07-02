@@ -78,9 +78,9 @@ export async function RichPageView({ cfg, locale }: { cfg: RichPageConfig; local
       />
 
       <Section>
-        <div className="max-w-3xl space-y-6">
+        <div className="space-y-6">
           {icerikLexical && (
-            <div className="prose prose-neutral dark:prose-invert">
+            <div className="prose prose-neutral dark:prose-invert max-w-none">
               <RichText data={icerikLexical as unknown as Parameters<typeof RichText>[0]['data']} />
             </div>
           )}

@@ -217,7 +217,7 @@ export default async function ProjeDetayPage({
           <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl mb-8">
             {isTr ? 'Proje Hakkında' : 'About the Project'}
           </h2>
-          <div className="max-w-3xl prose prose-neutral dark:prose-invert">
+          <div className="prose prose-neutral dark:prose-invert max-w-none">
             <RichText data={aciklamaLexical as unknown as Parameters<typeof RichText>[0]['data']} />
           </div>
         </Section>

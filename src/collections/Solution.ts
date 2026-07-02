@@ -1,5 +1,4 @@
 import type { CollectionConfig } from 'payload'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { ICON_OPTIONS } from './iconOptions'
 
 export const Solution: CollectionConfig = {
@@ -32,7 +31,6 @@ export const Solution: CollectionConfig = {
       name: 'icerik',
       type: 'richText',
       label: 'İçerik',
-      editor: lexicalEditor(),
       localized: true,
     },
     {

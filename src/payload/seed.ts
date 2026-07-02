@@ -19,7 +19,7 @@ import { config as dotenvConfig } from 'dotenv'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { plainToLexical } from '../lib/lexical/plainToLexical'
-import type { Referan, Faq, Product } from '../payload-types'
+import type { Referan, Faq, Product, Page } from '../payload-types'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
@@ -592,7 +592,7 @@ async function main() {
         slug: pg.slug,
         baslik: pg.tr.baslik,
         altBaslik: pg.tr.altBaslik,
-        girisLead: pg.tr.girisLead,
+        girisLead: plainToLexical(pg.tr.girisLead) as NonNullable<Page['girisLead']>,
       },
       overrideAccess: true,
     })
@@ -603,7 +603,7 @@ async function main() {
       data: {
         baslik: pg.en.baslik,
         altBaslik: pg.en.altBaslik,
-        girisLead: pg.en.girisLead,
+        girisLead: plainToLexical(pg.en.girisLead) as NonNullable<Page['girisLead']>,
       },
       overrideAccess: true,
     })
