@@ -44,7 +44,7 @@ export const Page: CollectionConfig = {
     // Giriş
     {
       name: 'girisLead',
-      type: 'textarea',
+      type: 'richText',
       label: 'Giriş — Vurgulu Cümle',
       localized: true,
     },
@@ -55,7 +55,7 @@ export const Page: CollectionConfig = {
       fields: [
         {
           name: 'paragraf',
-          type: 'textarea',
+          type: 'richText',
           label: 'Paragraf',
           localized: true,
         },
@@ -70,7 +70,7 @@ export const Page: CollectionConfig = {
     },
     {
       name: 'vizyonMetin',
-      type: 'textarea',
+      type: 'richText',
       label: 'Vizyon Metni',
       localized: true,
     },
@@ -82,7 +82,7 @@ export const Page: CollectionConfig = {
     },
     {
       name: 'misyonMetin',
-      type: 'textarea',
+      type: 'richText',
       label: 'Misyon Metni',
       localized: true,
     },
@@ -124,7 +124,7 @@ export const Page: CollectionConfig = {
         },
         {
           name: 'aciklama',
-          type: 'textarea',
+          type: 'richText',
           label: 'Açıklama',
           localized: true,
         },

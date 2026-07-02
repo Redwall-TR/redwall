@@ -15,6 +15,7 @@ import * as migration_20260701_190945_faq_cevap_richtext from './20260701_190945
 import * as migration_20260701_192053_product_richtext from './20260701_192053_product_richtext';
 import * as migration_20260701_193609_service_richtext from './20260701_193609_service_richtext';
 import * as migration_20260701_210926_sitesettings_marka from './20260701_210926_sitesettings_marka';
+import * as migration_20260702_194453_page_richtext from './20260702_194453_page_richtext';
 
 export const migrations = [
   {
@@ -100,6 +101,11 @@ export const migrations = [
   {
     up: migration_20260701_210926_sitesettings_marka.up,
     down: migration_20260701_210926_sitesettings_marka.down,
-    name: '20260701_210926_sitesettings_marka'
+    name: '20260701_210926_sitesettings_marka',
+  },
+  {
+    up: migration_20260702_194453_page_richtext.up,
+    down: migration_20260702_194453_page_richtext.down,
+    name: '20260702_194453_page_richtext'
   },
 ];
