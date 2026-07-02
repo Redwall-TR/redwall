@@ -443,7 +443,7 @@ export default async function UrunDetayPage({
       {/* Ürün Hakkında */}
       {aciklama != null && (
         <Section>
-          <RichContent value={aciklama} className="prose prose-neutral dark:prose-invert mx-auto max-w-3xl" />
+          <RichContent value={aciklama} className="prose prose-neutral dark:prose-invert max-w-none" />
         </Section>
       )}
 
