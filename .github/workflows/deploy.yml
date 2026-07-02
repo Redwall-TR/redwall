@@ -146,4 +146,16 @@ jobs:
               -e DATABASE_URI="$DATABASE_URI" -e PAYLOAD_SECRET="$PAYLOAD_SECRET" \
               "$TOOLS_IMAGE" npx payload migrate
 
-            echo "Deploy + migrate tamam."
+            echo "Disk temizliği (eski imajlar + yedekler)..."
+            # Bu deploy'un sha'sı ve latest hariç eski redwall imajlarını kaldır
+            # (her deploy ~2.2GB tools imajı biriktiriyor → disk dolup MinIO yazamıyor).
+            CUR_TAG="${WEB_IMAGE##*:}"
+            docker image ls --format '{{.Repository}}:{{.Tag}}' \
+              | grep -E 'redwall-(web|tools):' \
+              | grep -vE ":(${CUR_TAG}|latest)\$" \
+              | xargs -r docker rmi 2>/dev/null || true
+            docker image prune -f >/dev/null 2>&1 || true
+            # Son 10 migrate yedegi haric eskileri sil
+            ls -1t /opt/redwall/backups/pre-migrate-*.sql.gz 2>/dev/null | tail -n +11 | xargs -r rm -f || true
+
+            echo "Deploy + migrate + temizlik tamam."
