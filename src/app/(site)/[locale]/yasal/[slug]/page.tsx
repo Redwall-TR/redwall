@@ -106,7 +106,7 @@ export default async function YasalDetayPage({
       />
 
       <Section>
-        <div className="max-w-3xl space-y-6">
+        <div className="space-y-6">
           {/* Draft / legal advisory warning banner */}
           {isLegal && (
             <div
@@ -121,7 +121,7 @@ export default async function YasalDetayPage({
 
           {/* Lexical rich-text content */}
           {icerikLexical && (
-            <div className="prose prose-neutral dark:prose-invert">
+            <div className="prose prose-neutral dark:prose-invert max-w-none">
               <RichText
                 data={
                   icerikLexical as unknown as Parameters<typeof RichText>[0]['data']
