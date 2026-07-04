@@ -37,7 +37,14 @@ export default buildConfig({
   }),
   secret: process.env.PAYLOAD_SECRET || '',
   typescript: { outputFile: path.resolve(dirname, 'src/payload-types.ts') },
-  db: postgresAdapter({ pool: { connectionString: process.env.DATABASE_URI || '' } }),
+  // `tablesFilter` dev-mode şema push'unu (Drizzle Kit) yalnızca Payload'un
+  // yönettiği tablolarla sınırlar. `form_rate_limit` ham SQL migration ile
+  // yönetilen bir tablodur (Payload şemasında tanımlı değil); negate pattern
+  // olmadan dev push onu "beklenmeyen tablo" sayıp DROP eder.
+  db: postgresAdapter({
+    pool: { connectionString: process.env.DATABASE_URI || '' },
+    tablesFilter: ['!form_rate_limit'],
+  }),
   collections: [
     {
       slug: 'users',
