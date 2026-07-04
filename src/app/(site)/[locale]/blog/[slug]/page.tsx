@@ -9,7 +9,7 @@ import { getPost } from '@/lib/cms/queries';
 import { mediaUrl } from '@/lib/cms/image';
 import { Section, Cta } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
-import { RichText } from '@payloadcms/richtext-lexical/react';
+import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 
@@ -136,9 +136,7 @@ export default async function BlogDetayPage({
       {/* Article content */}
       {icerikLexical && (
         <Section>
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <RichText data={icerikLexical as unknown as Parameters<typeof RichText>[0]['data']} />
-          </div>
+          <RichContent value={icerikLexical} className="prose prose-neutral dark:prose-invert max-w-none" />
         </Section>
       )}
 

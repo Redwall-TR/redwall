@@ -12,9 +12,11 @@ export const MediaEmbed: Block = {
       label: 'Bağlantı (YouTube / Vimeo / SoundCloud / Spotify)',
     },
     {
+      // NOT: localized DEĞİL — richText alanının kendisi zaten localized
+      // (blok her locale'in Lexical state'inde ayrı durur). Alt-alanı bir daha
+      // localized yapmak editörde ters/yanlış-yere yazma hatasına yol açıyordu.
       name: 'baslik',
       type: 'text',
-      localized: true,
       label: 'Başlık / açıklama (opsiyonel)',
     },
   ],
