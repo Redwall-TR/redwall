@@ -1570,6 +1570,17 @@ export interface CollectionsWidget {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "MediaEmbedBlock".
+ */
+export interface MediaEmbedBlock {
+  url: string;
+  baslik?: string | null;
+  id?: string | null;
+  blockName?: string | null;
+  blockType: 'mediaEmbed';
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "auth".
  */
 export interface Auth {

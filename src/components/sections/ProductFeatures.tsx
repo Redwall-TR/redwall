@@ -62,7 +62,7 @@ export default function ProductFeatures({ features, locale }: ProductFeaturesPro
             {/* Description */}
             <RichContent
               value={pick(feature.aciklama as Record<'tr' | 'en', unknown>, locale)}
-              className="text-sm leading-relaxed text-muted flex-1 prose prose-sm max-w-none dark:prose-invert prose-p:my-0"
+              className="text-sm leading-relaxed text-muted flex-1 prose prose-sm max-w-none dark:prose-invert prose-p:my-0 prose-p:text-muted"
             />
           </div>
         );

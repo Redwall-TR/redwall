@@ -20,10 +20,12 @@ const nextConfig: NextConfig = {
     },
   },
 
-  // Güvenlik yanıt başlıkları (tüm rotalar). Tam CSP bilinçli olarak eklenmedi
-  // (Payload /admin'in inline script/style'larını ve next'i bozabilir); clickjacking
-  // koruması frame-ancestors 'self' + X-Frame-Options ile sağlanır. Kendi sitemizin
-  // dış iframe gömmesi (OSM haritası) bu başlıklardan etkilenmez.
+  // Güvenlik yanıt başlıkları (tüm rotalar). Tam CSP (script-src/style-src) bilinçli
+  // olarak eklenmedi (Payload /admin'in inline script/style'larını ve next'i bozabilir);
+  // clickjacking koruması frame-ancestors 'self' + X-Frame-Options ile sağlanır.
+  // frame-src ile dışarı açılan iframe'ler allowlist'e alındı: OSM haritası
+  // (/tr/iletisim) + Medya Gömme bloğunun desteklediği 4 platform (YouTube, Vimeo,
+  // SoundCloud, Spotify). Allowlist dışı iframe'ler bloklanır.
   async headers() {
     return [
       {
@@ -32,7 +34,7 @@ const nextConfig: NextConfig = {
           { key: 'X-Content-Type-Options', value: 'nosniff' },
           { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
           { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
-          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'" },
+          { key: 'Content-Security-Policy', value: "frame-ancestors 'self'; frame-src 'self' https://www.openstreetmap.org https://www.youtube-nocookie.com https://www.youtube.com https://player.vimeo.com https://w.soundcloud.com https://open.spotify.com" },
           { key: 'Strict-Transport-Security', value: 'max-age=31536000' },
           { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=()' },
         ],
