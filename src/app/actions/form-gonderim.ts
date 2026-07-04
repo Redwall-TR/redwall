@@ -36,12 +36,20 @@ function rateLimited(ip: string): boolean {
 }
 
 /**
- * Cloudflare Turnstile token doğrulaması. TURNSTILE_SECRET_KEY tanımlı değilse
- * doğrulama atlanır (özellik kapalı). Tanımlıysa token geçersizse false döner.
+ * Cloudflare Turnstile token doğrulaması. TURNSTILE_SECRET_KEY tanımlı değilse:
+ * - üretimde (NODE_ENV=production) fail-closed — form reddedilir + loglanır.
+ * - diğer ortamlarda (dev/test) özellik yapılandırılmamış sayılır → atla.
+ * Secret tanımlıysa token geçersizse false döner.
  */
-async function verifyTurnstile(token: string | undefined, ip: string): Promise<boolean> {
+export async function verifyTurnstile(token: string | undefined, ip: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY
-  if (!secret) return true // özellik yapılandırılmamış → atla
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[turnstile] TURNSTILE_SECRET_KEY tanımsız — üretimde form reddedildi (fail-closed)')
+      return false
+    }
+    return true // dev: özellik yapılandırılmamış → atla
+  }
   if (!token) return false
   try {
     const body = new URLSearchParams({ secret, response: token })

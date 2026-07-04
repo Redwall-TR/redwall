@@ -9,6 +9,7 @@ export default defineConfig({
     alias: {
       '@': resolve(__dirname, './src'),
       '@payload-config': resolve(__dirname, './payload.config.ts'),
+      'server-only': resolve(__dirname, './test/server-only-stub.ts'),
     },
   },
 });
