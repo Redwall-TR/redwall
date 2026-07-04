@@ -1,5 +1,11 @@
 import type { Block } from 'payload'
 
+/**
+ * Zengin editöre dış platform (YouTube/Vimeo/SoundCloud/Spotify) video/ses gömme bloğu.
+ * Yalnız `url` alanı var: altyazı/başlık alanı bilinçli olarak YOK — Payload lexical
+ * blok alt-alanları editörle çatışıyor (input olayları ana editöre sızıyor). Altyazı
+ * istenirse gömmenin altına/üstüne normal metin olarak yazılır (prose ile stillenir).
+ */
 export const MediaEmbed: Block = {
   slug: 'mediaEmbed',
   interfaceName: 'MediaEmbedBlock',
@@ -10,14 +16,6 @@ export const MediaEmbed: Block = {
       type: 'text',
       required: true,
       label: 'Bağlantı (YouTube / Vimeo / SoundCloud / Spotify)',
-    },
-    {
-      // NOT: localized DEĞİL — richText alanının kendisi zaten localized
-      // (blok her locale'in Lexical state'inde ayrı durur). Alt-alanı bir daha
-      // localized yapmak editörde ters/yanlış-yere yazma hatasına yol açıyordu.
-      name: 'baslik',
-      type: 'text',
-      label: 'Başlık / açıklama (opsiyonel)',
     },
   ],
 }
