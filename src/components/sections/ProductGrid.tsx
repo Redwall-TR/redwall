@@ -123,7 +123,7 @@ export default function ProductGrid({ products, locale }: ProductGridProps) {
             {/* Description */}
             {aciklama != null && (
               <div className="flex-1 text-sm leading-relaxed text-muted">
-                <RichContent value={aciklama} className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0" />
+                <RichContent value={aciklama} className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0 prose-p:text-muted" />
               </div>
             )}
 
