@@ -12,7 +12,7 @@ import { Link } from '@/i18n/navigation';
 import { isKoluLabel } from '@/lib/labels';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
-import { RichText } from '@payloadcms/richtext-lexical/react';
+import { RichContent } from '@/components/ui/RichContent';
 import type { IsKolu, ProjeDurumu } from '@/types';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
@@ -217,9 +217,7 @@ export default async function ProjeDetayPage({
           <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl mb-8">
             {isTr ? 'Proje Hakkında' : 'About the Project'}
           </h2>
-          <div className="prose prose-neutral dark:prose-invert max-w-none">
-            <RichText data={aciklamaLexical as unknown as Parameters<typeof RichText>[0]['data']} />
-          </div>
+          <RichContent value={aciklamaLexical} className="prose prose-neutral dark:prose-invert max-w-none" />
         </Section>
       )}
 

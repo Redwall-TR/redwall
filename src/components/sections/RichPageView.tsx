@@ -6,7 +6,7 @@ import { isLocale, pick, type Locale } from '@/lib/locales';
 import { buildMetadata } from '@/lib/metadata';
 import { getRichPage } from '@/lib/cms/queries';
 import { Section } from '@/components/ui';
-import { RichText } from '@payloadcms/richtext-lexical/react';
+import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 
@@ -80,9 +80,7 @@ export async function RichPageView({ cfg, locale }: { cfg: RichPageConfig; local
       <Section>
         <div className="space-y-6">
           {icerikLexical && (
-            <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <RichText data={icerikLexical as unknown as Parameters<typeof RichText>[0]['data']} />
-            </div>
+            <RichContent value={icerikLexical} className="prose prose-neutral dark:prose-invert max-w-none" />
           )}
         </div>
       </Section>
