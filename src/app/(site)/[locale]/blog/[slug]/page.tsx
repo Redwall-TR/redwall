@@ -12,6 +12,7 @@ import { Link } from '@/i18n/navigation';
 import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -90,7 +91,7 @@ export default async function BlogDetayPage({
       <PageHero
         eyebrow="Blog"
         title={baslik ?? ''}
-        accent="#e63950"
+        accent={ACCENT}
         chips={tarihStr ? [tarihStr] : undefined}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />

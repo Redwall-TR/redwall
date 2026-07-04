@@ -12,6 +12,7 @@ import { PageHero } from '@/components/sections/PageHero';
 import PaginatedLogoWall from '@/components/sections/PaginatedLogoWall';
 import { ServiceIcon } from '@/components/ui/icons';
 import { RichContent } from '@/components/ui/RichContent';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -103,7 +104,7 @@ export default async function ReferanslarPage({
         eyebrow={loc === 'tr' ? 'Referanslar' : 'References'}
         title={heading}
         description={description}
-        accent="#e63950"
+        accent={ACCENT}
         glyph={<ServiceIcon name="building" className="h-[26rem] w-[26rem]" />}
       />
 
@@ -133,13 +134,13 @@ export default async function ReferanslarPage({
                   {/* accent left-rule */}
                   <span
                     className="absolute left-0 top-0 h-full w-1 rounded-l-xl"
-                    style={{ backgroundColor: '#e63950' }}
+                    style={{ backgroundColor: ACCENT }}
                     aria-hidden
                   />
                   {/* decorative quote mark */}
                   <span
                     className="absolute right-4 top-3 font-display text-7xl font-bold leading-none select-none"
-                    style={{ color: '#e63950', opacity: 0.12 }}
+                    style={{ color: ACCENT, opacity: 0.12 }}
                     aria-hidden
                   >
                     &ldquo;

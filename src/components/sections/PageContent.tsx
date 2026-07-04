@@ -10,6 +10,7 @@ import {
   IntroLead,
 } from '@/components/sections/page-blocks';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -37,10 +38,6 @@ interface PageData {
   kartlarAciklama?: LocaleString;
   kartlar?: PageCard[];
 }
-
-// ── Shared accent ─────────────────────────────────────────────────────────────
-
-const ACCENT = '#e63950';
 
 // ── Fallback titles ───────────────────────────────────────────────────────────
 

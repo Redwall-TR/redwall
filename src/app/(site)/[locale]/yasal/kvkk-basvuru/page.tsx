@@ -8,6 +8,7 @@ import { Section } from '@/components/ui';
 import KvkkBasvuruForm from '@/components/sections/KvkkBasvuruForm';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -61,7 +62,7 @@ export default async function KvkkBasvuruPage({
         eyebrow={isTr ? 'Yasal' : 'Legal'}
         title={pageBaslik}
         description={pageAciklama}
-        accent="#e63950"
+        accent={ACCENT}
         chips={isTr ? ['KVKK Md. 11', 'İlgili Kişi Hakları'] : ['KVKK Art. 11', 'Data Subject Rights']}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />

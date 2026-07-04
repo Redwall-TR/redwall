@@ -8,6 +8,7 @@ import { Section } from '@/components/ui';
 import DemoForm from '@/components/sections/DemoForm';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -59,7 +60,7 @@ export default async function DemoPage({
         eyebrow={isTr ? 'Yazılım' : 'Software'}
         title={pageBaslik}
         description={pageAciklama}
-        accent="#e63950"
+        accent={ACCENT}
         chips={isTr ? ['YangınPro', 'MekanikPro'] : ['YangınPro', 'MekanikPro']}
         glyph={<ServiceIcon name="code" className="h-[26rem] w-[26rem]" />}
       />

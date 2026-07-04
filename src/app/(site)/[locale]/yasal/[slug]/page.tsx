@@ -9,6 +9,7 @@ import { Section } from '@/components/ui';
 import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -98,7 +99,7 @@ export default async function YasalDetayPage({
       <PageHero
         eyebrow={isTr ? 'Yasal' : 'Legal'}
         title={baslik ?? ''}
-        accent="#e63950"
+        accent={ACCENT}
         chips={sonGuncellemeTarih ? [sonGuncellemeTarih] : undefined}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />

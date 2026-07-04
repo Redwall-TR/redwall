@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import { Link } from '@/i18n/navigation';
 import { getSiteSettings } from '@/lib/cms/queries';
 import { pick, type Locale } from '@/lib/locales';
+import { ACCENT } from '@/lib/theme';
 
 type Social = 'linkedin' | 'instagram' | 'youtube' | 'x' | 'facebook' | 'whatsapp';
 
@@ -12,7 +13,6 @@ interface SiteSettings {
   sosyal?: Partial<Record<Social, string>>;
 }
 
-const ACCENT = '#e63950';
 const SOCIAL_ORDER: Social[] = ['linkedin', 'instagram', 'youtube', 'x', 'facebook', 'whatsapp'];
 
 // ── Social icons ──────────────────────────────────────────────────────────────

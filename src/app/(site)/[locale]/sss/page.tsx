@@ -11,6 +11,7 @@ import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading } from '@/components/sections/page-blocks';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -210,7 +211,7 @@ export default async function SssPage({
         eyebrow={isTr ? 'Yardım' : 'Help'}
         title={pageBaslik}
         description={pageAciklama}
-        accent="#e63950"
+        accent={ACCENT}
         chips={chips}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />
@@ -232,7 +233,7 @@ export default async function SssPage({
             }));
             return (
               <div key={kat}>
-                <SectionHeading title={label} accent="#e63950" />
+                <SectionHeading title={label} accent={ACCENT} />
                 <Accordion items={accordionItems} />
               </div>
             );

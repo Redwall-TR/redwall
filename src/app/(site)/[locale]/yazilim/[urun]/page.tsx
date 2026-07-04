@@ -11,6 +11,7 @@ import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading } from '@/components/sections/page-blocks';
 import ProductFeatures, { type Feature } from '@/components/sections/ProductFeatures';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -33,10 +34,6 @@ interface ProductData {
   ekranGorselleri?: unknown[];
 }
 
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const ACCENT = '#e63950';
 
 // ── Known product slugs (always prerender) ────────────────────────────────────
 
