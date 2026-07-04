@@ -5,10 +5,10 @@ import { MediaEmbed } from '@/components/ui/MediaEmbed';
 type RichData = Parameters<typeof RichText>[0]['data'];
 
 /** mediaEmbed bloğunun Lexical node'undaki alan şekli (Payload blok tanımıyla eşleşir). */
-type MediaEmbedNode = { fields: { url?: string; baslik?: string } };
+type MediaEmbedNode = { fields: { url?: string } };
 
 function mediaEmbedConverter({ node }: JSXConverterArgs<MediaEmbedNode>) {
-  return <MediaEmbed url={node.fields?.url} baslik={node.fields?.baslik} />;
+  return <MediaEmbed url={node.fields?.url} />;
 }
 
 const converters: JSXConvertersFunction = ({ defaultConverters }) => ({

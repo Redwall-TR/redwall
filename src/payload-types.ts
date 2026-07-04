@@ -1574,7 +1574,6 @@ export interface CollectionsWidget {
  */
 export interface MediaEmbedBlock {
   url: string;
-  baslik?: string | null;
   id?: string | null;
   blockName?: string | null;
   blockType: 'mediaEmbed';

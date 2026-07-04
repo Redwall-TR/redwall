@@ -2,25 +2,23 @@ import { parseEmbedUrl } from '@/lib/embed/parseEmbedUrl';
 
 /** Lexical mediaEmbed bloğunu güvenli, responsive oynatıcı iframe'ine çevirir.
  *  Tanınmayan URL → düz bağlantı fallback (asla ham iframe). */
-export function MediaEmbed({ url, baslik }: { url?: unknown; baslik?: unknown }) {
+export function MediaEmbed({ url }: { url?: unknown }) {
   const src = typeof url === 'string' ? url : '';
-  const caption = typeof baslik === 'string' && baslik.trim() ? baslik.trim() : undefined;
   const parsed = parseEmbedUrl(src);
 
   if (!parsed) {
     if (!src) return null;
     return (
       <a href={src} target="_blank" rel="noopener noreferrer nofollow" className="text-primary underline">
-        {caption ?? src}
+        {src}
       </a>
     );
   }
 
-  const title = caption ?? parsed.platform;
   const iframe = (
     <iframe
       src={parsed.embedSrc}
-      title={title}
+      title={parsed.platform}
       loading="lazy"
       referrerPolicy="strict-origin-when-cross-origin"
       allow="autoplay; encrypted-media; picture-in-picture; clipboard-write; fullscreen"
@@ -39,7 +37,6 @@ export function MediaEmbed({ url, baslik }: { url?: unknown; baslik?: unknown })
       ) : (
         <div className="overflow-hidden rounded-xl border border-border">{iframe}</div>
       )}
-      {caption && <figcaption className="mt-2 text-sm text-muted">{caption}</figcaption>}
     </figure>
   );
 }
