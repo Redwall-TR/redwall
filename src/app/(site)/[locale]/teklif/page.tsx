@@ -21,7 +21,7 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Yangın Güvenliği Hizmetleri için Teklif Al | Redwall' : 'Get a Fire Safety Services Quote | Redwall';
+  const baslik = isTr ? 'Yangın Güvenliği Hizmetleri için Teklif Al' : 'Get a Fire Safety Services Quote';
   const aciklama = isTr
     ? 'Yangın güvenliği danışmanlığı, mühendislik ve YangınPro/MekanikPro yazılımları için ihtiyacınıza özel teklif almak üzere formu doldurun.'
     : 'Fill in the form to get a custom quote for fire-safety consulting, engineering, or YangınPro/MekanikPro software tailored to your needs.';

@@ -38,7 +38,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const baslik = loc === 'tr' ? 'Blog — Yangın Güvenliği Haberleri & Makaleler | Redwall' : 'Blog — Fire Safety News & Articles | Redwall';
+  const baslik = loc === 'tr' ? 'Blog — Yangın Güvenliği Haberleri & Makaleler' : 'Blog — Fire Safety News & Articles';
   const aciklama =
     loc === 'tr'
       ? 'Redwall\'ın yangın güvenliği, mevzuat uyumluluk ve mühendislik alanındaki sektör görüşleri, proje haberleri ve teknik makaleleri.'

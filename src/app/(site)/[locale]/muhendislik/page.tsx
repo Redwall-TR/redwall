@@ -16,7 +16,7 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Yangın Mühendisliği & Söndürme Sistemi Uygulama | Redwall' : 'Fire Engineering & Suppression System Installation | Redwall';
+  const baslik = isTr ? 'Yangın Mühendisliği & Söndürme Sistemi Uygulama' : 'Fire Engineering & Suppression System Installation';
   const aciklama = isTr
     ? 'Aktif söndürme, pasif önleme, saha uygulaması, sıhhi tesisat ve periyodik bakım alanlarında uçtan uca yangın mühendisliği ve taahhüt hizmetleri sunuyoruz.'
     : 'End-to-end fire engineering and contracting services covering active suppression, passive prevention, field installation, plumbing, and periodic maintenance.';

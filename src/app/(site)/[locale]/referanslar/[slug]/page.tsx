@@ -40,7 +40,7 @@ export async function generateMetadata({
   const data = (await getReference(slug)) as ReferenceData | null;
   if (!data) {
     return buildMetadata({
-      baslik: loc === 'tr' ? 'Referans | Redwall' : 'Reference | Redwall',
+      baslik: loc === 'tr' ? 'Referans' : 'Reference',
       aciklama: loc === 'tr' ? 'Redwall referansı.' : 'Redwall reference.',
       locale: loc,
       path: `/referanslar/${slug}`,

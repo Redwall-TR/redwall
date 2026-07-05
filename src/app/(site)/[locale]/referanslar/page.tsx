@@ -39,7 +39,7 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Referanslarımız — Yangın Güvenliği Projeleri | Redwall' : 'Our References — Fire Safety Project Clients | Redwall';
+  const baslik = isTr ? 'Referanslarımız — Yangın Güvenliği Projeleri' : 'Our References — Fire Safety Project Clients';
   const aciklama = isTr
     ? 'Redwall olarak yangın güvenliği alanında birlikte çalıştığımız kurumlar, iş ortaklarımız ve tamamladığımız projelerin referans listesi.'
     : 'A reference list of the organizations and business partners Redwall has worked with, and the fire-safety projects completed together.';

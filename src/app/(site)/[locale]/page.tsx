@@ -45,7 +45,7 @@ export async function generateMetadata({
 
   const title: string =
     (seo?.baslik ? (pick(seo.baslik as LocaleString, loc) ?? undefined) : undefined) ??
-    (loc === 'tr' ? 'Redwall — Yangın Güvenliği Danışmanlık ve Mühendislik' : 'Redwall — Fire Safety Consulting & Engineering');
+    (loc === 'tr' ? 'Yangın Güvenliğinde 360° Çözüm — Yazılım, Danışmanlık, Mühendislik' : 'Integrated Fire Safety — Software, Consulting & Engineering');
 
   const description: string =
     (seo?.aciklama ? (pick(seo.aciklama as LocaleString, loc) ?? undefined) : undefined) ??

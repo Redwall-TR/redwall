@@ -17,7 +17,7 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Kalite Yönetimi, Standartlar & Belgeler | Redwall' : 'Quality Management, Standards & Certificates | Redwall';
+  const baslik = isTr ? 'Kalite Yönetimi, Standartlar & Belgeler' : 'Quality Management, Standards & Certificates';
   const aciklama = isTr
     ? 'Redwall kalite yönetim yaklaşımımız, uyduğumuz ulusal ve uluslararası standartlar ile yangın güvenliği alanındaki sertifikalarımız hakkında bilgi edinin.'
     : 'Learn about Redwall\'s quality management approach, the national and international standards we comply with, and our fire-safety certifications.';
