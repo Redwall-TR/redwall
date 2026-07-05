@@ -46,7 +46,7 @@ docker compose up -d
 docker compose ps
 ```
 
-## Docker daemon API uyumu ( zorunlu)
+## Docker daemon API uyumu (zorunlu)
 Traefik v3.3'ün Docker provider'ı istemci API sürümü **1.24** ile konuşur. Docker Engine
 29 minimum API **1.40** ister ve 1.24'ü reddeder → Traefik container label'larını okuyamaz,
 hiçbir router oluşmaz, her istek **404** döner (TLS geçerli ama origin 404). Çözüm daemon
