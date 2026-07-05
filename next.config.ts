@@ -1,6 +1,7 @@
 import type { NextConfig } from 'next';
 import createNextIntlPlugin from 'next-intl/plugin';
 import { withPayload } from '@payloadcms/next/withPayload';
+import { withSentryConfig } from '@sentry/nextjs';
 
 const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts');
 
@@ -43,4 +44,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default withPayload(withNextIntl(nextConfig));
+// En dışa withSentryConfig: DSN/auth token olmadan sourcemaps upload atlanır
+// (sourcemaps.disable), yalnız derleme sırasında hata yakalama enstrümantasyonu eklenir.
+export default withSentryConfig(withPayload(withNextIntl(nextConfig)), {
+  silent: true,
+  sourcemaps: { disable: true },
+  disableLogger: true,
+});
