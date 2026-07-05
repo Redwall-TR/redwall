@@ -89,6 +89,8 @@ services:
       FORM_NOTIFY_TO: ${FORM_NOTIFY_TO}
       # Turnstile (bot doğrulaması) — sunucu tarafı siteverify. Boşsa doğrulama atlanır.
       TURNSTILE_SECRET_KEY: ${TURNSTILE_SECRET_KEY}
+      # Sentry (sunucu tarafı hata izleme) — boşsa Sentry inert kalır.
+      SENTRY_DSN: ${SENTRY_DSN}
     networks:
       - traefik-public
       - app-internal
