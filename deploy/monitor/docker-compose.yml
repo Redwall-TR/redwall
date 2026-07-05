@@ -58,12 +58,25 @@ services:
       - --config.file=/etc/prometheus/prometheus.yml
       - --storage.tsdb.retention.time=30d
       - --web.enable-lifecycle
+      # Hedef ajanlar (Alloy) metrikleri buraya remote_write ile iter (push modeli)
+      - --web.enable-remote-write-receiver
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/targets:/etc/prometheus/targets:ro
       - prom-data:/prometheus
     networks:
       - monitor-net
+    # push.redwall.tr → yalnız /api/v1/write (remote-write alıcısı), basic-auth arkası.
+    # Prometheus UI/API'nin geri kalanı DIŞA AÇILMAZ (yalnız bu path).
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=monitor-net
+      - traefik.http.routers.promwrite.rule=Host(`push.${MONITOR_BASE_DOMAIN}`) && Path(`/api/v1/write`)
+      - traefik.http.routers.promwrite.entrypoints=websecure
+      - traefik.http.routers.promwrite.tls=true
+      - traefik.http.routers.promwrite.middlewares=promwrite-auth
+      - traefik.http.middlewares.promwrite-auth.basicauth.users=${PROM_BASICAUTH}
+      - traefik.http.services.promwrite.loadbalancer.server.port=9090
 
   loki:
     image: grafana/loki:3.7.3

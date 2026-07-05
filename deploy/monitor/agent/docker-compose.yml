@@ -1,0 +1,38 @@
+# Redwall monitör ajanı — HER HEDEF SUNUCUDA çalışır (ERP, YangınPro test/self, license, kurumsal).
+# Tek Grafana Alloy container'ı: host+container metriği + docker logları → monitör'e PUSH.
+# Salt-okuma: docker.sock ro, host fs ro. Mevcut stack'lere/minio/postgres'e DOKUNMAZ.
+# Deploy (hedefte): AGENT_HOSTNAME vs .env'de → docker compose up -d
+name: redwall-agent
+
+services:
+  alloy:
+    image: grafana/alloy:v1.17.1
+    restart: unless-stopped
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --storage.path=/var/lib/alloy/data
+      - --server.http.listen-addr=127.0.0.1:12345
+    environment:
+      - AGENT_HOSTNAME=${AGENT_HOSTNAME}
+      - PROM_URL=${PROM_URL}
+      - PROM_USER=${PROM_USER}
+      - PROM_PASS=${PROM_PASS}
+      - LOKI_URL=${LOKI_URL}
+      - LOKI_USER=${LOKI_USER}
+      - LOKI_PASS=${LOKI_PASS}
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - /:/host/root:ro,rslave
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - alloy-data:/var/lib/alloy/data
+    # Host ağı: unix exporter host arayüzlerini görsün; HTTP arayüzü yalnız 127.0.0.1:12345 (dışa kapalı).
+    network_mode: host
+    pid: host
+    # cadvisor + unix exporter host kaynaklarına erişir (salt-okuma mount'lar).
+    privileged: true
+
+volumes:
+  alloy-data:
