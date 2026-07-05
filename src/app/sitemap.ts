@@ -4,6 +4,12 @@ import { LOCALES } from '@/lib/locales';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
 
+// İstek anında üret: CMS içerik URL'leri (proje/blog/referans detayları) DB'den
+// gelir. Statik (build-time) üretimde CI build'inde DB erişilemez → safe() boş döner
+// ve sitemap yalnız statik rotaları içerir. force-dynamic ile DB istek anında okunur
+// (detay rotalarının DYNAMIC_SERVER_USAGE için kullandığı aynı desen).
+export const dynamic = 'force-dynamic';
+
 const STATIC_PATHS: string[] = [
   '',
   '/yazilim',
