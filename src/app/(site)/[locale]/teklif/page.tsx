@@ -21,10 +21,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Teklif İste | Redwall' : 'Get a Quote | Redwall';
+  const baslik = isTr ? 'Yangın Güvenliği Hizmetleri için Teklif Al | Redwall' : 'Get a Fire Safety Services Quote | Redwall';
   const aciklama = isTr
-    ? 'İhtiyacınıza özel teklif almak için formu doldurun. Kısa sürede size dönüş yapıyoruz.'
-    : 'Fill in the form to get a custom quote tailored to your needs. We respond promptly.';
+    ? 'Yangın güvenliği danışmanlığı, mühendislik ve YangınPro/MekanikPro yazılımları için ihtiyacınıza özel teklif almak üzere formu doldurun.'
+    : 'Fill in the form to get a custom quote for fire-safety consulting, engineering, or YangınPro/MekanikPro software tailored to your needs.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/teklif' });
 }

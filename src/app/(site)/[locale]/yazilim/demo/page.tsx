@@ -21,10 +21,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Demo Talep | Redwall' : 'Request a Demo | Redwall';
+  const baslik = isTr ? 'YangınPro & MekanikPro için Ücretsiz Demo Talebi | Redwall' : 'Request a Free YangınPro & MekanikPro Demo | Redwall';
   const aciklama = isTr
-    ? 'YangınPro ve MekanikPro yazılımları için ücretsiz demo talep edin.'
-    : 'Request a free demo of our YangınPro and MekanikPro software.';
+    ? 'YangınPro ve MekanikPro yazılımlarını yakından tanımak için ücretsiz demo talep edin; ekibimiz kısa sürede sizinle iletişime geçsin.'
+    : 'Request a free demo of YangınPro and MekanikPro software to see them in action — our team will reach out shortly to schedule your session.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/yazilim/demo' });
 }

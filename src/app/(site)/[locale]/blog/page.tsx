@@ -38,11 +38,11 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const baslik = loc === 'tr' ? 'Blog & Haberler | Redwall' : 'Blog & News | Redwall';
+  const baslik = loc === 'tr' ? 'Blog — Yangın Güvenliği Haberleri & Makaleler | Redwall' : 'Blog — Fire Safety News & Articles | Redwall';
   const aciklama =
     loc === 'tr'
-      ? 'Redwall\'ın sektör görüşleri, proje haberleri ve teknik makaleleri.'
-      : 'Industry insights, project news, and technical articles from Redwall.';
+      ? 'Redwall\'ın yangın güvenliği, mevzuat uyumluluk ve mühendislik alanındaki sektör görüşleri, proje haberleri ve teknik makaleleri.'
+      : 'Industry insights, project news, and technical articles on fire safety, regulatory compliance, and engineering from Redwall.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/blog' });
 }
