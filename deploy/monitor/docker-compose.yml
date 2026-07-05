@@ -1,0 +1,33 @@
+# Monitör hub — tek düğüm, düz docker compose.
+# TLS: Cloudflare "Full" origin cert doğrulamaz → Traefik self-signed sunar (tls=true, ACME yok).
+# Deploy (sunucuda): docker compose up -d   (bkz. README.md)
+name: monitor
+
+networks:
+  monitor-net:
+    driver: bridge
+
+volumes:
+  grafana-data:
+  prom-data:
+  loki-data:
+  kuma-data:
+
+services:
+  traefik:
+    image: traefik:v3.3
+    restart: unless-stopped
+    command:
+      - --providers.docker=true
+      - --providers.docker.exposedByDefault=false
+      - --entrypoints.web.address=:80
+      - --entrypoints.websecure.address=:443
+      - --entrypoints.web.http.redirections.entrypoint.to=websecure
+      - --entrypoints.web.http.redirections.entrypoint.scheme=https
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - monitor-net
