@@ -40,7 +40,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const baslik = loc === 'tr' ? 'Katalog, Sertifika ve Teknik Dokümanlar | Redwall' : 'Catalogs, Certificates & Technical Documents | Redwall';
+  const baslik = loc === 'tr' ? 'Katalog, Sertifika ve Teknik Dokümanlar' : 'Catalogs, Certificates & Technical Documents';
   const aciklama =
     loc === 'tr'
       ? 'Redwall\'ın yangın güvenliği katalogları, kalite sertifikaları ve teknik dokümanlarını inceleyin, ihtiyacınız olanları hemen indirin.'

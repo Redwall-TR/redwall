@@ -62,7 +62,7 @@ export async function generateMetadata({
     });
   }
 
-  const baslik = (pick(data.baslik, loc) ?? data.baslik.tr) + ' | Redwall';
+  const baslik = (pick(data.baslik, loc) ?? data.baslik.tr) + '';
   const aciklama =
     loc === 'tr'
       ? 'Redwall blog yazısı — sektörden görüşler ve haberler.'

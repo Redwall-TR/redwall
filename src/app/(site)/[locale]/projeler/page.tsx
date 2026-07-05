@@ -21,7 +21,7 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const baslik = loc === 'tr' ? 'Tamamlanan & Devam Eden Yangın Güvenliği Projeleri | Redwall' : 'Completed & Ongoing Fire Safety Projects | Redwall';
+  const baslik = loc === 'tr' ? 'Tamamlanan & Devam Eden Yangın Güvenliği Projeleri' : 'Completed & Ongoing Fire Safety Projects';
   const aciklama =
     loc === 'tr'
       ? 'Redwall\'ın tamamlanan ve devam eden yangın güvenliği projelerini iş koluna, sektöre ve konuma göre filtreleyerek inceleyin.'

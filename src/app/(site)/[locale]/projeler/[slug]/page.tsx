@@ -58,7 +58,7 @@ export async function generateMetadata({
 
   if (!data) {
     return buildMetadata({
-      baslik: 'Proje | Redwall',
+      baslik: 'Proje',
       aciklama: loc === 'tr' ? 'Redwall projesi.' : 'Redwall project.',
       locale: loc,
       path: `/projeler/${slug}`,

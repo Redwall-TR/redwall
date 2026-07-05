@@ -56,7 +56,7 @@ export async function generateMetadata({
     });
   }
 
-  const baslik = (pick(data.baslik, loc) ?? data.baslik.tr) + ' | Redwall';
+  const baslik = (pick(data.baslik, loc) ?? data.baslik.tr) + '';
   const aciklama =
     loc === 'tr'
       ? 'Redwall yasal belgesi ve politika sayfası.'
