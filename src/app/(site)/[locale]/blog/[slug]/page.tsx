@@ -29,6 +29,7 @@ interface PostData {
   kapak?: unknown;
   icerik?: Record<string, unknown>;
   ozet?: LocaleString;
+  updatedAt?: string;
 }
 
 // ── Rendering ───────────────────────────────────────────────────────────────
@@ -117,9 +118,13 @@ export default async function BlogDetayPage({
     headline: baslik ?? '',
     description: aciklama,
     datePublished: data.tarih ?? undefined,
-    imageUrl: imgSrc ? (imgSrc.startsWith('http') ? imgSrc : `${SITE_URL}${imgSrc}`) : undefined,
+    dateModified: data.updatedAt ?? data.tarih ?? undefined,
+    imageUrl: imgSrc
+      ? (imgSrc.startsWith('http') ? imgSrc : `${SITE_URL}${imgSrc}`)
+      : `${SITE_URL}/og-default.png`,
     url: postUrl,
     authorName: 'Redwall',
+    authorUrl: SITE_URL,
   });
   const bcLd = breadcrumbJsonLd([
     { name: isTr ? 'Ana Sayfa' : 'Home', url: `${SITE_URL}/${locale}` },
