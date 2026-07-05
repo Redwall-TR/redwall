@@ -60,3 +60,22 @@ services:
       - prom-data:/prometheus
     networks:
       - monitor-net
+
+  loki:
+    image: grafana/loki:3.3.2
+    restart: unless-stopped
+    command: -config.file=/etc/loki/loki-config.yml
+    volumes:
+      - ./loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - loki-data:/loki
+    networks:
+      - monitor-net
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=monitor-net
+      - traefik.http.routers.loki.rule=Host(`loki.${MONITOR_BASE_DOMAIN}`)
+      - traefik.http.routers.loki.entrypoints=websecure
+      - traefik.http.routers.loki.tls=true
+      - traefik.http.routers.loki.middlewares=loki-auth
+      - traefik.http.middlewares.loki-auth.basicauth.users=${LOKI_BASICAUTH}
+      - traefik.http.services.loki.loadbalancer.server.port=3100
