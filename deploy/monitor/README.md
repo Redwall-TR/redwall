@@ -62,8 +62,24 @@ Bu, redwall prod sunucusunda da uygulanan aynı uyumluluk ayarıdır.
 - Loki (iç): `docker compose exec loki wget -qO- localhost:3100/ready` → `ready`.
 - Loki push ucu (auth): `curl -u agent:PAROLA https://loki.redwall.tr/loki/api/v1/push -XPOST -H 'Content-Type: application/json' --data '{"streams":[{"stream":{"job":"test"},"values":[["'"$(date +%s)"'000000000","merhaba"]]}]}'` → HTTP 204. Auth'suz → 401.
 
+## Dashboard'lar (Grafana)
+Hazır dashboard'lar: Node Exporter Full + cAdvisor + Redwall Loglar (`grafana/dashboards/*.json`).
+
+**TUZAK — Grafana 13 datasource uid:** Grafana 13, `datasources.yml`'de sabit `uid`
+verilince provisioning'de çöküyor ("Datasource provisioning error: data source not found",
+crash-loop). Bu yüzden datasource'lar **uid'siz** (Grafana otomatik uid üretir). Dashboard'lar
+da bu otomatik uid'lere bağlanmalı → **file-provisioning yerine API import** kullanılır:
+```bash
+GF_URL=https://monitor.redwall.tr GF_USER=admin GF_PASS=<parola> \
+  deploy/monitor/grafana/import-dashboards.sh
+```
+Script gerçek uid'leri sorgular, dashboard JSON'larındaki placeholder ("prometheus"/"loki")
+uid'leri değiştirir ve import eder. Deploy sonrası bir kez çalıştır (idempotent, overwrite).
+
 ## İşletim
 - Saklama: Prometheus 30g, Loki 30g. Disk izle: `df -h /`.
 - Loglar: `docker compose logs -f <servis>`.
 - Güncelleme: imaj etiketini bump et → `docker compose pull && docker compose up -d`.
-- **Faz 2** (hedef sunucular): `prometheus/targets/` altına `node-*.yml`/`cadvisor-*.yml` eklenir + hedeflere agent kurulur; ayrı plan.
+- **Faz 2 (hedef sunucular) — CANLI:** her hedefte Grafana Alloy ajanı (`agent/`) host+container
+  metriği + docker loglarını monitör'e PUSH eder (bkz. `agent/README yok — docker-compose.yml + config.alloy`).
+  Prometheus remote-write ucu: `push.redwall.tr/api/v1/write` (basic-auth). Log ucu: `loki.redwall.tr`.

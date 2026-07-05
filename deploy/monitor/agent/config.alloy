@@ -1,0 +1,87 @@
+// Redwall monitör ajanı (Grafana Alloy) — her hedef sunucuda tek container.
+// Host metriği (unix) + container metriği (cadvisor) + docker logları → monitör'e PUSH
+// (HTTPS + basic-auth, hepsi OUTBOUND). Hedefte inbound port açılmaz, salt-okuma.
+
+// ════════ METRİKLER ════════
+// Host: CPU/RAM/disk/ağ (node_exporter eşdeğeri, Alloy içi)
+prometheus.exporter.unix "node" {
+  rootfs_path = "/host/root"
+  procfs_path = "/host/proc"
+  sysfs_path  = "/host/sys"
+  filesystem {
+    mount_points_exclude = "^/(dev|proc|sys|var/lib/docker/.+|run)($|/)"
+    fs_types_exclude     = "^(autofs|binfmt_misc|bpf|cgroup2?|configfs|debugfs|devpts|devtmpfs|fusectl|hugetlbfs|mqueue|nsfs|overlay|proc|procfs|pstore|securityfs|selinuxfs|squashfs|sysfs|tracefs)$"
+  }
+}
+
+// Container: docker/swarm container başına kaynak (cadvisor, Alloy içi)
+prometheus.exporter.cadvisor "cadvisor" {
+  docker_host      = "unix:///var/run/docker.sock"
+  storage_duration = "5m"
+}
+
+prometheus.scrape "node" {
+  targets         = prometheus.exporter.unix.node.targets
+  forward_to      = [prometheus.remote_write.monitor.receiver]
+  scrape_interval = "30s"
+  job_name        = "node"
+}
+
+prometheus.scrape "cadvisor" {
+  targets         = prometheus.exporter.cadvisor.cadvisor.targets
+  forward_to      = [prometheus.remote_write.monitor.receiver]
+  scrape_interval = "30s"
+  job_name        = "cadvisor"
+}
+
+prometheus.remote_write "monitor" {
+  endpoint {
+    url = sys.env("PROM_URL")
+    basic_auth {
+      username = sys.env("PROM_USER")
+      password = sys.env("PROM_PASS")
+    }
+  }
+  external_labels = {
+    host = sys.env("AGENT_HOSTNAME"),
+  }
+}
+
+// ════════ LOGLAR ════════
+// Tüm docker container loglarını keşfet + tail → monitör Loki
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_log_stream"]
+    target_label  = "stream"
+  }
+}
+
+loki.source.docker "containers" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.containers.output
+  forward_to = [loki.write.monitor.receiver]
+  labels     = {
+    host = sys.env("AGENT_HOSTNAME"),
+    job  = "docker",
+  }
+}
+
+loki.write "monitor" {
+  endpoint {
+    url = sys.env("LOKI_URL")
+    basic_auth {
+      username = sys.env("LOKI_USER")
+      password = sys.env("LOKI_PASS")
+    }
+  }
+}
