@@ -36,6 +36,7 @@ export function buildMetadata({
       title: baslik,
       description: aciklama,
       url: `${SITE_URL}/${locale}${path}`,
+      siteName: 'Redwall',
       locale,
       type: type ?? 'website',
       images: [{ url: ogImage }],

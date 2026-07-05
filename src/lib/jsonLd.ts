@@ -20,7 +20,7 @@ export function websiteJsonLd(o: { name: string; url: string }): Record<string, 
 }
 
 export function articleJsonLd(o: {
-  headline: string; description?: string; datePublished?: string; imageUrl?: string; url: string; authorName?: string;
+  headline: string; description?: string; datePublished?: string; dateModified?: string; imageUrl?: string; url: string; authorName?: string; authorUrl?: string;
 }): Record<string, unknown> {
   const out: Record<string, unknown> = {
     '@context': CTX, '@type': 'Article', headline: o.headline, url: o.url,
@@ -28,8 +28,13 @@ export function articleJsonLd(o: {
   };
   if (o.description) out.description = o.description;
   if (o.datePublished) out.datePublished = o.datePublished;
+  if (o.dateModified) out.dateModified = o.dateModified;
   if (o.imageUrl) out.image = o.imageUrl;
-  if (o.authorName) out.author = { '@type': 'Organization', name: o.authorName };
+  if (o.authorName) {
+    const author: Record<string, unknown> = { '@type': 'Organization', name: o.authorName };
+    if (o.authorUrl) author.url = o.authorUrl;
+    out.author = author;
+  }
   return out;
 }
 

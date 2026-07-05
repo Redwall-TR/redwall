@@ -363,6 +363,7 @@ export async function getPost(slug: string) {
       kapak: r.kapak,
       icerik: r.icerik,
       ozet: r.ozet,
+      updatedAt: r.updatedAt,
     }
   }, null)
 }

@@ -25,6 +25,19 @@ describe('jsonLd builders', () => {
     expect(a.datePublished).toBe('2026-01-01');
     expect(a.image).toBe('https://redwall.tr/c.jpg');
   });
+  it('article — dateModified + author url eklenir; verilmezse atlanır', () => {
+    const a = articleJsonLd({
+      headline: 'B', url: 'https://redwall.tr/tr/blog/x',
+      dateModified: '2026-02-02', authorName: 'Redwall', authorUrl: 'https://redwall.tr',
+    });
+    expect(a.dateModified).toBe('2026-02-02');
+    expect((a.author as Record<string, unknown>).name).toBe('Redwall');
+    expect((a.author as Record<string, unknown>).url).toBe('https://redwall.tr');
+    // authorUrl'süz → author.url yok
+    const b = articleJsonLd({ headline: 'B', url: 'https://redwall.tr/tr/blog/y', authorName: 'Redwall' });
+    expect('url' in (b.author as Record<string, unknown>)).toBe(false);
+    expect('dateModified' in b).toBe(false);
+  });
   it('softwareApp', () => {
     const s = softwareAppJsonLd({ name: 'YangınPro', url: 'https://redwall.tr/tr/yazilim/yanginpro', category: 'BusinessApplication' });
     expect(s['@type']).toBe('SoftwareApplication');
