@@ -9,6 +9,7 @@ import { Section } from '@/components/ui';
 import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -93,32 +94,18 @@ export default async function YasalDetayPage({
       ) ?? undefined)
     : undefined;
 
-  const isLegal = data.kategori === 'legal';
-
   return (
     <>
       <PageHero
         eyebrow={isTr ? 'Yasal' : 'Legal'}
         title={baslik ?? ''}
-        accent="#e63950"
+        accent={ACCENT}
         chips={sonGuncellemeTarih ? [sonGuncellemeTarih] : undefined}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />
 
       <Section>
         <div className="space-y-6">
-          {/* Draft / legal advisory warning banner */}
-          {isLegal && (
-            <div
-              role="note"
-              className="rounded-lg border border-amber-300 bg-amber-50 px-5 py-4 text-sm text-amber-900 dark:border-amber-600 dark:bg-amber-950/40 dark:text-amber-200"
-            >
-              {isTr
-                ? '⚠️ Bu metin taslaktır; yürürlüğe koymadan önce KVKK danışmanınıza kontrol ettirin.'
-                : '⚠️ This is a draft; have it reviewed by a data-protection advisor before relying on it.'}
-            </div>
-          )}
-
           {/* Lexical rich-text content */}
           {icerikLexical && (
             <RichContent value={icerikLexical} className="prose prose-neutral dark:prose-invert max-w-none" />

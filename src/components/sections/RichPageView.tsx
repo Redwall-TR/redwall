@@ -9,6 +9,7 @@ import { Section } from '@/components/ui';
 import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // Tek-slug richPage rotaları için paylaşılan veri-çekme + render. mevzuat /
 // guvenlik / destek / yazilim-nasil-calisir bunu config ile kullanır; böylece
@@ -72,7 +73,7 @@ export async function RichPageView({ cfg, locale }: { cfg: RichPageConfig; local
       <PageHero
         eyebrow={isTr ? cfg.eyebrowTr : cfg.eyebrowEn}
         title={baslik ?? ''}
-        accent="#e63950"
+        accent={ACCENT}
         chips={sonGuncellemeTarih ? [sonGuncellemeTarih] : undefined}
         glyph={<ServiceIcon name="shield-check" className="h-[26rem] w-[26rem]" />}
       />

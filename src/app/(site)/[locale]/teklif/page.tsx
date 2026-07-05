@@ -8,6 +8,7 @@ import { Section } from '@/components/ui';
 import QuoteForm from '@/components/sections/QuoteForm';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -59,7 +60,7 @@ export default async function TeklifPage({
         eyebrow={isTr ? 'Teklif' : 'Quote'}
         title={pageBaslik}
         description={pageAciklama}
-        accent="#e63950"
+        accent={ACCENT}
         chips={isTr ? ['Hızlı Yanıt', '1 İş Günü'] : ['Fast Response', '1 Business Day']}
         glyph={<ServiceIcon name="gauge" className="h-[26rem] w-[26rem]" />}
       />

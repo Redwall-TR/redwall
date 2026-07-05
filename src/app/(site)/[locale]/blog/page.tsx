@@ -11,6 +11,7 @@ import { Section } from '@/components/ui';
 import { Link } from '@/i18n/navigation';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -72,7 +73,7 @@ export default async function BlogPage({
         eyebrow="Blog"
         title={heading}
         description={description}
-        accent="#e63950"
+        accent={ACCENT}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />
 

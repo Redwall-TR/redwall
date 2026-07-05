@@ -9,6 +9,7 @@ import { Section, Cta, Button } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
 import { IntroLead } from '@/components/sections/page-blocks';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -114,7 +115,7 @@ export default async function KariyerPage({
         eyebrow={loc === 'tr' ? 'Kariyer' : 'Careers'}
         title={heading}
         description={description}
-        accent="#e63950"
+        accent={ACCENT}
         chips={chips}
         glyph={<ServiceIcon name="hard-hat" className="h-[26rem] w-[26rem]" />}
       />
@@ -124,7 +125,7 @@ export default async function KariyerPage({
         <IntroLead
           lead={introParagraphs[0]}
           body={introParagraphs.slice(1)}
-          accent="#e63950"
+          accent={ACCENT}
         />
       </Section>
 

@@ -9,6 +9,7 @@ import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 import ProjectsExplorer from '@/components/sections/ProjectsExplorer';
 import type { ProjectCard } from '@/lib/projects';
+import { ACCENT } from '@/lib/theme';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
 
@@ -58,7 +59,7 @@ export default async function ProjelerPage({
         eyebrow={isTr ? 'Projeler' : 'Projects'}
         title={heading}
         description={description}
-        accent="#e63950"
+        accent={ACCENT}
         chips={chips}
         glyph={<ServiceIcon name="building" className="h-[26rem] w-[26rem]" />}
       />

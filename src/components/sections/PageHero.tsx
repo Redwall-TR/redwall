@@ -1,4 +1,5 @@
 import type { CSSProperties } from 'react';
+import { ACCENT } from '@/lib/theme';
 
 interface PageHeroProps {
   eyebrow?: string;
@@ -21,7 +22,7 @@ export function PageHero({
   eyebrow,
   title,
   description,
-  accent = '#e63950',
+  accent = ACCENT,
   chips,
   glyph,
 }: PageHeroProps) {

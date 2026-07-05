@@ -1,6 +1,7 @@
 'use server'
 
 import { headers } from 'next/headers'
+import { sql } from '@payloadcms/db-postgres'
 import { getPayloadClient } from '@/lib/cms/client'
 import { getSiteSettings } from '@/lib/cms/queries'
 import { validateContact, validateQuote, validateDemo, validateKvkkBasvuru } from '@/lib/form'
@@ -12,36 +13,54 @@ export interface FormGonderimSonuc {
   errors?: Record<string, string>
 }
 
-// ── Basit IP-bazlı hız sınırı (best-effort, replica başına bellek içi) ──────────
-// Sağlam koruma için Cloudflare Turnstile/WAF rate-rule önerilir; bu, app
-// katmanında ucuz bir ilk savunmadır (spam/SMTP kota tüketimini zorlaştırır).
+// ── Postgres tabanlı dağıtık hız sınırı ──────────────────────────────────────
+// Tüm replikalar `form_rate_limit` tablosunu paylaşır ve sayaç restart'a dayanır
+// (önceki bellek-içi Map yerine). Sağlam koruma için Cloudflare Turnstile/WAF
+// rate-rule önerilir; bu, app katmanında ucuz bir ek savunmadır (spam/SMTP kota
+// tüketimini zorlaştırır). DB hatası → fail-open (log) — rate-limit arızası
+// meşru gönderimi kilitlemesin.
 const WINDOW_MS = 10 * 60 * 1000 // 10 dk
 const MAX_PER_WINDOW = 5
-const hits = new Map<string, number[]>()
 
-function rateLimited(ip: string): boolean {
+async function rateLimited(ip: string): Promise<boolean> {
+  if (!ip || ip === 'unknown') return false
   const now = Date.now()
-  const arr = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS)
-  if (arr.length >= MAX_PER_WINDOW) {
-    hits.set(ip, arr)
-    return true
+  const windowStart = now - WINDOW_MS
+  try {
+    const payload = await getPayloadClient()
+    const db = payload.db.drizzle
+    await db.execute(sql`DELETE FROM "form_rate_limit" WHERE "hit_at" < ${windowStart}`)
+    const res = await db.execute(
+      sql`SELECT count(*)::int AS c FROM "form_rate_limit" WHERE "ip" = ${ip} AND "hit_at" >= ${windowStart}`,
+    )
+    const rows =
+      (res as unknown as { rows?: Array<{ c: number }> }).rows ??
+      (res as unknown as Array<{ c: number }>)
+    const count = Number(rows?.[0]?.c ?? 0)
+    if (count >= MAX_PER_WINDOW) return true
+    await db.execute(sql`INSERT INTO "form_rate_limit" ("ip", "hit_at") VALUES (${ip}, ${now})`)
+    return false
+  } catch (err) {
+    console.error('[rate-limit] Postgres hatası — fail-open:', err)
+    return false
   }
-  arr.push(now)
-  hits.set(ip, arr)
-  // Bellek sızıntısını önlemek için ara sıra eski IP'leri temizle
-  if (hits.size > 5000) {
-    for (const [k, v] of hits) if (v.every((t) => now - t >= WINDOW_MS)) hits.delete(k)
-  }
-  return false
 }
 
 /**
- * Cloudflare Turnstile token doğrulaması. TURNSTILE_SECRET_KEY tanımlı değilse
- * doğrulama atlanır (özellik kapalı). Tanımlıysa token geçersizse false döner.
+ * Cloudflare Turnstile token doğrulaması. TURNSTILE_SECRET_KEY tanımlı değilse:
+ * - üretimde (NODE_ENV=production) fail-closed — form reddedilir + loglanır.
+ * - diğer ortamlarda (dev/test) özellik yapılandırılmamış sayılır → atla.
+ * Secret tanımlıysa token geçersizse false döner.
  */
-async function verifyTurnstile(token: string | undefined, ip: string): Promise<boolean> {
+export async function verifyTurnstile(token: string | undefined, ip: string): Promise<boolean> {
   const secret = process.env.TURNSTILE_SECRET_KEY
-  if (!secret) return true // özellik yapılandırılmamış → atla
+  if (!secret) {
+    if (process.env.NODE_ENV === 'production') {
+      console.error('[turnstile] TURNSTILE_SECRET_KEY tanımsız — üretimde form reddedildi (fail-closed)')
+      return false
+    }
+    return true // dev: özellik yapılandırılmamış → atla
+  }
   if (!token) return false
   try {
     const body = new URLSearchParams({ secret, response: token })
@@ -101,7 +120,7 @@ export async function submitForm(input: FormGonderimInput): Promise<FormGonderim
   }
 
   // Hız sınırı
-  if (rateLimited(ip)) {
+  if (await rateLimited(ip)) {
     return { ok: false, errors: { _genel: 'rate' } }
   }
 

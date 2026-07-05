@@ -9,6 +9,7 @@ import { Section } from '@/components/ui';
 import ContactForm from '@/components/sections/ContactForm';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 interface SiteSettings {
   sirketAdi?: string;
@@ -98,7 +99,7 @@ export default async function IletisimPage({
         eyebrow={isTr ? 'İletişim' : 'Contact'}
         title={pageBaslik}
         description={pageAciklama}
-        accent="#e63950"
+        accent={ACCENT}
         chips={[adres, email]}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />

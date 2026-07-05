@@ -2,6 +2,7 @@ import { type Locale } from '@/lib/locales';
 import { mediaUrl } from '@/lib/cms/image';
 import { LogoWall } from '@/components/ui';
 import { referansHref } from '@/lib/references';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -17,8 +18,6 @@ interface ReferenceStripProps {
   counts: Record<string, number>;
   locale: Locale;
 }
-
-const ACCENT = '#e63950';
 
 // ── Component ────────────────────────────────────────────────────────────────
 

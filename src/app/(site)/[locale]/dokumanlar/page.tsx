@@ -9,6 +9,7 @@ import { mediaUrl } from '@/lib/cms/image';
 import { Section } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -89,7 +90,7 @@ export default async function DokumanlarPage({
         eyebrow={heading}
         title={heading}
         description={description}
-        accent="#e63950"
+        accent={ACCENT}
         glyph={<ServiceIcon name="document" className="h-[26rem] w-[26rem]" />}
       />
 

@@ -14,6 +14,7 @@ import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 import { RichContent } from '@/components/ui/RichContent';
 import type { IsKolu, ProjeDurumu } from '@/types';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -130,7 +131,7 @@ export default async function ProjeDetayPage({
         eyebrow={isKoluLabel(data.isKolu, locale)}
         title={baslik}
         description={ozet}
-        accent="#e63950"
+        accent={ACCENT}
         chips={heroChips}
         glyph={<ServiceIcon name="building" className="h-[26rem] w-[26rem]" />}
       />

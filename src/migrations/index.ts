@@ -16,6 +16,7 @@ import * as migration_20260701_192053_product_richtext from './20260701_192053_p
 import * as migration_20260701_193609_service_richtext from './20260701_193609_service_richtext';
 import * as migration_20260701_210926_sitesettings_marka from './20260701_210926_sitesettings_marka';
 import * as migration_20260702_194453_page_richtext from './20260702_194453_page_richtext';
+import * as migration_20260704_194830_form_rate_limit from './20260704_194830_form_rate_limit';
 
 export const migrations = [
   {
@@ -106,6 +107,11 @@ export const migrations = [
   {
     up: migration_20260702_194453_page_richtext.up,
     down: migration_20260702_194453_page_richtext.down,
-    name: '20260702_194453_page_richtext'
+    name: '20260702_194453_page_richtext',
+  },
+  {
+    up: migration_20260704_194830_form_rate_limit.up,
+    down: migration_20260704_194830_form_rate_limit.down,
+    name: '20260704_194830_form_rate_limit'
   },
 ];

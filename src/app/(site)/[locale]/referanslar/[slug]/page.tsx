@@ -14,6 +14,7 @@ import { ProjectCardLink } from '@/components/sections/ProjectCardLink';
 import type { ProjectCard } from '@/lib/projects';
 import Image from 'next/image';
 import { RichContent } from '@/components/ui/RichContent';
+import { ACCENT } from '@/lib/theme';
 
 export const dynamic = 'force-dynamic';
 
@@ -77,7 +78,7 @@ export default async function ReferansDetayPage({
       <PageHero
         eyebrow={isTr ? 'Referans' : 'Reference'}
         title={data.ad}
-        accent="#e63950"
+        accent={ACCENT}
         glyph={
           logoSrc ? (
             <div className="relative h-[20rem] w-[20rem]">
@@ -106,7 +107,7 @@ export default async function ReferansDetayPage({
       {gorusMetinRaw && (
         <Section>
           <figure className="relative mx-auto max-w-3xl rounded-xl border border-border bg-surface p-6 pl-8 overflow-hidden">
-            <span className="absolute left-0 top-0 h-full w-1 rounded-l-xl" style={{ backgroundColor: '#e63950' }} aria-hidden />
+            <span className="absolute left-0 top-0 h-full w-1 rounded-l-xl" style={{ backgroundColor: ACCENT }} aria-hidden />
             <blockquote className="relative text-base leading-relaxed text-foreground/80">
               <RichContent value={pick(gorusMetinRaw as Record<'tr'|'en', unknown>, locale)} className="prose prose-sm max-w-none dark:prose-invert prose-p:my-0" />
             </blockquote>

@@ -10,6 +10,7 @@ import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading, IntroLead } from '@/components/sections/page-blocks';
 import ProductGrid, { type ProductCard } from '@/components/sections/ProductGrid';
 import { RichContent } from '@/components/ui/RichContent';
+import { ACCENT } from '@/lib/theme';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -51,10 +52,6 @@ export async function generateMetadata({
 export function generateStaticParams() {
   return [{ locale: 'tr' }, { locale: 'en' }];
 }
-
-// ── Constants ─────────────────────────────────────────────────────────────────
-
-const ACCENT = '#e63950';
 
 // ── Page ──────────────────────────────────────────────────────────────────────
 
