@@ -13,6 +13,8 @@ import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 import { ACCENT } from '@/lib/theme';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { articleJsonLd, breadcrumbJsonLd } from '@/lib/jsonLd';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -26,6 +28,7 @@ interface PostData {
   tarih?: string;
   kapak?: unknown;
   icerik?: Record<string, unknown>;
+  ozet?: LocaleString;
 }
 
 // ── Rendering ───────────────────────────────────────────────────────────────
@@ -49,7 +52,13 @@ export async function generateMetadata({
     const fallbackBaslik = loc === 'tr' ? 'Blog Yazısı | Redwall' : 'Blog Post | Redwall';
     const fallbackAciklama =
       loc === 'tr' ? 'Redwall blog yazısı.' : 'Redwall blog post.';
-    return buildMetadata({ baslik: fallbackBaslik, aciklama: fallbackAciklama, locale: loc, path: `/blog/${slug}` });
+    return buildMetadata({
+      baslik: fallbackBaslik,
+      aciklama: fallbackAciklama,
+      locale: loc,
+      path: `/blog/${slug}`,
+      type: 'article',
+    });
   }
 
   const baslik = (pick(data.baslik, loc) ?? data.baslik.tr) + ' | Redwall';
@@ -58,7 +67,22 @@ export async function generateMetadata({
       ? 'Redwall blog yazısı — sektörden görüşler ve haberler.'
       : 'Redwall blog post — industry insights and news.';
 
-  return buildMetadata({ baslik, aciklama, locale: loc, path: `/blog/${slug}` });
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
+  const kapakUrl = data.kapak ? mediaUrl(data.kapak) : undefined;
+  const gorselUrl = kapakUrl
+    ? kapakUrl.startsWith('http')
+      ? kapakUrl
+      : `${SITE_URL}${kapakUrl}`
+    : undefined;
+
+  return buildMetadata({
+    baslik,
+    aciklama,
+    locale: loc,
+    path: `/blog/${slug}`,
+    type: 'article',
+    gorselUrl,
+  });
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
@@ -85,9 +109,28 @@ export default async function BlogDetayPage({
     : undefined;
 
   const imgSrc = data.kapak ? mediaUrl(data.kapak) ?? null : null;
+  const aciklama = data.ozet ? pick(data.ozet, locale) ?? undefined : undefined;
+
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
+  const postUrl = `${SITE_URL}/${locale}/blog/${slug}`;
+  const articleLd = articleJsonLd({
+    headline: baslik ?? '',
+    description: aciklama,
+    datePublished: data.tarih ?? undefined,
+    imageUrl: imgSrc ? (imgSrc.startsWith('http') ? imgSrc : `${SITE_URL}${imgSrc}`) : undefined,
+    url: postUrl,
+    authorName: 'Redwall',
+  });
+  const bcLd = breadcrumbJsonLd([
+    { name: isTr ? 'Ana Sayfa' : 'Home', url: `${SITE_URL}/${locale}` },
+    { name: 'Blog', url: `${SITE_URL}/${locale}/blog` },
+    { name: baslik ?? '', url: postUrl },
+  ]);
 
   return (
     <>
+      <JsonLd data={articleLd} />
+      <JsonLd data={bcLd} />
       <PageHero
         eyebrow="Blog"
         title={baslik ?? ''}

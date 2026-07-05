@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getProjects, getPosts } from '@/lib/cms/queries';
+import { getProjects, getPosts, getReferences } from '@/lib/cms/queries';
 import { LOCALES } from '@/lib/locales';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
@@ -24,9 +24,10 @@ const STATIC_PATHS: string[] = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projects, posts] = await Promise.all([
+  const [projects, posts, references] = await Promise.all([
     getProjects(),
     getPosts(),
+    getReferences(),
   ]);
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_PATHS.flatMap((path) =>
@@ -55,5 +56,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  return [...staticEntries, ...projectEntries, ...postEntries];
+  const referenceEntries: MetadataRoute.Sitemap = references
+    .filter((ref) => ref.slug)
+    .flatMap((ref) =>
+      LOCALES.map((locale) => ({
+        url: `${SITE_URL}/${locale}/referanslar/${ref.slug}`,
+        changeFrequency: 'monthly' as const,
+        priority: 0.7,
+      })),
+    );
+
+  return [...staticEntries, ...projectEntries, ...postEntries, ...referenceEntries];
 }
