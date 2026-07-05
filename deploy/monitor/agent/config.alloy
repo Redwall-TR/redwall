@@ -20,15 +20,33 @@ prometheus.exporter.cadvisor "cadvisor" {
   storage_duration = "5m"
 }
 
+// instance etiketini okunur sunucu adına sabitle (yoksa Alloy container'ının rastgele
+// hostname'i gelir → dashboard'larda "jq1w9fmlvf" gibi görünür).
+discovery.relabel "node" {
+  targets = prometheus.exporter.unix.node.targets
+  rule {
+    target_label = "instance"
+    replacement  = sys.env("AGENT_HOSTNAME")
+  }
+}
+
+discovery.relabel "cadvisor" {
+  targets = prometheus.exporter.cadvisor.cadvisor.targets
+  rule {
+    target_label = "instance"
+    replacement  = sys.env("AGENT_HOSTNAME")
+  }
+}
+
 prometheus.scrape "node" {
-  targets         = prometheus.exporter.unix.node.targets
+  targets         = discovery.relabel.node.output
   forward_to      = [prometheus.remote_write.monitor.receiver]
   scrape_interval = "30s"
   job_name        = "node"
 }
 
 prometheus.scrape "cadvisor" {
-  targets         = prometheus.exporter.cadvisor.cadvisor.targets
+  targets         = discovery.relabel.cadvisor.output
   forward_to      = [prometheus.remote_write.monitor.receiver]
   scrape_interval = "30s"
   job_name        = "cadvisor"

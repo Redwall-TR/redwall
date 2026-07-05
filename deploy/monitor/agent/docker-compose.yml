@@ -23,11 +23,16 @@ services:
       - LOKI_PASS=${LOKI_PASS}
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy:ro
-      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - alloy-data:/var/lib/alloy/data
+      # node (unix) exporter — /host/* yolları
       - /:/host/root:ro,rslave
       - /proc:/host/proc:ro
       - /sys:/host/sys:ro
-      - alloy-data:/var/lib/alloy/data
+      # cadvisor — container cgroup/metadata için standart yollar (salt-okuma)
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
     # Host ağı: unix exporter host arayüzlerini görsün; HTTP arayüzü yalnız 127.0.0.1:12345 (dışa kapalı).
     network_mode: host
     pid: host
