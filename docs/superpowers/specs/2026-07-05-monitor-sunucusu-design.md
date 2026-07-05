@@ -90,5 +90,6 @@ HEDEF SUNUCULARDA (her biri salt-okuma):
 UI'lar geçerli sertifikayla açılıyor; Prometheus hedefleri "up"; Grafana veri kaynakları yeşil; test log satırı Loki'de; Kuma monitörleri yeşil; kasıtlı test alarmı Telegram + e-postaya düşüyor.
 
 ## Kapsam dışı (YAGNI)
+- **YangınPro production sunucuları:** henüz mevcut değil, çok sonra kurulacak. Faz 2'ye DAHİL DEĞİL. Mimari bunları ileride aynı Faz-2 deseniyle (agent + ufw + scrape/log/monitor) sorunsuz kaldırır — o gün sadece hedef eklenir, tasarım değişmez.
 - Uzun-dönem metrik arşivi (Thanos/Mimir), tracing (Tempo), APM. İhtiyaç doğarsa ayrı proje.
 - WireGuard mesh: firewall-tabanlı erişim yeterli; hardening istenirse sonra.
