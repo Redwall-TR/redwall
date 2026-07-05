@@ -9,6 +9,7 @@ import { getSiteSettings } from '@/lib/cms/queries';
 import { mediaUrl } from '@/lib/cms/image';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { organizationJsonLd, websiteJsonLd } from '@/lib/jsonLd';
+import { Analytics } from '@/components/analytics/Analytics';
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -63,6 +64,7 @@ export default async function LocaleLayout({
   return (
     <NextIntlClientProvider>
       <div className="flex min-h-screen flex-col">
+        <Analytics />
         <JsonLd data={orgLd} />
         <JsonLd data={siteLd} />
         <Header locale={locale} logoAcik={navbarLogoAcik} logoKoyu={navbarLogoKoyu} />
