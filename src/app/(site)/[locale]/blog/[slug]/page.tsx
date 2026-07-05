@@ -52,7 +52,13 @@ export async function generateMetadata({
     const fallbackBaslik = loc === 'tr' ? 'Blog Yazısı | Redwall' : 'Blog Post | Redwall';
     const fallbackAciklama =
       loc === 'tr' ? 'Redwall blog yazısı.' : 'Redwall blog post.';
-    return buildMetadata({ baslik: fallbackBaslik, aciklama: fallbackAciklama, locale: loc, path: `/blog/${slug}` });
+    return buildMetadata({
+      baslik: fallbackBaslik,
+      aciklama: fallbackAciklama,
+      locale: loc,
+      path: `/blog/${slug}`,
+      type: 'article',
+    });
   }
 
   const baslik = (pick(data.baslik, loc) ?? data.baslik.tr) + ' | Redwall';
@@ -61,7 +67,22 @@ export async function generateMetadata({
       ? 'Redwall blog yazısı — sektörden görüşler ve haberler.'
       : 'Redwall blog post — industry insights and news.';
 
-  return buildMetadata({ baslik, aciklama, locale: loc, path: `/blog/${slug}` });
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
+  const kapakUrl = data.kapak ? mediaUrl(data.kapak) : undefined;
+  const gorselUrl = kapakUrl
+    ? kapakUrl.startsWith('http')
+      ? kapakUrl
+      : `${SITE_URL}${kapakUrl}`
+    : undefined;
+
+  return buildMetadata({
+    baslik,
+    aciklama,
+    locale: loc,
+    path: `/blog/${slug}`,
+    type: 'article',
+    gorselUrl,
+  });
 }
 
 // ── Page ──────────────────────────────────────────────────────────────────────
