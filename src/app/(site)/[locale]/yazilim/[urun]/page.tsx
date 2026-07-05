@@ -13,6 +13,9 @@ import { SectionHeading } from '@/components/sections/page-blocks';
 import ProductFeatures, { type Feature } from '@/components/sections/ProductFeatures';
 import { ACCENT } from '@/lib/theme';
 import { FALLBACK, FEATURE_ICONS, KNOWN_SLUGS, type KnownSlug, type LocaleString } from '@/data/urun-fallback';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { softwareAppJsonLd, breadcrumbJsonLd } from '@/lib/jsonLd';
+import { lexicalToPlainText } from '@/lib/lexicalToPlainText';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -281,8 +284,25 @@ export default async function UrunDetayPage({
     ? `${ad} şu kullanıcı gruplarına hitap etmektedir:`
     : `${ad} is designed for the following user groups:`;
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
+  const urunUrl = `${SITE_URL}/${locale}/yazilim/${urun}`;
+  const appDescription = aciklama != null ? lexicalToPlainText(aciklama) || undefined : undefined;
+  const appLd = softwareAppJsonLd({
+    name: ad,
+    description: appDescription,
+    url: urunUrl,
+    category: 'BusinessApplication',
+  });
+  const bcLd = breadcrumbJsonLd([
+    { name: isTr ? 'Ana Sayfa' : 'Home', url: `${SITE_URL}/${locale}` },
+    { name: isTr ? 'Yazılım' : 'Software', url: `${SITE_URL}/${locale}/yazilim` },
+    { name: ad, url: urunUrl },
+  ]);
+
   return (
     <>
+      <JsonLd data={appLd} />
+      <JsonLd data={bcLd} />
       {/* Hero */}
       <PageHero
         eyebrow={isTr ? 'Yazılım Ürünü' : 'Software Product'}

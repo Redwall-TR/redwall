@@ -12,6 +12,9 @@ import { PageHero } from '@/components/sections/PageHero';
 import { SectionHeading } from '@/components/sections/page-blocks';
 import { ServiceIcon } from '@/components/ui/icons';
 import { ACCENT } from '@/lib/theme';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { faqPageJsonLd } from '@/lib/jsonLd';
+import { lexicalToPlainText } from '@/lib/lexicalToPlainText';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -205,8 +208,15 @@ export default async function SssPage({
     ? ['Genel', 'Yazılım', 'Danışmanlık', 'Mühendislik']
     : ['General', 'Software', 'Consulting', 'Engineering'];
 
+  const faqItems = faqs.map((f) => ({
+    question: pick(f.soru, loc) ?? '',
+    answer: lexicalToPlainText(pick(f.cevap, loc)),
+  }));
+  const faqLd = faqPageJsonLd(faqItems);
+
   return (
     <>
+      <JsonLd data={faqLd} />
       <PageHero
         eyebrow={isTr ? 'Yardım' : 'Help'}
         title={pageBaslik}

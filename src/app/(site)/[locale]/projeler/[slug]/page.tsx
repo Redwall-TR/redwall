@@ -15,6 +15,8 @@ import { ServiceIcon } from '@/components/ui/icons';
 import { RichContent } from '@/components/ui/RichContent';
 import type { IsKolu, ProjeDurumu } from '@/types';
 import { ACCENT } from '@/lib/theme';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { breadcrumbJsonLd } from '@/lib/jsonLd';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -125,8 +127,17 @@ export default async function ProjeDetayPage({
     data.il,
   ].filter((v): v is string => Boolean(v));
 
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
+  const projeUrl = `${SITE_URL}/${locale}/projeler/${slug}`;
+  const bcLd = breadcrumbJsonLd([
+    { name: isTr ? 'Ana Sayfa' : 'Home', url: `${SITE_URL}/${locale}` },
+    { name: isTr ? 'Projeler' : 'Projects', url: `${SITE_URL}/${locale}/projeler` },
+    { name: baslik ?? slug, url: projeUrl },
+  ]);
+
   return (
     <>
+      <JsonLd data={bcLd} />
       <PageHero
         eyebrow={isKoluLabel(data.isKolu, locale)}
         title={baslik}

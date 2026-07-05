@@ -13,6 +13,8 @@ import { RichContent } from '@/components/ui/RichContent';
 import { PageHero } from '@/components/sections/PageHero';
 import { ServiceIcon } from '@/components/ui/icons';
 import { ACCENT } from '@/lib/theme';
+import { JsonLd } from '@/components/seo/JsonLd';
+import { articleJsonLd, breadcrumbJsonLd } from '@/lib/jsonLd';
 
 // ── Types ─────────────────────────────────────────────────────────────────────
 
@@ -26,6 +28,7 @@ interface PostData {
   tarih?: string;
   kapak?: unknown;
   icerik?: Record<string, unknown>;
+  ozet?: LocaleString;
 }
 
 // ── Rendering ───────────────────────────────────────────────────────────────
@@ -85,9 +88,28 @@ export default async function BlogDetayPage({
     : undefined;
 
   const imgSrc = data.kapak ? mediaUrl(data.kapak) ?? null : null;
+  const aciklama = data.ozet ? pick(data.ozet, locale) ?? undefined : undefined;
+
+  const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
+  const postUrl = `${SITE_URL}/${locale}/blog/${slug}`;
+  const articleLd = articleJsonLd({
+    headline: baslik ?? '',
+    description: aciklama,
+    datePublished: data.tarih ?? undefined,
+    imageUrl: imgSrc ? (imgSrc.startsWith('http') ? imgSrc : `${SITE_URL}${imgSrc}`) : undefined,
+    url: postUrl,
+    authorName: 'Redwall',
+  });
+  const bcLd = breadcrumbJsonLd([
+    { name: isTr ? 'Ana Sayfa' : 'Home', url: `${SITE_URL}/${locale}` },
+    { name: 'Blog', url: `${SITE_URL}/${locale}/blog` },
+    { name: baslik ?? '', url: postUrl },
+  ]);
 
   return (
     <>
+      <JsonLd data={articleLd} />
+      <JsonLd data={bcLd} />
       <PageHero
         eyebrow="Blog"
         title={baslik ?? ''}

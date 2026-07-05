@@ -362,6 +362,7 @@ export async function getPost(slug: string) {
       tarih: r.tarih,
       kapak: r.kapak,
       icerik: r.icerik,
+      ozet: r.ozet,
     }
   }, null)
 }
