@@ -8,6 +8,14 @@ services:
   alloy:
     image: grafana/alloy:v1.17.1
     restart: unless-stopped
+    # Container hostname = sunucu adı → node_exporter uname (nodename) ve exporter
+    # instance etiketi baştan okunur gelir (erp/yp-test/... — rastgele container id değil).
+    hostname: ${AGENT_HOSTNAME}
+    # Güvenilir resolver: push.redwall.tr'ı hedefin yavaş DNS'i yerine Cloudflare çözer
+    # (host /etc/hosts köprüsüne gerek kalmaz).
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
     command:
       - run
       - /etc/alloy/config.alloy
@@ -33,8 +41,8 @@ services:
       - /sys:/sys:ro
       - /var/lib/docker:/var/lib/docker:ro
       - /dev/disk:/dev/disk:ro
-    # Host ağı: unix exporter host arayüzlerini görsün; HTTP arayüzü yalnız 127.0.0.1:12345 (dışa kapalı).
-    network_mode: host
+    # NOT: network_mode: host KULLANILMAZ (hostname/dns ile çakışır). Ağ metrikleri
+    # /host/proc/net'ten okunur; Alloy exporter'ları in-process scrape edilir.
     pid: host
     # cadvisor + unix exporter host kaynaklarına erişir (salt-okuma mount'lar).
     privileged: true
