@@ -40,11 +40,11 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const baslik = loc === 'tr' ? 'Dokümanlar — Redwall' : 'Documents — Redwall';
+  const baslik = loc === 'tr' ? 'Katalog, Sertifika ve Teknik Dokümanlar | Redwall' : 'Catalogs, Certificates & Technical Documents | Redwall';
   const aciklama =
     loc === 'tr'
-      ? 'Redwall katalog, sertifika ve teknik dokümanlarını indirin.'
-      : 'Download Redwall catalogs, certificates and technical documents.';
+      ? 'Redwall\'ın yangın güvenliği katalogları, kalite sertifikaları ve teknik dokümanlarını inceleyin, ihtiyacınız olanları hemen indirin.'
+      : 'Browse Redwall\'s fire-safety catalogs, quality certificates, and technical documents, and download the ones you need right away.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/dokumanlar' });
 }

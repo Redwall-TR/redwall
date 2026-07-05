@@ -17,10 +17,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Vizyon & Misyon | Redwall' : 'Vision & Mission | Redwall';
+  const baslik = isTr ? 'Vizyon & Misyon — Redwall Yangın Güvenliği Şirketi' : 'Vision & Mission — Redwall Fire Safety Company';
   const aciklama = isTr
-    ? "Redwall'ın vizyonu, misyonu ve temel değerleri — yangın güvenliğinde lider bütünleşik çözüm ortağı olma hedefi."
-    : "Redwall's vision, mission, and core values — the goal of becoming a leading integrated fire safety partner.";
+    ? "Redwall'ın vizyonu, misyonu ve temel değerleri — yangın güvenliğinde lider bütünleşik çözüm ortağı olma hedefimizi ve kurumsal ilkelerimizi keşfedin."
+    : "Redwall's vision, mission, and core values — discover our goal of becoming the leading integrated fire-safety solution partner and our guiding principles.";
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/kurumsal/vizyon-misyon' });
 }

@@ -39,10 +39,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Yazılım | Redwall' : 'Software | Redwall';
+  const baslik = isTr ? 'YangınPro & MekanikPro Yangın Güvenliği Yazılımı | Redwall' : 'YangınPro & MekanikPro Fire Safety Software | Redwall';
   const aciklama = isTr
-    ? 'Fikri mülkiyeti Redwall\'a ait YangınPro ve MekanikPro yazılımları ile yangın ve mekanik mühendislik süreçlerinizi dijitalleştirin.'
-    : 'Digitise your fire and mechanical engineering workflows with YangınPro and MekanikPro — proprietary software developed and owned by Redwall.';
+    ? 'Fikri mülkiyeti Redwall\'a ait YangınPro ve MekanikPro yazılımlarıyla yangın ve mekanik mühendislik süreçlerinizi dijitalleştirin, mevzuat uyumunu kolaylaştırın.'
+    : 'Digitise your fire and mechanical engineering workflows with YangınPro and MekanikPro — proprietary software developed and owned by Redwall for full compliance.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/yazilim' });
 }

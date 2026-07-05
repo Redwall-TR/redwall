@@ -45,13 +45,13 @@ export async function generateMetadata({
 
   const title: string =
     (seo?.baslik ? (pick(seo.baslik as LocaleString, loc) ?? undefined) : undefined) ??
-    (loc === 'tr' ? 'Redwall — Yangın Güvenliği Çözümleri' : 'Redwall — Fire Safety Solutions');
+    (loc === 'tr' ? 'Redwall — Yangın Güvenliği Danışmanlık ve Mühendislik' : 'Redwall — Fire Safety Consulting & Engineering');
 
   const description: string =
     (seo?.aciklama ? (pick(seo.aciklama as LocaleString, loc) ?? undefined) : undefined) ??
     (loc === 'tr'
-      ? 'Yangın güvenliğinde yazılım, danışmanlık ve mühendislik hizmetleriyle uçtan uca çözümler.'
-      : 'End-to-end fire safety solutions covering software, consulting, and engineering.');
+      ? 'Yangın güvenliğinde danışmanlık, mühendislik ve YangınPro/MekanikPro yazılımlarıyla uçtan uca çözümler. İtfaiye raporu ve mevzuat uyumunda güvenilir ortağınız.'
+      : 'End-to-end fire safety solutions: consulting, engineering, and YangınPro/MekanikPro software — your trusted partner for compliance and fire-department approval.');
 
   return buildMetadata({ baslik: title, aciklama: description, locale: loc, path: '' });
 }

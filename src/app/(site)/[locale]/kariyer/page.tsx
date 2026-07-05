@@ -34,10 +34,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Kariyer | Redwall' : 'Careers | Redwall';
+  const baslik = isTr ? 'Kariyer Fırsatları — Redwall Yangın Güvenliği Ailesi' : 'Careers at Redwall — Join Our Fire Safety Team';
   const aciklama = isTr
-    ? 'Redwall ailesinin bir parçası olmak için açık pozisyonlarımızı keşfedin.'
-    : 'Explore our open positions and join the Redwall team.';
+    ? 'Redwall ailesinin bir parçası olmak için yangın güvenliği, mühendislik ve yazılım alanlarındaki açık pozisyonlarımızı keşfedin, hemen başvurun.'
+    : 'Explore our open positions in fire safety, engineering, and software, and join the Redwall team to build your career with us today.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/kariyer' });
 }

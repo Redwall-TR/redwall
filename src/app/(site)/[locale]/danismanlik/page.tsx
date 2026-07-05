@@ -16,10 +16,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Yangın Danışmanlığı | Redwall' : 'Fire Consulting | Redwall';
+  const baslik = isTr ? 'Yangın Güvenliği Danışmanlığı & İtfaiye Raporu | Redwall' : 'Fire Safety Consulting & Fire Department Approval | Redwall';
   const aciklama = isTr
-    ? 'İtfaiyeden olumlu rapor almak, mevzuata tam uyum sağlamak ve yangın güvenliği projelerinizi doğru şekilde yönetmek için profesyonel danışmanlık hizmetleri.'
-    : 'Professional consulting services to obtain a positive fire-department report, achieve full regulatory compliance, and correctly manage your fire-safety projects.';
+    ? 'İtfaiyeden olumlu rapor almak, mevzuata tam uyum sağlamak ve yangın güvenliği projelerinizi doğru yönetmek için profesyonel danışmanlık hizmetleri sunuyoruz.'
+    : 'Professional fire consulting to obtain a positive fire-department report, achieve full regulatory compliance, and correctly manage your fire-safety projects.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/danismanlik' });
 }

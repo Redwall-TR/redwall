@@ -22,11 +22,11 @@ export async function generateMetadata({
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
   const baslik = isTr
-    ? 'KVKK İlgili Kişi Başvuru Formu | Redwall'
-    : 'KVKK Data Subject Request Form | Redwall';
+    ? 'KVKK İlgili Kişi Başvuru Formu — Redwall Veri Talebi'
+    : 'KVKK Data Subject Request Form — Redwall Privacy';
   const aciklama = isTr
-    ? 'Kişisel verilerinize ilişkin KVKK kapsamındaki haklarınızı kullanmak için başvuru formunu doldurun.'
-    : 'Submit a request to exercise your rights regarding your personal data under the KVKK.';
+    ? 'Kişisel verilerinize ilişkin KVKK kapsamındaki haklarınızı kullanmak için Redwall ilgili kişi başvuru formunu eksiksiz doldurup gönderin.'
+    : 'Submit Redwall\'s data subject request form to exercise your rights regarding your personal data under Turkey\'s KVKK regulation.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/yasal/kvkk-basvuru' });
 }

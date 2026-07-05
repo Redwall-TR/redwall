@@ -17,10 +17,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Hakkımızda | Redwall' : 'About Us | Redwall';
+  const baslik = isTr ? 'Hakkımızda — Redwall Yangın Güvenliği Şirketi' : 'About Us — Redwall Integrated Fire Safety Company';
   const aciklama = isTr
-    ? 'Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri — yazılım, danışmanlık ve mühendisliği tek çatı altında birleştiren bütünleşik bir yangın güvenliği şirketi.'
-    : 'Redwall Fire Safety — an integrated fire safety company uniting software, consulting, and engineering under one roof.';
+    ? 'Redwall Yangın Danışmanlık Yazılım ve Mühendislik Hizmetleri — yazılım, danışmanlık ve mühendisliği tek çatıda birleştiren bütünleşik yangın güvenliği şirketi.'
+    : 'Redwall Fire Safety — an integrated company uniting software, consulting, and engineering under one roof to deliver complete fire-safety solutions.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/kurumsal/hakkimizda' });
 }

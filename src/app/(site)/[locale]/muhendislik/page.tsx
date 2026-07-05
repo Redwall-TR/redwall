@@ -16,10 +16,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Mühendislik & Uygulama | Redwall' : 'Engineering & Application | Redwall';
+  const baslik = isTr ? 'Yangın Mühendisliği & Söndürme Sistemi Uygulama | Redwall' : 'Fire Engineering & Suppression System Installation | Redwall';
   const aciklama = isTr
-    ? 'Aktif söndürme, pasif önleme, saha uygulaması, sıhhi tesisat ve periyodik bakım alanlarında uçtan uca mühendislik ve taahhüt hizmetleri.'
-    : 'End-to-end engineering and contracting services in active suppression, passive prevention, field application, plumbing installation, and periodic maintenance.';
+    ? 'Aktif söndürme, pasif önleme, saha uygulaması, sıhhi tesisat ve periyodik bakım alanlarında uçtan uca yangın mühendisliği ve taahhüt hizmetleri sunuyoruz.'
+    : 'End-to-end fire engineering and contracting services covering active suppression, passive prevention, field installation, plumbing, and periodic maintenance.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/muhendislik' });
 }

@@ -21,11 +21,11 @@ export async function generateMetadata({
   const { locale } = await params;
   const loc: Locale = isLocale(locale) ? locale : 'tr';
 
-  const baslik = loc === 'tr' ? 'Projeler — Redwall' : 'Projects — Redwall';
+  const baslik = loc === 'tr' ? 'Tamamlanan & Devam Eden Yangın Güvenliği Projeleri | Redwall' : 'Completed & Ongoing Fire Safety Projects | Redwall';
   const aciklama =
     loc === 'tr'
-      ? 'Redwall\'ın tamamlanan ve devam eden projelerini iş koluna göre filtreleyin.'
-      : 'Browse Redwall\'s completed and ongoing projects, filtered by business line.';
+      ? 'Redwall\'ın tamamlanan ve devam eden yangın güvenliği projelerini iş koluna, sektöre ve konuma göre filtreleyerek inceleyin.'
+      : 'Browse Redwall\'s completed and ongoing fire-safety projects, filtered by business line, sector, and location for easy discovery.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/projeler' });
 }
