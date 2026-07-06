@@ -1,16 +1,39 @@
+# Umami web analitiği — monitör Traefik'ine bağlı (analitik.redwall.tr).
+# TLS: Cloudflare "Full" → Traefik self-signed sunar (tls=true, ACME yok), monitör deseniyle aynı.
+# Umami v3 birleşik image (v2'deki postgresql-latest split + DATABASE_TYPE kaldırıldı).
+# Deploy (sunucuda /opt/umami): docker compose up -d
+name: umami
+
+networks:
+  internal:
+  monitor-net:
+    external: true
+    name: monitor_monitor-net
+
+volumes:
+  umami-db-data:
+
 services:
   umami:
-    image: ghcr.io/umami-software/umami:postgresql-latest
+    image: ghcr.io/umami-software/umami:latest
     environment:
       DATABASE_URL: postgresql://umami:${UMAMI_DB_PASSWORD}@umami-db:5432/umami
-      DATABASE_TYPE: postgresql
       APP_SECRET: ${UMAMI_APP_SECRET}
     depends_on:
       umami-db:
         condition: service_healthy
-    ports:
-      - "3001:3000"
+    networks:
+      - internal
+      - monitor-net
     restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=monitor_monitor-net
+      - traefik.http.routers.umami.rule=Host(`analitik.redwall.tr`)
+      - traefik.http.routers.umami.entrypoints=websecure
+      - traefik.http.routers.umami.tls=true
+      - traefik.http.services.umami.loadbalancer.server.port=3000
+
   umami-db:
     image: postgres:16-alpine
     environment:
@@ -19,11 +42,11 @@ services:
       POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD}
     volumes:
       - umami-db-data:/var/lib/postgresql/data
+    networks:
+      - internal
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U umami -d umami"]
       interval: 5s
       timeout: 5s
       retries: 10
     restart: unless-stopped
-volumes:
-  umami-db-data:
