@@ -1,0 +1,87 @@
+# redwall.tr — Tier-1, tam SLO seti (erişilebilirlik + başarı + gecikme).
+# Hedef felsefesi: ulaşılabilirden başla (%99.5), ilk 28g gözden geçirmesinde sıkılaştır (spec §5).
+version: "prometheus/v1"
+service: "redwall-tr"
+labels:
+  tier: "1"
+slos:
+  # Erişilebilirlik — Kuma dış prob (blackbox). == bool 0: yalnız DOWN hata sayılır
+  # (2=pending, 3=bakım bütçe YAKMAZ). Subquery 1m çözünürlük. max(): monitör
+  # yeniden-oluşturmada kısa süreli çift seri korunması.
+  # monitor_name="Resmi Web Sitesi" → redwall.tr'nin ana URL monitörü (Kuma'da doğrulandı,
+  # monitor_url="https://redwall.tr"); "Kurumsal Health" (/api/health) BU DEĞİL.
+  - name: availability
+    objective: 99.5
+    description: "redwall.tr dışarıdan erişilebilir (Kuma prob, CF+DNS+TLS dahil)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="Resmi Web Sitesi"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: RedwallTrAvailability
+      labels:
+        service: redwall-tr
+        tier: "1"
+        category: availability
+      annotations:
+        summary: "redwall.tr erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket
+
+  # Başarı oranı — Traefik RED (whitebox): 5xx / tüm istekler.
+  # service="redwall@swarm" → Step 2 keşfinde doğrulandı (instance="redwall-kurumsal").
+  # Sıfır-trafik: 0/0=NaN → alarm ateşlemez (körlük Kuma SLO'suyla kapalı — hibrit).
+  - name: success
+    objective: 99.5
+    description: "redwall.tr isteklerinin %99.5'i 5xx değil"
+    labels:
+      category: success
+    sli:
+      events:
+        error_query: sum(rate(traefik_service_requests_total{instance="redwall-kurumsal",service="redwall@swarm",code=~"5.."}[{{.window}}]))
+        total_query: sum(rate(traefik_service_requests_total{instance="redwall-kurumsal",service="redwall@swarm"}[{{.window}}]))
+    alerting:
+      name: RedwallTrSuccess
+      labels:
+        service: redwall-tr
+        tier: "1"
+        category: success
+      annotations:
+        summary: "redwall.tr 5xx oranı SLO bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket
+
+  # Gecikme — eşik-tabanlı (spec §5): isteklerin %99'u < 1.2s (1.2 = Traefik varsayılan
+  # histogram kovası; kova olmayan eşik ölçülemez, kova-hizalı eşik endüstri pratiği).
+  - name: latency
+    objective: 99
+    description: "redwall.tr isteklerinin %99'u 1.2s'den hızlı"
+    labels:
+      category: latency
+    sli:
+      events:
+        error_query: (sum(rate(traefik_service_request_duration_seconds_count{instance="redwall-kurumsal",service="redwall@swarm"}[{{.window}}])) - sum(rate(traefik_service_request_duration_seconds_bucket{instance="redwall-kurumsal",service="redwall@swarm",le="1.2"}[{{.window}}])))
+        total_query: sum(rate(traefik_service_request_duration_seconds_count{instance="redwall-kurumsal",service="redwall@swarm"}[{{.window}}]))
+    alerting:
+      name: RedwallTrLatency
+      labels:
+        service: redwall-tr
+        tier: "1"
+        category: latency
+      annotations:
+        summary: "redwall.tr yavaş istek oranı SLO bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket

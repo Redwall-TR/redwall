@@ -50,7 +50,7 @@ Traefik metrikleri Tur 1'de `:8082`'de canlı ve Traefik-RED dashboard'unda doğ
 |---|---|---|---|
 | **Erişilebilirlik** | Kuma `monitor_status` | `raw` (error_ratio_query) | `1 - avg_over_time(monitor_status{monitor_name="<svc>"}[{{.window}}])` |
 | **Başarı oranı** | `traefik_service_requests_total{service,code}` | `events` | total = tüm istekler; error = `code=~"5.."` |
-| **Gecikme** | `traefik_service_request_duration_seconds_bucket{service,le}` | `events` | total = tüm istekler; error = 1s eşiğini aşanlar (`le="1"` kovası dışı) |
+| **Gecikme** | `traefik_service_request_duration_seconds_bucket{service,le}` | `events` | total = tüm istekler; error = 1.2s (Traefik varsayılan histogram kovası — kova-hizalı eşik) eşiğini aşanlar (`le="1.2"` kovası dışı) |
 
 > Not: gerçek `service`/`monitor_name` etiket değerleri uygulama sırasında Prometheus/Kuma'dan doğrulanacak (Traefik servis adları `<stack>-<svc>@swarm` biçiminde olabilir; Kuma monitör adları Faz 3'te tanımlanan 10 monitör).
 >
@@ -60,7 +60,7 @@ Traefik metrikleri Tur 1'de `:8082`'de canlı ve Traefik-RED dashboard'unda doğ
 
 | Kademe | Servisler | SLO'lar | Başlangıç hedefi | Alarm |
 |---|---|---|---|---|
-| **Tier-1** | redwall.tr, erp, license | erişilebilirlik + başarı (+ redwall.tr'ye gecikme) | erişilebilirlik %99.5, başarı %99.5, gecikme: isteklerin %99'u < 1s | **acil** (Telegram+e-posta) |
+| **Tier-1** | redwall.tr, erp, license | erişilebilirlik + başarı (+ redwall.tr'ye gecikme) | erişilebilirlik %99.5, başarı %99.5, gecikme: isteklerin %99'u < 1.2s (Traefik varsayılan histogram kovası — kova-hizalı eşik) | **acil** (Telegram+e-posta) |
 | **Tier-1** | registry | **yalnız erişilebilirlik** (makine/CI trafiği, düşük hacim — istek-tabanlı SLO gürültülü olur) | %99.5 | **acil** |
 | **Tier-2** | YP test, YP test-api, YP shtest, YP shtest-api, monitor, **durum**, analitik, hata, **loki** | yalnız erişilebilirlik | %99 | **uyarı** (yalnız e-posta) |
 | **Tier-1 (gelecek)** | 🔜 YangınPro production | tam set | en yüksek öncelik | acil |
@@ -74,7 +74,7 @@ Traefik metrikleri Tur 1'de `:8082`'de canlı ve Traefik-RED dashboard'unda doğ
 
 - **Pencere:** 28-günlük yuvarlanan (SRE standardı). Hata bütçesi = 1 − hedef.
 - **Hedef felsefesi (SRE Workbook):** hedefler *ulaşılabilir* seviyeden başlar (henüz 28g ölçüm geçmişi yok; tek-origin/HA'sız sunucularda %99.9 ile başlamak "aspirational SLO" anti-pattern'i olur → bütçe ilk ayda biter, alarm yorgunluğu). **İlk hata-bütçesi penceresi (28g) sonunda gözden geçirme**: ölçülen performans hedefi rahat karşılıyorsa Tier-1 erişilebilirlik %99.9'a sıkılaştırılır. Bu gözden geçirme runbook'ta adımdır.
-- **Gecikme SLO biçimi:** eşik-tabanlı ("isteklerin %X'i < 1s") — percentile ("p95<1s") hata bütçesine çevrilemediği için SLO'larda kullanılmaz; bölüm 4'teki events SLI tanımıyla birebir uyumlu.
+- **Gecikme SLO biçimi:** eşik-tabanlı ("isteklerin %X'i < 1.2s", Traefik varsayılan histogram kovası — kova-hizalı eşik) — percentile ("p95<1.2s") hata bütçesine çevrilemediği için SLO'larda kullanılmaz; bölüm 4'teki events SLI tanımıyla birebir uyumlu.
 - **Genişletme deseni:** yeni servis = `slos/<svc>.yml` (kademe = label), `generate.sh`, commit. Kural/dashboard elle düzenlenmez.
 
 ## 6. Bileşenler ve dosya düzeni
