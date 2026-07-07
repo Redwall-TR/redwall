@@ -1,0 +1,95 @@
+{
+  "title": "Redwall NOC",
+  "uid": "redwall-noc",
+  "tags": ["redwall", "noc", "slo"],
+  "timezone": "browser",
+  "refresh": "30s",
+  "time": { "from": "now-6h", "to": "now" },
+  "schemaVersion": 39,
+  "panels": [
+    {
+      "type": "stat", "title": "Servis Sağlığı (Kuma — dış prob)",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "monitor_status", "legendFormat": "{{monitor_name}}", "refId": "A" }],
+      "options": { "colorMode": "background", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "mappings": [{ "type": "value", "options": {
+        "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" },
+        "2": { "text": "BEKLEME", "color": "yellow" }, "3": { "text": "BAKIM", "color": "blue" } } }],
+        "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] }
+    },
+    {
+      "type": "bargauge", "title": "Hata Bütçesi Kalan — 28g (%)",
+      "gridPos": { "h": 8, "w": 14, "x": 0, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "clamp_min(slo:period_error_budget_remaining:ratio, -1) * 100", "legendFormat": "{{sloth_service}} · {{sloth_slo}}", "refId": "A" }],
+      "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": -100, "max": 100,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "red", "value": null }, { "color": "orange", "value": 10 },
+          { "color": "yellow", "value": 30 }, { "color": "green", "value": 55 } ] } }, "overrides": [] }
+    },
+    {
+      "type": "stat", "title": "Burn Rate (anlık — 1.0 = tam bütçe hızında)",
+      "gridPos": { "h": 8, "w": 10, "x": 14, "y": 6 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "slo:current_burn_rate:ratio", "legendFormat": "{{sloth_service}} · {{sloth_slo}}", "refId": "A" }],
+      "options": { "colorMode": "background", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "decimals": 1,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "yellow", "value": 1 },
+          { "color": "orange", "value": 3 }, { "color": "red", "value": 6 } ] } }, "overrides": [] }
+    },
+    {
+      "type": "table", "title": "Aktif Alarmlar (SLO + meta)",
+      "gridPos": { "h": 7, "w": 24, "x": 0, "y": 14 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "ALERTS{alertstate=\"firing\"}", "format": "table", "instant": true, "refId": "A" }],
+      "options": {},
+      "fieldConfig": { "defaults": {}, "overrides": [] },
+      "transformations": [{ "id": "organize", "options": { "excludeByName": { "Time": true, "Value": true, "__name__": true } } }]
+    },
+    {
+      "type": "bargauge", "title": "CPU (%) — 6 sunucu",
+      "gridPos": { "h": 7, "w": 8, "x": 0, "y": 21 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "100 * (1 - avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))", "legendFormat": "{{instance}}", "refId": "A" }],
+      "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "yellow", "value": 70 }, { "color": "red", "value": 90 } ] } }, "overrides": [] }
+    },
+    {
+      "type": "bargauge", "title": "Bellek (%) — 6 sunucu",
+      "gridPos": { "h": 7, "w": 8, "x": 8, "y": 21 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "100 * (1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)", "legendFormat": "{{instance}}", "refId": "A" }],
+      "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "yellow", "value": 80 }, { "color": "red", "value": 90 } ] } }, "overrides": [] }
+    },
+    {
+      "type": "bargauge", "title": "Disk / (%) — 6 sunucu",
+      "gridPos": { "h": 7, "w": 8, "x": 16, "y": 21 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "100 - 100 * (node_filesystem_avail_bytes{mountpoint=\"/\",fstype!=\"\"} / node_filesystem_size_bytes{mountpoint=\"/\",fstype!=\"\"})", "legendFormat": "{{instance}}", "refId": "A" }],
+      "options": { "displayMode": "gradient", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "percent", "min": 0, "max": 100,
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "yellow", "value": 75 }, { "color": "red", "value": 85 } ] } }, "overrides": [] }
+    },
+    {
+      "type": "timeseries", "title": "Tier-1 p95 gecikme (bilgi amaçlı — SLO eşiği 1.2s)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 28 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=\"redwall@swarm\",instance=\"redwall-kurumsal\"}[5m])))", "legendFormat": "redwall.tr p95", "refId": "A" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=\"frontend@docker\",instance=\"redwall-erp\"}[5m])))", "legendFormat": "erp p95", "refId": "B" },
+        { "expr": "histogram_quantile(0.95, sum by (le) (rate(traefik_service_request_duration_seconds_bucket{service=\"license@docker\",instance=\"redwall-license\"}[5m])))", "legendFormat": "license p95", "refId": "C" }
+      ],
+      "options": {},
+      "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    }
+  ]
+}
