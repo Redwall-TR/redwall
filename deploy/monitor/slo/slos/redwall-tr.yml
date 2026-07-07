@@ -35,7 +35,8 @@ slos:
 
   # Başarı oranı — Traefik RED (whitebox): 5xx / tüm istekler.
   # service="redwall@swarm" → Step 2 keşfinde doğrulandı (instance="redwall-kurumsal").
-  # Sıfır-trafik: 0/0=NaN → alarm ateşlemez (körlük Kuma SLO'suyla kapalı — hibrit).
+  # Sıfır-trafik/hiç-5xx: sorgu boş vektör ya da NaN döner → alarm ateşlemez
+  # (körlük Kuma SLO'suyla kapalı — hibrit).
   - name: success
     objective: 99.5
     description: "redwall.tr isteklerinin %99.5'i 5xx değil"

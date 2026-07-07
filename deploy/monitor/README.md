@@ -83,3 +83,5 @@ uid'leri değiştirir ve import eder. Deploy sonrası bir kez çalıştır (idem
 - **Faz 2 (hedef sunucular) — CANLI:** her hedefte Grafana Alloy ajanı (`agent/`) host+container
   metriği + docker loglarını monitör'e PUSH eder (bkz. `agent/README yok — docker-compose.yml + config.alloy`).
   Prometheus remote-write ucu: `push.redwall.tr/api/v1/write` (basic-auth). Log ucu: `loki.redwall.tr`.
+- **SLO alarmları + NOC:** bkz. `slo/README.md` (Sloth üretimi, Alertmanager yönlendirme,
+  yeni servis ekleme, bakım susturması). NOC: https://monitor.redwall.tr/d/redwall-noc (kiosk: ?kiosk&refresh=30s)
