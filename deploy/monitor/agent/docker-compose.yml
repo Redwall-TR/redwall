@@ -46,6 +46,17 @@ services:
     pid: host
     # cadvisor + unix exporter host kaynaklarına erişir (salt-okuma mount'lar).
     privileged: true
+    # Köprü ağı: exporter servisleri (postgres/redis/mysql) traefik-public'te (attachable);
+    # Alloy oraya katılıp servis-DNS'iyle scrape eder. Exporter yoksa (yalnız node/cadvisor)
+    # MON_BRIDGE_NET tanımsız bırakılıp bu bölüm etkisiz kalır — pilotta doğrulanır.
+    networks:
+      - default
+      - monbridge
+
+networks:
+  monbridge:
+    external: true
+    name: ${MON_BRIDGE_NET:-traefik-public}
 
 volumes:
   alloy-data:

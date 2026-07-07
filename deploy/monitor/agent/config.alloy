@@ -65,6 +65,39 @@ prometheus.remote_write "monitor" {
   }
 }
 
+// ════════ UYGULAMA/DB EXPORTER'LARI (ayrı servisler, köprü ağı üzerinden scrape) ════════
+// Exporter'lar traefik-public (attachable) ağında; Alloy o ağa katılıp servis-DNS'iyle kazır.
+// Her *_ADDR env'i o sunucuda ilgili exporter varsa doldurulur; YOKSA ilgili blok o sunucuya
+// deploy edilen config'den ÇIKARILIR (rollout'ta sunucu-bazlı). instance=sunucu adı sabit.
+
+prometheus.scrape "traefik" {
+  targets         = [{ "__address__" = sys.env("TRAEFIK_METRICS_ADDR"), "instance" = sys.env("AGENT_HOSTNAME") }]
+  forward_to      = [prometheus.remote_write.monitor.receiver]
+  scrape_interval = "30s"
+  job_name        = "traefik"
+}
+
+prometheus.scrape "postgres" {
+  targets         = [{ "__address__" = sys.env("PG_EXPORTER_ADDR"), "instance" = sys.env("AGENT_HOSTNAME") }]
+  forward_to      = [prometheus.remote_write.monitor.receiver]
+  scrape_interval = "30s"
+  job_name        = "postgres"
+}
+
+prometheus.scrape "redis" {
+  targets         = [{ "__address__" = sys.env("REDIS_EXPORTER_ADDR"), "instance" = sys.env("AGENT_HOSTNAME") }]
+  forward_to      = [prometheus.remote_write.monitor.receiver]
+  scrape_interval = "30s"
+  job_name        = "redis"
+}
+
+prometheus.scrape "mysql" {
+  targets         = [{ "__address__" = sys.env("MYSQL_EXPORTER_ADDR"), "instance" = sys.env("AGENT_HOSTNAME") }]
+  forward_to      = [prometheus.remote_write.monitor.receiver]
+  scrape_interval = "30s"
+  job_name        = "mysql"
+}
+
 // ════════ LOGLAR ════════
 // Tüm docker container loglarını keşfet + tail → monitör Loki
 discovery.docker "containers" {
