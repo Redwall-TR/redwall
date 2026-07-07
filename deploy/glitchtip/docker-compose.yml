@@ -41,6 +41,7 @@ services:
       - traefik.http.routers.glitchtip.rule=Host(`hata.redwall.tr`)
       - traefik.http.routers.glitchtip.entrypoints=websecure
       - traefik.http.routers.glitchtip.tls=true
+      - traefik.http.routers.glitchtip.middlewares=cloudflare-ips
       - traefik.http.services.glitchtip.loadbalancer.server.port=8000
   glitchtip-worker:
     image: glitchtip/glitchtip:latest
