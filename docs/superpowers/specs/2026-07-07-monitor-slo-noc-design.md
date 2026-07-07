@@ -62,8 +62,15 @@ Traefik metrikleri Tur 1'de `:8082`'de canlı ve Traefik-RED dashboard'unda doğ
 |---|---|---|---|---|
 | **Tier-1** | redwall.tr, erp, license | erişilebilirlik + başarı (+ redwall.tr'ye gecikme) | erişilebilirlik %99.5, başarı %99.5, gecikme: isteklerin %99'u < 1s | **acil** (Telegram+e-posta) |
 | **Tier-1** | registry | **yalnız erişilebilirlik** (makine/CI trafiği, düşük hacim — istek-tabanlı SLO gürültülü olur) | %99.5 | **acil** |
-| **Tier-2** | YP test, YP shtest, monitor, analitik, hata | yalnız erişilebilirlik | %99 | **uyarı** (yalnız e-posta) |
+| **Tier-2** | YP test, YP test-api, YP shtest, YP shtest-api, monitor, **durum**, analitik, hata, **loki** | yalnız erişilebilirlik | %99 | **uyarı** (yalnız e-posta) |
 | **Tier-1 (gelecek)** | 🔜 YangınPro production | tam set | en yüksek öncelik | acil |
+
+**Kapsama notları (tam envanter denetimi, 2026-07-07):**
+- **durum.redwall.tr (Kuma UI) ve loki.redwall.tr (ajan log ucu)** Tier-2'ye eklendi — loki düşerse tüm sunucuların logları *sessizce* durur; izleme zincirinin halkaları da izlenir. İkisi için Kuma'da yeni monitör açılır (loki: `/ready` ucu veya 401-kabul deseni, registry gibi).
+- **push.redwall.tr (Prometheus remote-write) SLO'ya GİRMEZ** — Prometheus sağlığı dead-man's switch (healthchecks.io, Tur 1) tarafından zaten kapsanıyor; çift alarm olmaz.
+- **YP test-api/shtest-api ayrı satırlar** — ayrı container/servisler; veri-güdümlü desende her biri bir YAML satırı, maliyeti sıfıra yakın.
+- **Meta-monitoring (Kuma körlüğü):** Kuma'nın kendisi çökerse `monitor_status` metriği *yok* olur → ona bağlı tüm erişilebilirlik alarmları sessizce susar. Koruma: Sloth-dışı küçük **statik kural dosyası** (`up{job="kuma"} == 0` VEYA `absent(monitor_status)` → `page`): "erişilebilirlik SLI'ları kör" alarmı.
+- **Monitör kutusunun kendi host metrikleri:** Tur 1 ajanları 5 hedefe kuruldu; monitör kutusunun (194.62.52.22) kendisinde node metriği YOK. Bu turda monitör kutusuna da node_exporter (veya aynı Alloy ajan deseni, localhost scrape) eklenir → NOC altyapı satırı **6 sunucu** gösterir. (Kutunun tamamen ölmesi zaten dead-man'de; bu, disk/CPU gibi *yaklaşan* arızalar için.)
 
 - **Pencere:** 28-günlük yuvarlanan (SRE standardı). Hata bütçesi = 1 − hedef.
 - **Hedef felsefesi (SRE Workbook):** hedefler *ulaşılabilir* seviyeden başlar (henüz 28g ölçüm geçmişi yok; tek-origin/HA'sız sunucularda %99.9 ile başlamak "aspirational SLO" anti-pattern'i olur → bütçe ilk ayda biter, alarm yorgunluğu). **İlk hata-bütçesi penceresi (28g) sonunda gözden geçirme**: ölçülen performans hedefi rahat karşılıyorsa Tier-1 erişilebilirlik %99.9'a sıkılaştırılır. Bu gözden geçirme runbook'ta adımdır.
@@ -85,7 +92,9 @@ deploy/monitor/
       monitor-internal.yml   # monitor/analitik/hata (Tier-2)
     generated/               # Sloth çıktısı — COMMIT'li (çalışma anında sloth gerekmez)
       *.rules.yml
-    generate.sh              # sloth'u docker ile çalıştırır: slos/ → generated/ ; sonra promtool check
+    static/
+      meta-monitoring.rules.yml  # elle: Kuma körlük koruması (up{job=kuma}==0 / absent(monitor_status) → page)
+    generate.sh              # sloth'u docker ile çalıştırır: slos/ → generated/ ; sonra promtool check (static dahil)
     README.md                # runbook: yeni servis ekleme + bakım susturması
   alertmanager/
     alertmanager.yml         # route (tier→severity), group_by:[service], inhibit (kuma↔traefik), receivers (telegram+email)
@@ -98,8 +107,9 @@ deploy/monitor/
 
 ### 6.1 Prometheus değişiklikleri
 - **Kuma scrape job'ı (ön koşul):** `kuma:3001/metrics`, Kuma API-key ile basic/bearer auth. Yalnız iç ağdan (monitor-net); dışa açılmaz.
-- **`rule_files:`** → `/etc/prometheus/rules/*.rules.yml` (generated/ buraya mount).
+- **`rule_files:`** → `/etc/prometheus/rules/*.rules.yml` (generated/ + static/ buraya mount).
 - **`alerting:`** → `alertmanager:9093`.
+- **Monitör kutusu öz-metrikleri:** kutuya node_exporter (compose'a servis; veya mevcut Alloy ajan deseni) + Prometheus localhost scrape → NOC altyapı satırında 6. sunucu.
 
 ### 6.2 Alertmanager
 - İmaj: `prom/alertmanager` (son kararlı — [[redwall-hep-son-surum]], sürüm uygulama anında doğrulanır).
@@ -117,7 +127,7 @@ deploy/monitor/
 1. **Servis sağlık ızgarası** — her servis tek renk hücre (Kuma up/down + Traefik hata oranı birleşik), kademeye göre gruplu.
 2. **Hata bütçesi satırı** — Tier-1: kalan 28g hata bütçesi % + burn-rate (Sloth recording metriklerinden).
 3. **Aktif SLO alarmları** — o an ateşleyen alarmlar (Alertmanager/Prometheus ALERTS metriği).
-4. **Altyapı üst-satırı** — 5 sunucu CPU/disk/bellek özet ışıkları, derin dashboard'lara drill-down link.
+4. **Altyapı üst-satırı** — **6 sunucu** (monitör kutusu dahil) CPU/disk/bellek özet ışıkları, derin dashboard'lara drill-down link.
 5. **Tier-1 gecikme özeti** — p95 latency tek bakışta.
 - Import: mevcut `import-dashboards.sh` deseni (datasource uid runtime enjeksiyonu — Grafana 13 sabit-uid crash tuzağı için).
 - Kiosk/TV: `?kiosk&refresh=30s` URL parametreleri (yerleşik; ekstra iş yok).
@@ -142,7 +152,7 @@ deploy/monitor/
 
 ## 9. Uygulama sırası (artımlı, bağımsız)
 
-1. **Ön koşul:** Prometheus'a Kuma scrape job'ı → `monitor_status` Prometheus'ta görünür.
+1. **Ön koşullar:** (a) Prometheus'a Kuma scrape job'ı → `monitor_status` Prometheus'ta görünür; (b) Kuma'ya eksik monitörler eklenir (durum.redwall.tr, loki.redwall.tr); (c) monitör kutusuna node_exporter → öz host-metrikleri; (d) static meta-monitoring kuralı.
 2. **Sloth iskeleti:** `slo/` dizini + 1 pilot servis (redwall.tr) YAML → `generate.sh` → `promtool check` yeşil → generated commit.
 3. **Alertmanager:** compose servisi + `alertmanager.yml` (route/group/inhibit/receivers) + prometheus `alerting:` + sentetik ihlalle uçtan uca test.
 4. **Kalan servisleri doldur:** Tier-1 + Tier-2 YAML'ları → yeniden üret → commit.
