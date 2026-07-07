@@ -11,6 +11,11 @@ scrape_configs:
   - job_name: node
     file_sd_configs:
       - files: ['/etc/prometheus/targets/node-*.yml']
+    # Monitör kutusunun kendisi (Alloy push şemasıyla tutarlı instance adı):
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          instance: redwall-monitor
 
   # Faz 2: hedef sunucuların cAdvisor'ları.
   - job_name: cadvisor

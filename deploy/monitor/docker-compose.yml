@@ -130,3 +130,17 @@ services:
       - traefik.http.routers.grafana.tls=true
       - traefik.http.routers.grafana.middlewares=cloudflare-ips
       - traefik.http.services.grafana.loadbalancer.server.port=3000
+
+  # Monitör kutusunun KENDİ host metrikleri (Tur 1 ajanları 5 hedefe kuruldu; kutunun
+  # kendisi kördü). Alloy push şemasıyla aynı: job=node, instance=redwall-monitor.
+  # DIŞA AÇILMAZ (Traefik label yok); Prometheus iç ağdan kazır.
+  node-exporter:
+    image: prom/node-exporter:v1.11.1   # Step 1 çıktısı
+    restart: unless-stopped
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    command:
+      - --path.rootfs=/host
+    networks:
+      - monitor-net
