@@ -2,6 +2,12 @@ global:
   scrape_interval: 30s
   evaluation_interval: 30s
 
+# SLO kuralları: generated/ = Sloth üretimi (slo/slos/*.yml kaynağından), static/ = elle
+# (meta-monitoring). İkisi de git'te; sunucuya rsync ile gelir, reload ile yüklenir.
+rule_files:
+  - /etc/prometheus/rules/generated/*.rules.yml
+  - /etc/prometheus/rules/static/*.rules.yml
+
 scrape_configs:
   - job_name: prometheus
     static_configs:

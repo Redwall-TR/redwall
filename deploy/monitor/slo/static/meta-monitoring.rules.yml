@@ -1,0 +1,17 @@
+# Meta-monitoring: izleme zincirinin kendisi. Sloth ÜRETMEZ — elle, kasıtlı.
+# NEDEN: Kuma çökerse monitor_status metriği "kötü" olmaz, YOK olur → ona bağlı tüm
+# erişilebilirlik SLO alarmları sessizce susar. En sinsi arıza modu budur.
+groups:
+  - name: meta-monitoring
+    rules:
+      - alert: KumaMetricsAbsent
+        expr: up{job="kuma"} == 0 or absent(monitor_status)
+        for: 5m
+        labels:
+          severity: page
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Kuma metrikleri YOK — tüm erişilebilirlik SLI'ları kör"
+          description: "Prometheus, Uptime Kuma /metrics ucunu 5 dakikadır kazıyamıyor. Erişilebilirlik SLO alarmları şu an sessizce devre dışı. Kuma container/auth kontrol et."

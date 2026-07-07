@@ -70,6 +70,8 @@ services:
       - ./prometheus/targets:/etc/prometheus/targets:ro
       - prom-data:/prometheus
       - ./secrets/prometheus:/etc/prometheus/secrets:ro
+      - ./slo/generated:/etc/prometheus/rules/generated:ro
+      - ./slo/static:/etc/prometheus/rules/static:ro
     networks:
       - monitor-net
     # push.redwall.tr → yalnız /api/v1/write (remote-write alıcısı), basic-auth arkası.
