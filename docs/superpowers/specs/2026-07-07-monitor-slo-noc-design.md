@@ -53,16 +53,21 @@ Traefik metrikleri Tur 1'de `:8082`'de canlı ve Traefik-RED dashboard'unda doğ
 | **Gecikme** | `traefik_service_request_duration_seconds_bucket{service,le}` | `events` | total = tüm istekler; error = 1s eşiğini aşanlar (`le="1"` kovası dışı) |
 
 > Not: gerçek `service`/`monitor_name` etiket değerleri uygulama sırasında Prometheus/Kuma'dan doğrulanacak (Traefik servis adları `<stack>-<svc>@swarm` biçiminde olabilir; Kuma monitör adları Faz 3'te tanımlanan 10 monitör).
+>
+> **Kuma→servis eşlemesi:** erişilebilirlik SLI'ı için servis başına **tek birincil monitör** kullanılır (örn. redwall.tr için ana URL monitörü; `/api/health` monitörü yardımcı sinyal olarak NOC'ta gösterilir, SLO'ya girmez — çift sayım/çelişki önlenir).
 
 ## 5. Servis kademeleri ve SLO hedefleri (taslak — uygulamada teyit edilir)
 
-| Kademe | Servisler | SLO'lar | Hedef | Alarm |
+| Kademe | Servisler | SLO'lar | Başlangıç hedefi | Alarm |
 |---|---|---|---|---|
-| **Tier-1** | redwall.tr, erp, license, registry | erişilebilirlik + başarı (+ redwall.tr'ye gecikme) | erişilebilirlik %99.9, başarı %99.5, gecikme p95<1s | **acil** (Telegram+e-posta) |
+| **Tier-1** | redwall.tr, erp, license | erişilebilirlik + başarı (+ redwall.tr'ye gecikme) | erişilebilirlik %99.5, başarı %99.5, gecikme: isteklerin %99'u < 1s | **acil** (Telegram+e-posta) |
+| **Tier-1** | registry | **yalnız erişilebilirlik** (makine/CI trafiği, düşük hacim — istek-tabanlı SLO gürültülü olur) | %99.5 | **acil** |
 | **Tier-2** | YP test, YP shtest, monitor, analitik, hata | yalnız erişilebilirlik | %99 | **uyarı** (yalnız e-posta) |
 | **Tier-1 (gelecek)** | 🔜 YangınPro production | tam set | en yüksek öncelik | acil |
 
 - **Pencere:** 28-günlük yuvarlanan (SRE standardı). Hata bütçesi = 1 − hedef.
+- **Hedef felsefesi (SRE Workbook):** hedefler *ulaşılabilir* seviyeden başlar (henüz 28g ölçüm geçmişi yok; tek-origin/HA'sız sunucularda %99.9 ile başlamak "aspirational SLO" anti-pattern'i olur → bütçe ilk ayda biter, alarm yorgunluğu). **İlk hata-bütçesi penceresi (28g) sonunda gözden geçirme**: ölçülen performans hedefi rahat karşılıyorsa Tier-1 erişilebilirlik %99.9'a sıkılaştırılır. Bu gözden geçirme runbook'ta adımdır.
+- **Gecikme SLO biçimi:** eşik-tabanlı ("isteklerin %X'i < 1s") — percentile ("p95<1s") hata bütçesine çevrilemediği için SLO'larda kullanılmaz; bölüm 4'teki events SLI tanımıyla birebir uyumlu.
 - **Genişletme deseni:** yeni servis = `slos/<svc>.yml` (kademe = label), `generate.sh`, commit. Kural/dashboard elle düzenlenmez.
 
 ## 6. Bileşenler ve dosya düzeni
@@ -133,6 +138,7 @@ deploy/monitor/
 4. **Sıfır-trafik körlüğü:** Traefik SLI trafik yokken sinyal vermez → erişilebilirlik SLO'su (Kuma) bu boşluğu kapatır (hibrit seçiminin sebebi).
 5. **Alertmanager secret tekrarı:** Telegram/SMTP config Grafana + Alertmanager'da iki yerde; ikisi de sunucu .env'inden beslenir, repoda literal yok.
 6. **generated/ commit disiplini:** `slos/` değişince `generate.sh` çalıştırılıp `generated/` yeniden commit edilmezse Prometheus eski kuralı okur → runbook + (opsiyonel) CI kontrolü.
+7. **Düşük-trafik gürültüsü (SRE Workbook "low-traffic services"):** istek-tabanlı SLO az trafikli serviste oynaktır — 10 istekte 1 tane 5xx = %10 hata oranı → burn-rate sahte tetiklenebilir. Hafifletme: (a) hedefler gevşek başlar (bölüm 5), (b) registry gibi düşük-hacimli servislere istek-tabanlı SLO verilmez, (c) sahte tetiklenme görülürse o servisin başarı-SLO'su `ticket` severity'ye indirilir veya erişilebilirlik-yalnız yapılır — ilk 28g gözden geçirmesinde değerlendirilir.
 
 ## 9. Uygulama sırası (artımlı, bağımsız)
 
@@ -141,7 +147,7 @@ deploy/monitor/
 3. **Alertmanager:** compose servisi + `alertmanager.yml` (route/group/inhibit/receivers) + prometheus `alerting:` + sentetik ihlalle uçtan uca test.
 4. **Kalan servisleri doldur:** Tier-1 + Tier-2 YAML'ları → yeniden üret → commit.
 5. **NOC dashboard:** `noc.json` + import + göz doğrulama + kiosk.
-6. **Runbook + kapanış:** README (yeni servis ekleme, bakım susturması, "hangi alarm nereden"), hafıza güncelle.
+6. **Runbook + kapanış:** README (yeni servis ekleme, bakım susturması, "hangi alarm nereden", **28-gün SLO gözden geçirme prosedürü**: ölçülen performans vs hedef → sıkılaştır/gevşet/severity ayarla), hafıza güncelle.
 
 ## 10. Kapsam dışı (bu tur değil)
 
