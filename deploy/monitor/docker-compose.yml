@@ -69,6 +69,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/targets:/etc/prometheus/targets:ro
       - prom-data:/prometheus
+      - ./secrets/prometheus:/etc/prometheus/secrets:ro
     networks:
       - monitor-net
     # push.redwall.tr → yalnız /api/v1/write (remote-write alıcısı), basic-auth arkası.

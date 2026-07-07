@@ -16,3 +16,13 @@ scrape_configs:
   - job_name: cadvisor
     file_sd_configs:
       - files: ['/etc/prometheus/targets/cadvisor-*.yml']
+
+  # SLO erişilebilirlik SLI kaynağı: Kuma monitör durumları (0=down 1=up 2=pending 3=bakım).
+  # Auth: Kuma API key (basic-auth, kullanıcı boş, parola=anahtar). Anahtar sunucuda
+  # /opt/monitor/secrets/prometheus/kuma_api_key (600, commit edilmez).
+  - job_name: kuma
+    basic_auth:
+      username: ''
+      password_file: /etc/prometheus/secrets/kuma_api_key
+    static_configs:
+      - targets: ['uptime-kuma:3001']

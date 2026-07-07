@@ -1,0 +1,3 @@
+# Sunucu-yerel gizli değerler — asla commit etme
+.env
+secrets/
