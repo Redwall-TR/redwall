@@ -12,6 +12,7 @@ volumes:
   prom-data:
   loki-data:
   kuma-data:
+  am-data:
 
 services:
   traefik:
@@ -85,6 +86,20 @@ services:
       - traefik.http.routers.promwrite.middlewares=promwrite-auth
       - traefik.http.middlewares.promwrite-auth.basicauth.users=${PROM_BASICAUTH}
       - traefik.http.services.promwrite.loadbalancer.server.port=9090
+
+  # SLO alarm yönlendirici. DIŞA AÇILMAZ (Traefik label yok) — cloudflare-ips gerekmez.
+  alertmanager:
+    image: prom/alertmanager:v0.33.1   # Step 1 çıktısı
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./secrets/alertmanager:/etc/alertmanager/secrets:ro
+      - am-data:/alertmanager
+    networks:
+      - monitor-net
 
   loki:
     image: grafana/loki:3.7.3
