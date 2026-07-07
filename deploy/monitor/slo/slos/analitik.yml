@@ -1,0 +1,31 @@
+# analitik.redwall.tr (Umami) — Tier-2: yalnız erişilebilirlik, yalnız e-posta uyarı
+# (severity=ticket sabit).
+version: "prometheus/v1"
+service: "analitik"
+labels:
+  tier: "2"
+slos:
+  # monitor_name="analitik.redwall.tr" (monitor_url="https://analitik.redwall.tr",
+  # canlıda doğrulandı).
+  - name: availability
+    objective: 99
+    description: "analitik.redwall.tr dışarıdan erişilebilir (Kuma prob)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="analitik.redwall.tr"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: AnalitikAvailability
+      labels:
+        service: analitik
+        tier: "2"
+        category: availability
+      annotations:
+        summary: "analitik erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: ticket   # Tier-2: hızlı yanış bile SAYFALAMAZ — e-posta uyarı
+      ticket_alert:
+        labels:
+          severity: ticket

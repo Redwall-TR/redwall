@@ -1,0 +1,34 @@
+# registry.redwall.tr (Docker Registry) — Tier-1, YALNIZ erişilebilirlik.
+# Success/latency yok: trafik makine-trafiği (docker pull/push), Traefik service
+# etiketi keşfedilmedi (kapsam dışı — brief tablosu "Traefik instance/SVC: —").
+# severity page/ticket AYNI KALIR (Tier-1 sayfalar) — yalnız success/latency bloğu
+# eksik, avail'in kritikliği düşmez.
+version: "prometheus/v1"
+service: "registry"
+labels:
+  tier: "1"
+slos:
+  # monitor_name="Docker Registry" (monitor_url="https://registry.redwall.tr/v2/",
+  # canlıda doğrulandı).
+  - name: availability
+    objective: 99.5
+    description: "registry.redwall.tr dışarıdan erişilebilir (Kuma prob, CF+DNS+TLS dahil)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="Docker Registry"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: RegistryAvailability
+      labels:
+        service: registry
+        tier: "1"
+        category: availability
+      annotations:
+        summary: "registry.redwall.tr erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket

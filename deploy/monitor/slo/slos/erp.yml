@@ -1,0 +1,56 @@
+# erp.redwall.tr — Tier-1, erişilebilirlik + başarı (gecikme YOK — yalnız redwall.tr'de).
+version: "prometheus/v1"
+service: "erp"
+labels:
+  tier: "1"
+slos:
+  # Erişilebilirlik — Kuma dış prob. monitor_name="ERP" (monitor_url="https://erp.redwall.tr",
+  # canlıda doğrulandı — Task 6/7 keşfi).
+  - name: availability
+    objective: 99.5
+    description: "erp.redwall.tr dışarıdan erişilebilir (Kuma prob, CF+DNS+TLS dahil)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="ERP"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: ErpAvailability
+      labels:
+        service: erp
+        tier: "1"
+        category: availability
+      annotations:
+        summary: "erp.redwall.tr erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket
+
+  # Başarı oranı — Traefik RED. service="frontend@docker" → Step 1 keşfinde doğrulandı
+  # (instance="redwall-erp", tek servis döndü — belirsizlik yok).
+  - name: success
+    objective: 99.5
+    description: "erp.redwall.tr isteklerinin %99.5'i 5xx değil"
+    labels:
+      category: success
+    sli:
+      events:
+        error_query: sum(rate(traefik_service_requests_total{instance="redwall-erp",service="frontend@docker",code=~"5.."}[{{.window}}]))
+        total_query: sum(rate(traefik_service_requests_total{instance="redwall-erp",service="frontend@docker"}[{{.window}}]))
+    alerting:
+      name: ErpSuccess
+      labels:
+        service: erp
+        tier: "1"
+        category: success
+      annotations:
+        summary: "erp.redwall.tr 5xx oranı SLO bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket

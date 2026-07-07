@@ -1,0 +1,31 @@
+# shtest.redwall.tr (YanginPro Self Hosted Test UI) — Tier-2: yalnız erişilebilirlik,
+# yalnız e-posta uyarı (severity=ticket sabit).
+version: "prometheus/v1"
+service: "yp-shtest"
+labels:
+  tier: "2"
+slos:
+  # monitor_name="YanginPro Self Hosted Test UI"
+  # (monitor_url="https://shtest.redwall.tr", canlıda doğrulandı).
+  - name: availability
+    objective: 99
+    description: "shtest.redwall.tr (YanginPro Self Hosted Test UI) dışarıdan erişilebilir (Kuma prob)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="YanginPro Self Hosted Test UI"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: YpShtestAvailability
+      labels:
+        service: yp-shtest
+        tier: "2"
+        category: availability
+      annotations:
+        summary: "yp-shtest erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: ticket   # Tier-2: hızlı yanış bile SAYFALAMAZ — e-posta uyarı
+      ticket_alert:
+        labels:
+          severity: ticket

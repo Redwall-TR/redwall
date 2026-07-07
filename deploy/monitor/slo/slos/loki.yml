@@ -1,0 +1,33 @@
+# loki.redwall.tr (Loki /ready) — Tier-2: yalnız erişilebilirlik, yalnız e-posta uyarı
+# (severity=ticket sabit). Kuma bu monitörde 401'i KABUL ediyor (Traefik basic-auth
+# arkasında) — monitor_status yine de standart 0/1/2/3 semantiğiyle üretilir, SLI
+# sorgusu diğer avail-only servislerle birebir aynı.
+version: "prometheus/v1"
+service: "loki"
+labels:
+  tier: "2"
+slos:
+  # monitor_name="loki.redwall.tr" (monitor_url="https://loki.redwall.tr/ready",
+  # canlıda doğrulandı).
+  - name: availability
+    objective: 99
+    description: "loki.redwall.tr (/ready, 401 kabul edilir) dışarıdan erişilebilir (Kuma prob)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="loki.redwall.tr"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: LokiAvailability
+      labels:
+        service: loki
+        tier: "2"
+        category: availability
+      annotations:
+        summary: "loki erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: ticket   # Tier-2: hızlı yanış bile SAYFALAMAZ — e-posta uyarı
+      ticket_alert:
+        labels:
+          severity: ticket
