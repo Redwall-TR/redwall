@@ -134,6 +134,19 @@ services:
       - GF_SMTP_USER=${SMTP_USER}
       - GF_SMTP_PASSWORD=${SMTP_PASSWORD}
       - GF_SMTP_FROM_ADDRESS=${SMTP_FROM}
+      # SSO (Authentik OIDC) — yerel admin formu FALLBACK olarak açık kalır (break-glass §6).
+      - GF_AUTH_GENERIC_OAUTH_ENABLED=true
+      - GF_AUTH_GENERIC_OAUTH_NAME=Authentik
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_ID=${GF_OAUTH_CLIENT_ID}
+      - GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET=${GF_OAUTH_CLIENT_SECRET}
+      - GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email
+      - GF_AUTH_GENERIC_OAUTH_AUTH_URL=https://auth.redwall.tr/application/o/authorize/
+      - GF_AUTH_GENERIC_OAUTH_TOKEN_URL=https://auth.redwall.tr/application/o/token/
+      - GF_AUTH_GENERIC_OAUTH_API_URL=https://auth.redwall.tr/application/o/userinfo/
+      - GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP=true
+      - GF_AUTH_GENERIC_OAUTH_AUTO_LOGIN=false
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH=contains(groups[*], 'monitor-admins') && 'Admin' || contains(groups[*], 'monitor-viewers') && 'Viewer' || 'None'
+      - GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_STRICT=true
     volumes:
       - ./grafana/provisioning:/etc/grafana/provisioning:ro
       - grafana-data:/var/lib/grafana
