@@ -1,0 +1,37 @@
+# apilicense.redwall.tr (LicenseServer Laravel API) — Tier-1, YALNIZ erişilebilirlik.
+# Registry token-auth realm'i (https://apilicense.redwall.tr/api/registry/auth) +
+# YangınPro lisans doğrulama bu API'de — düşerse docker pull/push VE lisans
+# doğrulama birlikte düşer (2026-07-08 kesintisi 45 dk fark edilmedi → bu SLO).
+# Success/latency yok: registry ile aynı gerekçe (makine trafiği, Traefik SVC
+# keşfi kapsam dışı); avail'in kritikliği düşmez, Tier-1 sayfalar.
+version: "prometheus/v1"
+service: "apilicense"
+labels:
+  tier: "1"
+slos:
+  # monitor_name="License API" (monitor_url="https://apilicense.redwall.tr/api/registry/auth").
+  # Kuma monitörü kabul edilen durum kodları: 200-299 + 401 — kimliksiz GET 401 döner
+  # (www-authenticate: Bearer realm + UNAUTHORIZED JSON, 2026-07-09 canlıda doğrulandı),
+  # bu SAĞLIKLI işarettir (404 = router yok / api ölü). registry/loki 401-kabul muadili.
+  - name: availability
+    objective: 99.5
+    description: "apilicense.redwall.tr dışarıdan erişilebilir (Kuma prob, CF+DNS+TLS dahil; 401=UP)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="License API"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: ApilicenseAvailability
+      labels:
+        service: apilicense
+        tier: "1"
+        category: availability
+      annotations:
+        summary: "apilicense.redwall.tr erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket
