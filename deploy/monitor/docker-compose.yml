@@ -12,6 +12,7 @@ volumes:
   prom-data:
   loki-data:
   kuma-data:
+  am-data:
 
 services:
   traefik:
@@ -49,7 +50,12 @@ services:
       - traefik.http.routers.kuma.rule=Host(`durum.${MONITOR_BASE_DOMAIN}`)
       - traefik.http.routers.kuma.entrypoints=websecure
       - traefik.http.routers.kuma.tls=true
+      - traefik.http.routers.kuma.middlewares=cloudflare-ips
       - traefik.http.services.kuma.loadbalancer.server.port=3001
+      # cloudflare-ips allowlist (global — plain docker provider, cross-container çalışır):
+      # origin'e yalnız Cloudflare ulaşır; doğrudan-IP erişimi 403. İnsan panellerine uygulanır.
+      # NOT: loki/push (ajan uçları) EKLENMEZ — ajanların CF'den geçtiği ayrıca doğrulanmalı.
+      - "traefik.http.middlewares.cloudflare-ips.ipallowlist.sourcerange=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
 
   prometheus:
     image: prom/prometheus:v3.13.0
@@ -64,6 +70,9 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./prometheus/targets:/etc/prometheus/targets:ro
       - prom-data:/prometheus
+      - ./secrets/prometheus:/etc/prometheus/secrets:ro
+      - ./slo/generated:/etc/prometheus/rules/generated:ro
+      - ./slo/static:/etc/prometheus/rules/static:ro
     networks:
       - monitor-net
     # push.redwall.tr → yalnız /api/v1/write (remote-write alıcısı), basic-auth arkası.
@@ -77,6 +86,20 @@ services:
       - traefik.http.routers.promwrite.middlewares=promwrite-auth
       - traefik.http.middlewares.promwrite-auth.basicauth.users=${PROM_BASICAUTH}
       - traefik.http.services.promwrite.loadbalancer.server.port=9090
+
+  # SLO alarm yönlendirici. DIŞA AÇILMAZ (Traefik label yok) — cloudflare-ips gerekmez.
+  alertmanager:
+    image: prom/alertmanager:v0.33.1   # Step 1 çıktısı
+    restart: unless-stopped
+    command:
+      - --config.file=/etc/alertmanager/alertmanager.yml
+      - --storage.path=/alertmanager
+    volumes:
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./secrets/alertmanager:/etc/alertmanager/secrets:ro
+      - am-data:/alertmanager
+    networks:
+      - monitor-net
 
   loki:
     image: grafana/loki:3.7.3
@@ -122,4 +145,19 @@ services:
       - traefik.http.routers.grafana.rule=Host(`monitor.${MONITOR_BASE_DOMAIN}`)
       - traefik.http.routers.grafana.entrypoints=websecure
       - traefik.http.routers.grafana.tls=true
+      - traefik.http.routers.grafana.middlewares=cloudflare-ips
       - traefik.http.services.grafana.loadbalancer.server.port=3000
+
+  # Monitör kutusunun KENDİ host metrikleri (Tur 1 ajanları 5 hedefe kuruldu; kutunun
+  # kendisi kördü). Alloy push şemasıyla aynı: job=node, instance=redwall-monitor.
+  # DIŞA AÇILMAZ (Traefik label yok); Prometheus iç ağdan kazır.
+  node-exporter:
+    image: prom/node-exporter:v1.11.1   # Step 1 çıktısı
+    restart: unless-stopped
+    pid: host
+    volumes:
+      - /:/host:ro,rslave
+    command:
+      - --path.rootfs=/host
+    networks:
+      - monitor-net

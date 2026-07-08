@@ -1,0 +1,31 @@
+# test.redwall.tr (YanginPro Test UI) — Tier-2: yalnız erişilebilirlik, yalnız e-posta
+# uyarı (severity=ticket sabit — hızlı yanış bile SAYFALAMAZ).
+version: "prometheus/v1"
+service: "yp-test"
+labels:
+  tier: "2"
+slos:
+  # monitor_name="YanginPro Test UI" (monitor_url="https://test.redwall.tr", canlıda
+  # doğrulandı). Bu servisin kendisi UI'dır — API monitörü DEĞİL.
+  - name: availability
+    objective: 99
+    description: "test.redwall.tr (YanginPro Test UI) dışarıdan erişilebilir (Kuma prob)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="YanginPro Test UI"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: YpTestAvailability
+      labels:
+        service: yp-test
+        tier: "2"
+        category: availability
+      annotations:
+        summary: "yp-test erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: ticket   # Tier-2: hızlı yanış bile SAYFALAMAZ — e-posta uyarı
+      ticket_alert:
+        labels:
+          severity: ticket

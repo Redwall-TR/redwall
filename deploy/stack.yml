@@ -41,6 +41,12 @@ services:
       # HTTP → HTTPS kalıcı yönlendirme
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      # Prometheus metrikleri (RED) — :8082 iç entrypoint, traefik-public'te; monitör Alloy scrape eder.
+      - --entrypoints.metrics.address=:8082
+      - --metrics.prometheus=true
+      - --metrics.prometheus.entrypoint=metrics
+      - --metrics.prometheus.addEntryPointsLabels=true
+      - --metrics.prometheus.addServicesLabels=true
       # TLS: Cloudflare "Full" origin cert'i doğrulamaz → Traefik varsayılan
       # self-signed cert sunar (router'da tls=true yeter, ACME yok).
       # - --api.dashboard=true   # açarsan ayrı bir güvenli router + auth ekle

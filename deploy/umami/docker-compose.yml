@@ -32,6 +32,7 @@ services:
       - traefik.http.routers.umami.rule=Host(`analitik.redwall.tr`)
       - traefik.http.routers.umami.entrypoints=websecure
       - traefik.http.routers.umami.tls=true
+      - traefik.http.routers.umami.middlewares=cloudflare-ips
       - traefik.http.services.umami.loadbalancer.server.port=3000
 
   umami-db:

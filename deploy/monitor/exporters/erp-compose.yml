@@ -1,0 +1,41 @@
+# Redwall monitör exporter'ları — ERP (194.62.52.66, Frappe, plain compose, MariaDB 11.8 + redis 6.2 ×2).
+# frappe_docker_frappe_network'e (external) bağlanır; Alloy da o ağa katılıp container-adıyla scrape eder.
+# Metrikler yalnız ağda (host portu YOK). Deploy (hedefte):
+#   MYSQL_MON_PASS=<p> docker compose -f erp-compose.yml up -d
+# Alloy .env: MON_BRIDGE_NET=frappe_docker_frappe_network,
+#   MYSQL_EXPORTER_ADDR=redwall-mon-mysqld:9104, REDIS_EXPORTER_ADDR=redwall-mon-redis-cache:9121
+#   (+ queue için Task 6'da 2. redis scrape bloğu).
+name: redwall-mon
+
+services:
+  mysqld-exporter:
+    image: prom/mysqld-exporter:v0.15.1
+    container_name: redwall-mon-mysqld
+    command:
+      - "--mysqld.address=db:3306"
+      - "--mysqld.username=monitoring"
+    environment:
+      MYSQLD_EXPORTER_PASSWORD: "${MYSQL_MON_PASS}"
+    networks: [frappe]
+    restart: unless-stopped
+
+  redis-cache-exporter:
+    image: oliver006/redis_exporter:v1.62.0
+    container_name: redwall-mon-redis-cache
+    environment:
+      REDIS_ADDR: "redis://redis-cache:6379"
+    networks: [frappe]
+    restart: unless-stopped
+
+  redis-queue-exporter:
+    image: oliver006/redis_exporter:v1.62.0
+    container_name: redwall-mon-redis-queue
+    environment:
+      REDIS_ADDR: "redis://redis-queue:6379"
+    networks: [frappe]
+    restart: unless-stopped
+
+networks:
+  frappe:
+    external: true
+    name: frappe_docker_frappe_network

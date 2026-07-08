@@ -1,0 +1,6 @@
+[Unit]
+Description=Redwall monitor dead-man ping (health-gated)
+After=docker.service
+[Service]
+Type=oneshot
+ExecStart=/opt/monitor/deadman/check-and-ping.sh

@@ -1,0 +1,59 @@
+# license.redwall.tr — Tier-1, erişilebilirlik + başarı (gecikme YOK — yalnız redwall.tr'de).
+version: "prometheus/v1"
+service: "license"
+labels:
+  tier: "1"
+slos:
+  # Erişilebilirlik — Kuma dış prob. monitor_name="License Server"
+  # (monitor_url="https://license.redwall.tr", canlıda doğrulandı).
+  - name: availability
+    objective: 99.5
+    description: "license.redwall.tr dışarıdan erişilebilir (Kuma prob, CF+DNS+TLS dahil)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="License Server"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: LicenseAvailability
+      labels:
+        service: license
+        tier: "1"
+        category: availability
+      annotations:
+        summary: "license.redwall.tr erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket
+
+  # Başarı oranı — Traefik RED. instance="redwall-license" 3 servis döndürdü
+  # (apilicense@docker, license@docker, registry-svc@docker — Step 1 keşfi).
+  # "license@docker" seçildi: en yüksek istek oranı (6s pencere) VE isim eşleşmesi
+  # (license.redwall.tr'nin web arayüzü); apilicense@docker muhtemelen alt-rota,
+  # registry-svc@docker bu instance'ta beliren alakasız/paylaşılan konteyner.
+  - name: success
+    objective: 99.5
+    description: "license.redwall.tr isteklerinin %99.5'i 5xx değil"
+    labels:
+      category: success
+    sli:
+      events:
+        error_query: sum(rate(traefik_service_requests_total{instance="redwall-license",service="license@docker",code=~"5.."}[{{.window}}]))
+        total_query: sum(rate(traefik_service_requests_total{instance="redwall-license",service="license@docker"}[{{.window}}]))
+    alerting:
+      name: LicenseSuccess
+      labels:
+        service: license
+        tier: "1"
+        category: success
+      annotations:
+        summary: "license.redwall.tr 5xx oranı SLO bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: page
+      ticket_alert:
+        labels:
+          severity: ticket

@@ -29,6 +29,11 @@ services:
       - LOKI_URL=${LOKI_URL}
       - LOKI_USER=${LOKI_USER}
       - LOKI_PASS=${LOKI_PASS}
+      # Exporter adresleri (o sunucuda yoksa boş → ilgili scrape bloğu config'den çıkarılır)
+      - TRAEFIK_METRICS_ADDR=${TRAEFIK_METRICS_ADDR:-}
+      - PG_EXPORTER_ADDR=${PG_EXPORTER_ADDR:-}
+      - REDIS_EXPORTER_ADDR=${REDIS_EXPORTER_ADDR:-}
+      - MYSQL_EXPORTER_ADDR=${MYSQL_EXPORTER_ADDR:-}
     volumes:
       - ./config.alloy:/etc/alloy/config.alloy:ro
       - alloy-data:/var/lib/alloy/data
@@ -46,6 +51,17 @@ services:
     pid: host
     # cadvisor + unix exporter host kaynaklarına erişir (salt-okuma mount'lar).
     privileged: true
+    # Köprü ağı: exporter servisleri (postgres/redis/mysql) traefik-public'te (attachable);
+    # Alloy oraya katılıp servis-DNS'iyle scrape eder. Exporter yoksa (yalnız node/cadvisor)
+    # MON_BRIDGE_NET tanımsız bırakılıp bu bölüm etkisiz kalır — pilotta doğrulanır.
+    networks:
+      - default
+      - monbridge
+
+networks:
+  monbridge:
+    external: true
+    name: ${MON_BRIDGE_NET:-traefik-public}
 
 volumes:
   alloy-data:

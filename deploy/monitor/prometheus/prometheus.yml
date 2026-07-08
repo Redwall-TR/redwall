@@ -2,6 +2,17 @@ global:
   scrape_interval: 30s
   evaluation_interval: 30s
 
+# SLO kuralları: generated/ = Sloth üretimi (slo/slos/*.yml kaynağından), static/ = elle
+# (meta-monitoring). İkisi de git'te; sunucuya rsync ile gelir, reload ile yüklenir.
+rule_files:
+  - /etc/prometheus/rules/generated/*.rules.yml
+  - /etc/prometheus/rules/static/*.rules.yml
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets: ['alertmanager:9093']
+
 scrape_configs:
   - job_name: prometheus
     static_configs:
@@ -11,8 +22,23 @@ scrape_configs:
   - job_name: node
     file_sd_configs:
       - files: ['/etc/prometheus/targets/node-*.yml']
+    # Monitör kutusunun kendisi (Alloy push şemasıyla tutarlı instance adı):
+    static_configs:
+      - targets: ['node-exporter:9100']
+        labels:
+          instance: redwall-monitor
 
   # Faz 2: hedef sunucuların cAdvisor'ları.
   - job_name: cadvisor
     file_sd_configs:
       - files: ['/etc/prometheus/targets/cadvisor-*.yml']
+
+  # SLO erişilebilirlik SLI kaynağı: Kuma monitör durumları (0=down 1=up 2=pending 3=bakım).
+  # Auth: Kuma API key (basic-auth, kullanıcı boş, parola=anahtar). Anahtar sunucuda
+  # /opt/monitor/secrets/prometheus/kuma_api_key (600, commit edilmez).
+  - job_name: kuma
+    basic_auth:
+      username: ''
+      password_file: /etc/prometheus/secrets/kuma_api_key
+    static_configs:
+      - targets: ['uptime-kuma:3001']

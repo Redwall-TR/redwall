@@ -1,0 +1,32 @@
+# monitor.redwall.tr (Monitör Sunucusu — bu kutunun kendi Grafana'sı) — Tier-2:
+# yalnız erişilebilirlik, yalnız e-posta uyarı (severity=ticket sabit).
+version: "prometheus/v1"
+service: "monitor"
+labels:
+  tier: "2"
+slos:
+  # monitor_name="Monitör Sunucusu" (monitor_url="https://monitor.redwall.tr",
+  # canlıda doğrulandı) — monitör kutusunun Grafana'sı, kendi kendini izler
+  # (Kuma harici probu üzerinden — Prometheus'un kendisi değil).
+  - name: availability
+    objective: 99
+    description: "monitor.redwall.tr (Grafana) dışarıdan erişilebilir (Kuma prob)"
+    labels:
+      category: availability
+    sli:
+      raw:
+        error_ratio_query: max(avg_over_time((monitor_status{monitor_name="Monitör Sunucusu"} == bool 0)[{{.window}}:1m]))
+    alerting:
+      name: MonitorAvailability
+      labels:
+        service: monitor
+        tier: "2"
+        category: availability
+      annotations:
+        summary: "monitor erişilebilirlik SLO'su hata bütçesini yakıyor"
+      page_alert:
+        labels:
+          severity: ticket   # Tier-2: hızlı yanış bile SAYFALAMAZ — e-posta uyarı
+      ticket_alert:
+        labels:
+          severity: ticket
