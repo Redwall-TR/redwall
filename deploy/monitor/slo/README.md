@@ -23,11 +23,13 @@ Alertmanager yönlendirme (`alertmanager/alertmanager.yml`):
 
 ## Envanter (2026-07 kurulumu)
 
-**13 servis SLO'lu** — 4 Tier-1, 9 Tier-2:
+**15 servis SLO'lu** — 5 Tier-1, 10 Tier-2:
 - **Tier-1:** `redwall-tr` (tam set: availability + success + latency),
-  `erp` ve `license` (availability + success), `registry` (yalnız availability).
+  `erp` ve `license` (availability + success), `registry` (yalnız availability),
+  `apilicense` (yalnız availability, %99.5 — Tur 2-B).
 - **Tier-2 (yalnız availability, %99):** `analitik`, `durum`, `hata` (GlitchTip), `loki`,
-  `monitor`, `yp-test`, `yp-test-api`, `yp-shtest`, `yp-shtest-api`.
+  `monitor`, `yp-test`, `yp-test-api`, `yp-shtest`, `yp-shtest-api`,
+  `auth` (Authentik SSO — Tur 2-C, bkz. `deploy/authentik/README.md`).
 
 Kuma'da **18 monitör** var ama SLO'ya yalnız servis başına **TEK birincil monitör** girer —
 grup ve health-endpoint monitörleri (örn. "Kurumsal Health") SLO'ya GİRMEZ.
