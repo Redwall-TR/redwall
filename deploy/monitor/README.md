@@ -85,3 +85,5 @@ uid'leri değiştirir ve import eder. Deploy sonrası bir kez çalıştır (idem
   Prometheus remote-write ucu: `push.redwall.tr/api/v1/write` (basic-auth). Log ucu: `loki.redwall.tr`.
 - **SLO alarmları + NOC:** bkz. `slo/README.md` (Sloth üretimi, Alertmanager yönlendirme,
   yeni servis ekleme, bakım susturması). NOC: https://monitor.redwall.tr/d/redwall-noc (kiosk: ?kiosk&refresh=30s)
+- **SSO / kimlik doğrulama (Grafana/Kuma/Umami/GlitchTip tek çatı):** bkz.
+  `../authentik/README.md` (break-glass, yeni kullanıcı, oturum öldürme, panel envanteri).
