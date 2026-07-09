@@ -28,7 +28,7 @@ Monitör kutusundaki 4 insan panelinin (Grafana/Kuma/Umami/GlitchTip) her birini
 | Grafana (monitor.) | **Native OIDC** | Authentik OAuth2/OIDC provider; grup→rol eşleme (admins→Admin, viewers→Viewer); **yerel admin girişi fallback olarak AÇIK kalır** (`oauth_auto_login=false` — login ekranında iki seçenek) |
 | GlitchTip (hata.) | **Native OIDC** | django-allauth OpenID Connect; kayıt kapalı kalır (mevcut `ENABLE_OPEN_USER_REGISTRATION=false`) |
 | Uptime Kuma (durum.) | **Forward-auth + iç giriş KAPALI** | Traefik `forwardAuth` → Authentik embedded outpost; Kuma "Disable Auth" modu (dış auth'a güven) — tek giriş Authentik, Kuma-TOTP'si emekli olur |
-| Umami (analitik.) | **Forward-auth (iç giriş kalır)** | Umami OSS'de OIDC yok → Authentik kapısı + arkada Umami girişi (çift giriş, nadir kullanım — kabul edildi) |
+| Umami (analitik.) | **Forward-auth (iç giriş kalır) — KAMUSAL UÇLAR HARİÇ** | Umami OSS'de OIDC yok → Authentik kapısı + arkada Umami girişi (çift giriş, nadir kullanım — kabul edildi). **KRİTİK İSTİSNA (uygulamada yakalanan regresyon, 2026-07-09):** `script.js` + `/api/send` SİTE İZLEME uçlarıdır (redwall.tr anonim ziyaretçileri) — forward-auth DIŞINDA ayrı yüksek-öncelikli router'dan servis edilir (cloudflare-ips kalır). Aynı sınıf-uyarısı: Kuma'da ileride public status-page kullanılırsa `/status/*` için aynı istisna gerekir (runbook'ta). |
 | loki. / push. | **DOKUNULMAZ** | Makine kimliği (basic-auth), ajan trafiği — SSO insan içindir |
 | Alertmanager/Prometheus | **Değişmez** | Zaten dışa kapalı (iç ağ) |
 
