@@ -1,0 +1,35 @@
+# Tempo — dağıtık izleme (trace) alım servisi. monitör Traefik'ine bağlı (izler.redwall.tr).
+# TLS: Cloudflare "Full" → Traefik self-signed sunar (tls=true, ACME yok), monitör deseniyle aynı.
+# Yalnız OTLP-HTTP alım ucu (/v1/traces) dışa açılır; sorgu API (3200) yalnız iç ağda kalır
+# (Grafana datasource monitor-net üzerinden erişir, Traefik router'ı yok).
+# Deploy (sunucuda /opt/tempo): docker compose up -d
+name: tempo
+
+networks:
+  monitor-net:
+    external: true
+    name: monitor_monitor-net
+
+volumes:
+  tempo-data:
+
+services:
+  tempo:
+    image: grafana/tempo:3.0.2
+    command: ["-config.file=/etc/tempo/tempo.yaml"]
+    volumes:
+      - ./tempo.yaml:/etc/tempo/tempo.yaml:ro
+      - tempo-data:/var/tempo
+    networks:
+      - monitor-net
+    restart: unless-stopped
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=monitor_monitor-net
+      # İz alım ucu — YALNIZ OTLP path'i, basic-auth (loki./push. deseni)
+      - traefik.http.routers.tempo-otlp.rule=Host(`izler.redwall.tr`) && PathPrefix(`/v1/traces`)
+      - traefik.http.routers.tempo-otlp.entrypoints=websecure
+      - traefik.http.routers.tempo-otlp.tls=true
+      - traefik.http.routers.tempo-otlp.middlewares=tempo-auth
+      - traefik.http.middlewares.tempo-auth.basicauth.users=${TEMPO_BASICAUTH}
+      - traefik.http.services.tempo-svc.loadbalancer.server.port=4318

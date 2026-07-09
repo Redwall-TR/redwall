@@ -1,0 +1,35 @@
+# Tempo — tek düğüm, yerel disk, 7g saklama. OTLP-HTTP alım :4318 (Traefik basic-auth arkası),
+# sorgu API :3200 (yalnız iç ağ — Grafana datasource buradan; dışa açılmaz).
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        http:
+          endpoint: 0.0.0.0:4318
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/blocks
+    wal:
+      path: /var/tempo/wal
+
+# NOT: Tempo v3 mimarisi eski "compactor:" bloğunu kaldırdı (ingester+compactor yerine
+# live-store+block-builder+backend-scheduler+backend-worker geldi — Kafka'sız tek-düğüm modda
+# bile). Saklama artık backend_scheduler VE backend_worker altında ayrı ayrı tanımlanır
+# (resmi grafana/tempo v3.0.2 single-binary örneğinde bile yok; varsayılan 336h/14g — burada
+# 7g'ye indiriyoruz). Doğrulama: `docker run ... -config.verify` + `/status/config` canlı kanıt
+# (bkz. rapor).
+backend_scheduler:
+  provider:
+    compaction:
+      compaction:
+        block_retention: 168h   # 7 gün (spec §2)
+
+backend_worker:
+  compaction:
+    block_retention: 168h   # 7 gün (spec §2) — worker tarafı da aynı değerle hizalanır
