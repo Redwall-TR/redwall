@@ -32,7 +32,11 @@ services:
       - traefik.http.routers.umami.rule=Host(`analitik.redwall.tr`)
       - traefik.http.routers.umami.entrypoints=websecure
       - traefik.http.routers.umami.tls=true
-      - traefik.http.routers.umami.middlewares=cloudflare-ips
+      - traefik.http.routers.umami.middlewares=cloudflare-ips,authentik-fa
+      # authentik-fa: deploy/authentik/docker-compose.yml içinde tanımlı (cross-container,
+      # plain docker provider — Task 5'te (Kuma) aynı desen doğrulandı).
+      # Sıra ÖNEMLİ: cloudflare-ips önce (doğrudan-IP hâlâ 403), authentik-fa sonra (SSO kapısı).
+      # Umami'nin İÇ GİRİŞİ bilinçli olarak AÇIK bırakıldı (spec: çift giriş kabul).
       - traefik.http.services.umami.loadbalancer.server.port=3000
 
   umami-db:
