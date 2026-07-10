@@ -1,0 +1,52 @@
+# Monitör kutusunun ÖZ-ajanı — 194.62.52.22 üzerinde /opt/monitor/self-agent altında çalışır.
+# Hedef-ajan deseninin (deploy/monitor/agent/) kutuya uyarlanmış kopyası: yalnız container
+# metriği (cadvisor) + docker logları. Host metriği AYRI (deploy/monitor/docker-compose.yml
+# → node-exporter) — burada tekrar edilmez (çift-metrik önlenir).
+#
+# Ağ: monitor_monitor-net (ana monitör stack'inin ürettiği DIŞ ağ, "monitor" proje adı +
+# "monitor-net" servis adından; docker compose otomatik "monitor_monitor-net" üretir).
+# Bu ağdayken loki/prometheus servis-DNS'iyle İÇ ağdan yazılır — dış https uç YOK, basic-auth
+# GEREKMEZ. Deploy (kutuda): /opt/monitor/self-agent altında AGENT_HOSTNAME .env'de →
+# docker compose up -d
+name: monitor-self-agent
+
+services:
+  alloy:
+    image: grafana/alloy:v1.17.1
+    restart: unless-stopped
+    # Container hostname = kutu adı (redwall-monitor) — Alloy'un kendi öz-telemetrisinde ve
+    # olası varsayılan etiketlerde tutarlılık için; işlevsel etiketleme AGENT_HOSTNAME env'i
+    # üzerinden config.alloy içinde açıkça yapılır.
+    hostname: ${AGENT_HOSTNAME}
+    command:
+      - run
+      - /etc/alloy/config.alloy
+      - --storage.path=/var/lib/alloy/data
+      - --server.http.listen-addr=127.0.0.1:12345
+    environment:
+      - AGENT_HOSTNAME=${AGENT_HOSTNAME}
+      - PROM_URL=${PROM_URL}
+      - LOKI_URL=${LOKI_URL}
+    volumes:
+      - ./config.alloy:/etc/alloy/config.alloy:ro
+      - alloy-data:/var/lib/alloy/data
+      # cadvisor — container cgroup/metadata için standart yollar (salt-okuma)
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker:/var/lib/docker:ro
+      - /dev/disk:/dev/disk:ro
+    # cadvisor host kaynaklarına erişir (salt-okuma mount'lar); unix exporter YOK, bu yüzden
+    # /host/root, /host/proc, /host/sys mount'ları (hedef-ajan deseninde vardı) burada YOK.
+    pid: host
+    privileged: true
+    networks:
+      - monitor-net
+
+networks:
+  # Ana monitör stack'inin ürettiği dış ağ — kutunun Loki/Prometheus'una iç DNS'le ulaşmak için.
+  monitor-net:
+    external: true
+    name: monitor_monitor-net
+
+volumes:
+  alloy-data:
