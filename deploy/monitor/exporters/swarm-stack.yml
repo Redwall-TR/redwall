@@ -11,6 +11,12 @@ version: "3.8"
 services:
   postgres-exporter:
     image: prometheuscommunity/postgres-exporter:v0.20.1
+    # PG17+ hostlarda (license/yp-test/yp-shtest): stat_bgwriter collector'ı v0.20.1'de bile
+    # kaldırılan kolonları sorguluyor → kapat + yerine stat_checkpointer aç (2026-07-10).
+    # DİKKAT: PG<17 hostta (kurumsal) BU İKİ FLAG'İ KALDIR (checkpointer view'ı yok → hata üretir).
+    command:
+      - "--no-collector.stat_bgwriter"
+      - "--collector.stat_checkpointer"
     environment:
       DATA_SOURCE_NAME: "postgresql://monitoring:${PG_MON_PASS}@${PG_HOST}:5432/${PG_DB:-postgres}?sslmode=disable"
     networks: [dbnet, monbridge]
