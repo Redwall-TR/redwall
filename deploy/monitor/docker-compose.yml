@@ -191,7 +191,11 @@ services:
     pid: host
     volumes:
       - /:/host:ro,rslave
+      # Tur 3 Task 4: kutu-içi gece yedeği tazelik metriği (backup.prom) buraya yazılır.
+      # ro mount: node-exporter yalnız okur, yazan box-backup.sh (host'ta root, systemd timer).
+      - /var/lib/node_exporter/textfile:/var/lib/node_exporter/textfile:ro
     command:
       - --path.rootfs=/host
+      - --collector.textfile.directory=/var/lib/node_exporter/textfile
     networks:
       - monitor-net
