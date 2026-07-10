@@ -83,7 +83,11 @@ uid'leri değiştirir ve import eder. Deploy sonrası bir kez çalıştır (idem
 - **Faz 2 (hedef sunucular) — CANLI:** her hedefte Grafana Alloy ajanı (`agent/`) host+container
   metriği + docker loglarını monitör'e PUSH eder (bkz. `agent/README yok — docker-compose.yml + config.alloy`).
   Prometheus remote-write ucu: `push.redwall.tr/api/v1/write` (basic-auth). Log ucu: `loki.redwall.tr`.
-- **SLO alarmları + NOC:** bkz. `slo/README.md` (Sloth üretimi, Alertmanager yönlendirme,
-  yeni servis ekleme, bakım susturması). NOC: https://monitor.redwall.tr/d/redwall-noc (kiosk: ?kiosk&refresh=30s)
+- **Alarm tek-çatı (Tur 3 Task 5):** TÜM alarmlar (SLO burn-rate + meta + kaynak
+  [disk/RAM/CPU/disk-predict] + kutu-yedeği tazelik) Prometheus → Alertmanager'dan
+  gider. Grafana-managed alerting (Tur 1'de kaynak alarmları için kullanılıyordu)
+  **emekli** — kural yok, SMTP contact-point config'i dursa da kullanılmıyor. Detay:
+  `slo/README.md` (Sloth üretimi, Alertmanager yönlendirme, yeni servis ekleme,
+  bakım susturması). NOC: https://monitor.redwall.tr/d/redwall-noc (kiosk: ?kiosk&refresh=30s)
 - **SSO / kimlik doğrulama (Grafana/Kuma/Umami/GlitchTip tek çatı):** bkz.
   `../authentik/README.md` (break-glass, yeni kullanıcı, oturum öldürme, panel envanteri).

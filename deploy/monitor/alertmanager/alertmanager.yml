@@ -1,6 +1,7 @@
-# SLO alarm yönlendirici — Sloth-üretimi Prometheus alarmları buradan geçer.
-# Tur 1 kaynak-alarmları (disk/CPU/RAM) Grafana-managed'da KALIR; bu dosya yalnız
-# SLO+meta alarmlarını yönetir ("hangi alarm nereden" → slo/README.md).
+# Alarm yönlendirici — TÜM Prometheus alarmları buradan geçer (SLO burn-rate + meta +
+# Tur 1'den taşınan kaynak alarmları [disk/CPU/RAM/disk-predict] + kutu-yedeği tazelik).
+# Tur 3 Task 5: Grafana-managed alerting emekli edildi, tek çatı burası
+# ("hangi alarm nereden" → slo/README.md).
 # Secret'lar: /etc/alertmanager/secrets/{telegram_bot_token,smtp_password}
 # (sunucuda /opt/monitor/secrets/alertmanager/, 600, commit edilmez).
 global:

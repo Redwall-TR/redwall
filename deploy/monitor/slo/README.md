@@ -3,15 +3,26 @@
 Spec: `docs/superpowers/specs/2026-07-07-monitor-slo-noc-design.md`
 Mimari: `slos/*.yml` (elle) → `generate.sh` (Sloth v0.16.0, `--default-slo-period=28d`)
 → `generated/*.rules.yml` (git'te — sunucuda Sloth GEREKMEZ)
-→ Prometheus → Alertmanager → Telegram + e-posta. `static/` = elle yazılmış meta-monitoring
-(watchdog / Kuma-scrape-öldü gibi "izleyeni izleyen" kurallar).
+→ Prometheus → Alertmanager → Telegram + e-posta. `static/` = elle yazılmış kurallar:
+meta-monitoring (watchdog / Kuma-scrape-öldü gibi "izleyeni izleyen" kurallar) +
+self-monitoring (izleme zincirinin kendi bileşenleri + Tur 1'den taşınan kaynak
+alarmları + kutu-yedeği tazelik — bkz. aşağıdaki "Hangi alarm nereden?").
 
-## Hangi alarm nereden? (iki sistem — bilinçli ayrım)
+## Hangi alarm nereden? (TEK çatı — Tur 3 Task 5)
 
-| Sistem | Ne için | Kanal |
-|---|---|---|
-| **Grafana-managed** (Tur 1) | KAYNAK alarmları: disk %85, RAM %90, CPU %90, disk-predict (`predict_linear`) | Grafana contact point (e-posta) |
-| **Alertmanager** (bu dizin) | SLO burn-rate + meta alarmları | Aşağıdaki yönlendirme |
+Tüm alarmlar **Alertmanager**'dan gider. Tur 1'de kaynak alarmları (disk/RAM/CPU/
+disk-predict) Grafana-managed alerting'deydi (folder `redwall-alerts`, contact point
+e-posta) — Tur 3 Task 5'te bu 4 kural expr+eşik+for birebir korunarak
+`static/self-monitoring.rules.yml`'e taşındı ve Grafana'daki kayıtlar API ile silindi
+(yedek: sunucuda `/opt/monitor-backups/grafana-alert-rules-pre-delete.json`).
+Grafana'nın Alerting sayfası artık boş; SMTP contact-point config'i durur ama
+kullanılmaz.
+
+| Kaynak | Ne için |
+|---|---|
+| `slo/generated/*.rules.yml` (Sloth üretimi) | SLO burn-rate alarmları (servis bazlı) |
+| `slo/static/meta-monitoring.rules.yml` | İzleme zincirinin kör-nokta koruması (Kuma metrikleri yok olursa) |
+| `slo/static/self-monitoring.rules.yml` | İzleme zincirinin kendi bileşenleri (Loki/Tempo/Grafana/AM down) + kaynak alarmları (disk/RAM/CPU/disk-predict, Tur 1'den taşındı) + kutu-yedeği tazelik (`BackupStale`, Task 4) |
 
 Alertmanager yönlendirme (`alertmanager/alertmanager.yml`):
 - `tier="2"` → **her zaman yalnız e-posta** (severity fark etmez).
