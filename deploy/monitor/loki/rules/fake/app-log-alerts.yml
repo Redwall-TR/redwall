@@ -1,0 +1,24 @@
+# Tur 3 Task 6: Loki ruler — log-tabanlı alarm.
+# "fake" dizini = tenant-id (Loki auth_enabled=false single-tenant modunda sabit).
+#
+# Host regex "yanginpro-.+|redwall-.+" CANLI doğrulandı (2026-07-10, Loki
+# /loki/api/v1/label/host/values): redwall-erp, redwall-kurumsal, redwall-license,
+# redwall-monitor, yanginpro-shtest, yanginpro-test — filodaki 6 host'un tamamını kapsar.
+#
+# NOT — LogAkisiKesildi (brief'teki 2. kural) buraya BİLEREK EKLENMEDİ:
+# `count_over_time(...) == 0` LogQL'de bilinen sınır: log akışı TAMAMEN kesilince
+# sorgu boş seri döner (== 0 hiç eşleşmez) → alarm hiç ateşlenmez. Pozitif-sinyal
+# çözümü için Prometheus tarafında Alloy'un loki.write bileşen metriği
+# (loki_write_sent_entries_total) gerekiyordu — CANLI Prometheus'ta sorgulandı,
+# YOK (ne self-agent ne hedef-agent kendi Alloy /metrics'ini self-scrape ediyor,
+# yalnızca Loki'nin SUNUCU tarafı loki_write_failures_* metrikleri mevcut).
+# Bu yüzden bu tur'da LogAkisiKesildi EKLENMEDİ — concern olarak task-6-report.md'de
+# raporlandı (gelecek iş: self-agent/agent config.alloy'a self-scrape eklenmesi).
+groups:
+  - name: app-loglari
+    rules:
+      - alert: AppHataFirtinasi
+        expr: sum by (host) (rate({host=~"yanginpro-.+|redwall-.+"} |~ "(?i)(FATAL|Uncaught|\\bpanic\\b)" [5m])) > 0.5
+        for: 5m
+        labels: {severity: ticket, category: log, tier: "2", service: app-logs}
+        annotations: {summary: "{{$labels.host}} log akışında hata fırtınası (>0.5/s FATAL/panic)"}
