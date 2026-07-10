@@ -52,6 +52,22 @@ Her Traefik command'ına: `--metrics.prometheus=true --metrics.prometheus.addEnt
 --metrics.prometheus.addServicesLabels=true --entrypoints.metrics.address=:8082
 --metrics.prometheus.entrypoint=metrics`. Traefik traefik-public'te olduğundan Alloy erişir.
 
+### ERP kalıcılık riski + reapply script'i (Tur 3 Task 10, K2)
+ERP'de (`/opt/frappe_docker/redwall.yml`) bu flag'ler **elle** eklenmiştir — Swarm
+label'ı değil, plain `docker compose` komut satırı. Frappe'nin sürüm yükseltme /
+config-regenerate akışı bu dosyayı yeniden oluşturabilir ve elle eklenen flag'leri
+SİLEBİLİR (sunucuda geçmiş `redwall.yml.bak-pre-v16-*` yedekleri bu tür
+regenerate'lerin izidir). Frappe'nin generate mekanizması frappe_docker reposunun
+kendi tooling'i olduğundan (repo-dışı), tam-IaC/otomatik önleme mümkün değil.
+
+Telafi: `reapply-traefik-metrics.sh` (bu dizinde, ERP'de `/opt/redwall-mon/`'a
+kurulu) — regenerate/upgrade SONRASI elle çalıştırılır. İdempotent: flag'ler
+zaten varsa dokunmaz; eksikse yedekler + `docker compose config -q` ile
+doğrular + doğrulama başarılıysa yalnız `traefik` servisini yeniden oluşturur
+(diğer ERP servisleri etkilenmez). Doğrulama başarısız olursa hiçbir şey
+uygulanmaz. Kullanım: `/opt/redwall-mon/reapply-traefik-metrics.sh
+[redwall.yml yolu]` (varsayılan `/opt/frappe_docker/redwall.yml`).
+
 ## Rollback
 `docker stack rm redwall-mon` (Swarm) / `docker compose -f erp-compose.yml down` (ERP) +
 Alloy `.env` eski hâli + Traefik metrics flag'lerini geri al. Push modeli/inbound yüzeyi değişmez.

@@ -104,3 +104,17 @@ uid'leri değiştirir ve import eder. Deploy sonrası bir kez çalıştır (idem
   forward-auth'lu paneller artık **404 değil 5xx (bad-gateway)** döner — güncel break-glass
   açıklaması ve canlı kanıt: `../authentik/README.md` ("Break-glass" bölümü) +
   `.superpowers/sdd/task-9-report.md`.
+- **Dış-sunucu durability — readTimeout + erp-metrik reapply (Tur 3 Task 10 — CANLI):**
+  license sunucusundaki 286MB registry push'unun Traefik varsayılan readTimeout=60s ile
+  499'la kesilmesi olayının (bkz. `redwall-traefik-readtimeout-olayi` hafızası) aynı kalıbı
+  kurumsal (redwall.tr, `../stack.yml`) + yanginpro test/shtest'te de değerlendirildi:
+  kurumsalda `--entrypoints.{web,websecure}.transport.respondingTimeouts.readTimeout=30m`
+  canlıya uygulandı (Payload `/api/media` boyut sınırı yok, CF 100MB proxy sınırına kadar
+  risk); yp test/shtest'te de aynı flag YANGINPRO reposunda ayrı dal+PR ile eklendi (dosya
+  ekleri app üzerinden Traefik'ten geçiyor, MinIO'ya presigned-URL değil). ERP'de elle
+  eklenen Traefik metrik-flag'lerinin frappe-regenerate'e karşı kalıcılığı için
+  `exporters/reapply-traefik-metrics.sh` eklendi (bkz. `exporters/README.md` "ERP kalıcılık
+  riski" bölümü). **Açık kalan (K3):** LicenseServer repo'sunda readTimeout=30m fix'i o repo
+  bizde olmadığından yalnız sunucu üzerinde canlı — repo'ya (IaC olarak) işlenmesi
+  kullanıcı/developer aksiyonu, LicenseServer reposuna erişim olduğunda yapılmalı. Detay +
+  ölçüm ham verisi: `.superpowers/sdd/task-10-report.md`.

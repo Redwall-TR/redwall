@@ -38,6 +38,13 @@ services:
       - --providers.swarm.network=traefik-public
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
+      # readTimeout: Traefik v2.11.2+/v3 varsayılanı 60s — büyük Payload medya
+      # upload'ları (CF proxy sınırı 100MB, /api/media boyut sınırı yok) yavaş
+      # bağlantıda kesilebilir (license sunucusunda 286MB registry push'u aynı
+      # varsayılanla 499 ile kesilmişti — kanıtlı olay, bkz. Tur 3 Task 10 raporu).
+      # Maliyeti yok (CF önde olduğundan slowloris penceresi genişlemesi kabul edilebilir).
+      - --entrypoints.web.transport.respondingTimeouts.readTimeout=30m
+      - --entrypoints.websecure.transport.respondingTimeouts.readTimeout=30m
       # HTTP → HTTPS kalıcı yönlendirme
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
