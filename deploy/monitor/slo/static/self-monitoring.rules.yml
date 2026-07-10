@@ -1,0 +1,52 @@
+# Öz-telemetri: izleme zincirinin kendi bileşenleri (Task 1'de eklenen up{} serilerine dayanır).
+# Sloth ÜRETMEZ — elle, kasıtlı (meta-monitoring.rules.yml ile aynı desen).
+# AM hariç hepsi severity=ticket: kanal sağlam, sadece o bileşen kör/sağır.
+# AM ise severity=page — ama AM ölüyse bu alarmı GÖNDEREMEZ; o boşluğu dead-man
+# script'i (check-and-ping.sh) yakalar (bkz. AM sağlık kapısı).
+groups:
+  - name: self-monitoring
+    rules:
+      - alert: LokiDown
+        expr: up{job="loki"} == 0
+        for: 5m
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Loki down — log toplama durdu"
+          description: "Prometheus loki:3100'ü 5dk kazıyamıyor."
+      - alert: TempoDown
+        expr: up{job="tempo"} == 0
+        for: 5m
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Tempo down — iz toplama durdu"
+          description: "Prometheus tempo ucunu 5dk kazıyamıyor."
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 5m
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Grafana down — dashboard erişimi yok"
+          description: "Prometheus grafana ucunu 5dk kazıyamıyor."
+      - alert: AlertmanagerDown
+        expr: up{job="alertmanager"} == 0
+        for: 5m
+        labels:
+          severity: page
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "🔴 Alertmanager down — ALARM KANALI ÖLÜ (dead-man devrede)"
+          description: "Prometheus alertmanager:9093'ü 5dk kazıyamıyor. AM ölüyse bu alarmı kendisi gönderemez — dead-man script'inin AM sağlık kapısı bu boşluğu yakalar (healthchecks.io ping kesilir)."
