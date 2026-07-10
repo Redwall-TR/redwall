@@ -65,6 +65,38 @@ prometheus.remote_write "monitor" {
   }
 }
 
+// ════════ ALLOY ÖZ-METRİKLERİ (T6b: LogAkisiKesildi alarmı için loki_write_* şart) ════════
+// Alloy kendi iç metriklerini (component sağlığı, loki.write yazma durumu) varsayılan olarak
+// Prometheus'a GÖNDERMEZ — yalnız kendi :12345/metrics ucunda durur. prometheus.exporter.self
+// bu ucu bir "target" olarak açar; yerel prometheus.scrape ile kazınıp mevcut remote-write
+// zincirine katılır. KARDİNALİTE: yalnız loki_write_* ailesi + alloy_build_info tutulur
+// (prometheus.relabel keep) — Alloy'un tüm dahili metrikleri (go_*, process_*, vb.) atılır.
+prometheus.exporter.self "alloy" { }
+
+discovery.relabel "alloy_self" {
+  targets = prometheus.exporter.self.alloy.targets
+  rule {
+    target_label = "instance"
+    replacement  = sys.env("AGENT_HOSTNAME")
+  }
+}
+
+prometheus.scrape "alloy_self" {
+  targets         = discovery.relabel.alloy_self.output
+  forward_to      = [prometheus.relabel.alloy_self.receiver]
+  scrape_interval = "30s"
+  job_name        = "alloy"
+}
+
+prometheus.relabel "alloy_self" {
+  forward_to = [prometheus.remote_write.monitor.receiver]
+  rule {
+    source_labels = ["__name__"]
+    regex         = "loki_write_.*|alloy_build_info"
+    action        = "keep"
+  }
+}
+
 // ════════ UYGULAMA/DB EXPORTER'LARI (ayrı servisler, köprü ağı üzerinden scrape) ════════
 // Exporter'lar traefik-public (attachable) ağında; Alloy o ağa katılıp servis-DNS'iyle kazır.
 // Her *_ADDR env'i o sunucuda ilgili exporter varsa doldurulur; YOKSA ilgili blok o sunucuya

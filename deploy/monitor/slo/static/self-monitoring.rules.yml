@@ -50,6 +50,26 @@ groups:
         annotations:
           summary: "🔴 Alertmanager down — ALARM KANALI ÖLÜ (dead-man devrede)"
           description: "Prometheus alertmanager:9093'ü 5dk kazıyamıyor. AM ölüyse bu alarmı kendisi gönderemez — dead-man script'inin AM sağlık kapısı bu boşluğu yakalar (healthchecks.io ping kesilir)."
+      # T6b: her ajanın loki.write öz-metriği (Alloy prometheus.exporter.self → remote-write,
+      # keep-filtre: yalnız loki_write_* + alloy_build_info). Ajan ölünce/log akışı kesilince
+      # seri de KESİLİR — remote-write'ta staleness marker yazılmaz, seri ~5dk lookback sonrası
+      # instant sorgudan düşer. Bu yüzden rate(...)==0 ASLA ateşlenmez (canlıda test edildi,
+      # 2026-07-10: t+8dk'da instant boş, rate hâlâ >0 — pencere boşalınca seri komple yok
+      # oluyor, hiçbir zaman ==0 olmuyor). ÇALIŞAN desen (canlı kanıtlı): timestamp() alt
+      # sorgusuyla "son görülme yaşı" — timestamp() sample'ın KENDİ zaman damgasını döner,
+      # max_over_time [4h:1m] alt-sorgusu son gerçek sample'ı pencerede tutar.
+      # SINIR: ajan 4 saatten uzun ölü kalırsa seri [4h] penceresinden de düşer → alarm
+      # kendiliğinden resolve olur (ticket zaten açılmış olur; solo-ops için kabul edildi).
+      - alert: LogAkisiKesildi
+        expr: (time() - max by(instance) (max_over_time(timestamp(loki_write_sent_entries_total)[4h:1m]))) > 900
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: log
+          tier: "1"
+        annotations:
+          summary: "{{ $labels.instance }} 15dk'dır Loki'ye log yazmıyor — ajan/akış ölmüş olabilir"
+          description: "Alloy ajanının loki.write öz-metriği (loki_write_sent_entries_total) 15 dakikadır güncellenmiyor: ya ajan container'ı öldü ya da log-push zinciri koptu. Sunucuda /opt/redwall-agent (monitör kutusunda /opt/monitor/self-agent) altında `docker compose ps` + `docker compose logs alloy` kontrol et. NOT: 4 saatten uzun kesintide alarm kendiliğinden resolve olur (seri pencereden düşer)."
 
   # Tur 3 Task 5: alarm tek-çatı. Aşağıdaki 4 kaynak alarmı Tur 1'de Grafana-managed
   # alerting'de kuruluydu (folder redwall-alerts, ruleGroup "kaynak", contact point
