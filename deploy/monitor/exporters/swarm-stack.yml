@@ -10,7 +10,7 @@ version: "3.8"
 
 services:
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:v0.15.0
+    image: prometheuscommunity/postgres-exporter:v0.20.1
     environment:
       DATA_SOURCE_NAME: "postgresql://monitoring:${PG_MON_PASS}@${PG_HOST}:5432/${PG_DB:-postgres}?sslmode=disable"
     networks: [dbnet, monbridge]
