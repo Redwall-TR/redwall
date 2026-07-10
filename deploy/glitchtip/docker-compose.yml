@@ -47,7 +47,8 @@ services:
       - traefik.http.routers.glitchtip.rule=Host(`hata.redwall.tr`)
       - traefik.http.routers.glitchtip.entrypoints=websecure
       - traefik.http.routers.glitchtip.tls=true
-      - traefik.http.routers.glitchtip.middlewares=cloudflare-ips
+      # Tur 3 Task 9: cloudflare-ips artık file-provider'da (deploy/monitor/traefik/dynamic.yml).
+      - traefik.http.routers.glitchtip.middlewares=cloudflare-ips@file
       - traefik.http.services.glitchtip.loadbalancer.server.port=8000
   glitchtip-worker:
     image: glitchtip/glitchtip:latest

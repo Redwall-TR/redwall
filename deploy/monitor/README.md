@@ -91,3 +91,16 @@ uid'leri değiştirir ve import eder. Deploy sonrası bir kez çalıştır (idem
   bakım susturması). NOC: https://monitor.redwall.tr/d/redwall-noc (kiosk: ?kiosk&refresh=30s)
 - **SSO / kimlik doğrulama (Grafana/Kuma/Umami/GlitchTip tek çatı):** bkz.
   `../authentik/README.md` (break-glass, yeni kullanıcı, oturum öldürme, panel envanteri).
+- **Traefik middleware'leri file-provider'da (Tur 3 Task 9 — CANLI):** `cloudflare-ips` ve
+  `authentik-fa` artık container label'ında DEĞİL, `traefik/dynamic.yml`'de tanımlı (bkz.
+  `docker-compose.yml`'deki `--providers.file.filename=/etc/traefik/dynamic.yml` +
+  `--providers.file.watch=true`, mount `./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro`).
+  Router label'ları `<ad>@file` ile referans verir. Neden: eskiden bu middleware'ler onları
+  TANIMLAYAN container'ın (kuma / authentik-server) label'ında yaşıyordu — o container restart
+  olunca middleware TANIMI kaybolur, referans veren TÜM router'lar (başka compose projelerinde
+  olsalar bile) düşerdi (Tur 1 kırılganlık notu). Artık kuma/authentik-server restart olsa da
+  BAŞKA panellerin router'ları ETKİLENMİYOR — yalnız restart olan servisin KENDİ router'ı
+  (kaçınılmaz biçimde, backend container yok) kısa süre düşebilir. authentik-server durunca
+  forward-auth'lu paneller artık **404 değil 5xx (bad-gateway)** döner — güncel break-glass
+  açıklaması ve canlı kanıt: `../authentik/README.md` ("Break-glass" bölümü) +
+  `.superpowers/sdd/task-9-report.md`.
