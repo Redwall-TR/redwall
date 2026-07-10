@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Kutu-içi gece yedeği: authentik/umami/glitchtip pg_dump + Kuma&Grafana sqlite + config-tar.
+# Kutu-içi gece yedeği: authentik/umami/glitchtip pg_dump + Kuma&Grafana sqlite +
+# Kuma&Grafana runtime-config JSON export (dr/kuma-export.py, dr/grafana-export.sh) + config-tar.
 # Her adım hata-kontrollü (backup-hardening dersi): set -euo pipefail + her yedek dosyası
 # >1KB kontrolünden geçmeli. Herhangi bir adım başarısız olursa script FAIL eder ve tazelik
 # textfile'ı (backup.prom) GÜNCELLENMEZ — bu durum T5'teki tazelik alarmını tetikler.
@@ -75,7 +76,25 @@ docker cp "$GRAFANA_CTN:/var/lib/grafana/grafana.db" "$DEST/grafana.db"
 gzip "$DEST/grafana.db"
 check_backup_file "$DEST/grafana.db.gz"
 
-# ── 4) Config-tar: /opt/{monitor,authentik,umami,glitchtip,tempo} — secret'lar HARİÇ ──
+# ── 4) Kuma + Grafana runtime-config export (Task 8 — DR) ──
+# Bu ikisi pg_dump/sqlite gibi VERİ değil, ÇALIŞMA-ZAMANI KONFİGÜRASYONU
+# (monitörler/bildirimler/dashboard'lar) — ayrı JSON'lara dökülür ki DR'da
+# sıfırdan kurulan bir kutuya elle-tıklama yerine script'le geri yüklenebilsin.
+# kuma.db.gz zaten ADIM 2'de yedekleniyor (birebir aynı veri) — bu JSON,
+# insan-okunur/import-edilebilir bir İKİNCİ temsil, tekrarlılık BİLİNÇLİ.
+log "kuma-export.py başlıyor (monitör+bildirim+status-page + cert-expiry doğrulaması)..."
+docker run --rm --network monitor_monitor-net \
+  -v /opt/monitor/dr/kuma-export.py:/kuma-export.py:ro \
+  -v "$DEST":/dest \
+  python:3.12-slim bash -c \
+    "pip install --quiet 'python-socketio[client]' && python3 /kuma-export.py export --output /dest/kuma-config.json --enable-cert-expiry"
+check_backup_file "$DEST/kuma-config.json"
+
+log "grafana-export.sh başlıyor (dashboard+datasource+alert-provisioning)..."
+bash /opt/monitor/dr/grafana-export.sh "$DEST/grafana-config.json"
+check_backup_file "$DEST/grafana-config.json"
+
+# ── 5) Config-tar: /opt/{monitor,authentik,umami,glitchtip,tempo} — secret'lar HARİÇ ──
 # --exclude desenleri slash içermediği için ağaçtaki HER seviyede eşleşir (örn.
 # self-agent/.env de dışlanır). "secrets" adlı dizinler (örn. /opt/monitor/secrets) de dışlanır.
 log "config-tar başlıyor..."
@@ -85,11 +104,11 @@ tar czf "$DEST/config.tar.gz" \
   -C /opt monitor authentik umami glitchtip tempo
 check_backup_file "$DEST/config.tar.gz"
 
-# ── 5) 7 günden eski yedek setlerini sil (yalnız $BACKUP_ROOT içinde) ──
+# ── 6) 7 günden eski yedek setlerini sil (yalnız $BACKUP_ROOT içinde) ──
 log "7 günden eski yedekler siliniyor..."
 find "$BACKUP_ROOT" -mindepth 1 -maxdepth 1 -type d -mtime +7 -exec rm -rf {} +
 
-# ── 6) Tazelik metriği — YALNIZ tüm adımlar başarılıysa buraya gelinir. Atomik yaz (tmp+mv). ──
+# ── 7) Tazelik metriği — YALNIZ tüm adımlar başarılıysa buraya gelinir. Atomik yaz (tmp+mv). ──
 mkdir -p "$TEXTFILE_DIR"
 TMP_METRIC="$(mktemp "$TEXTFILE_DIR/.backup.prom.XXXXXX")"
 {
