@@ -117,10 +117,24 @@ discovery.relabel "containers" {
   }
 }
 
+// ════════ GÜRÜLTÜ SÜZGECİ (2026-07-10, kullanıcı ilkesi: yalnız gerçek sinyal) ════════
+// 1) fpm self-healthcheck yankısı: container kendi kendine 127.0.0.1 GET /index.php 200
+//    — sıfır bilgi değeri. DİKKAT: yalnız " 200" düşer; healthcheck BAŞARISIZLIĞI (5xx) Loki'ye gider.
+// 2) Frappe rq worker gevezeliği (ERP): "Result is kept for N seconds".
+loki.process "gurultu" {
+  forward_to = [loki.write.monitor.receiver]
+  stage.drop {
+    expression = "^127\\.0\\.0\\.1 .*\"GET /index\\.php\" 200"
+  }
+  stage.drop {
+    expression = "Result is kept for [0-9]+ seconds"
+  }
+}
+
 loki.source.docker "containers" {
   host       = "unix:///var/run/docker.sock"
   targets    = discovery.relabel.containers.output
-  forward_to = [loki.write.monitor.receiver]
+  forward_to = [loki.process.gurultu.receiver]
   labels     = {
     host = sys.env("AGENT_HOSTNAME"),
     job  = "docker",
