@@ -16,9 +16,22 @@
 // kazınıyor — Alloy üzerinden ikinci kez scrape etmek aynı çift-metrik riskini taşır.
 
 // ════════ METRİKLER (yalnız container — cadvisor) ════════
+// disabled_metrics: Alloy varsayılanına (advtcp/cpu_topology/cpuset/hugetlb/memory_numa/
+// process/referenced_memory/resctrl/tcp/udp) "disk"+"diskIO" EKLENDİ (2026-07-11, T3-11b
+// kök-çözüm). Sebep: cadvisor'un per-container inode/disk kullanımı için stat ettiği
+// /var/lib/docker/rootfs/overlayfs/<id> yolu, kısa-ömürlü `docker run --rm` konteynerleri
+// (ör. doğrulama/backup script'leri) taranırken konteyner zaten kaldırılmış oluyor →
+// dakikada ~1 "rootDiskErr: could not stat ... no such file or directory" (zararsız ama
+// kalıcı gürültü, Loki'ye akıyor). disk/diskIO metrik ailesi repo'daki HİÇBİR
+// dashboard/SLO/alert tarafından kullanılmıyor (grep ile doğrulandı) — container CPU/RAM/ağ
+// metrikleri etkilenmez. Süzgeç değil, kaynağı KAPATMA (kök-çözüm).
 prometheus.exporter.cadvisor "cadvisor" {
   docker_host      = "unix:///var/run/docker.sock"
   storage_duration = "5m"
+  disabled_metrics = [
+    "advtcp", "cpu_topology", "cpuset", "disk", "diskIO", "hugetlb",
+    "memory_numa", "process", "referenced_memory", "resctrl", "tcp", "udp",
+  ]
 }
 
 // instance etiketini okunur sunucu adına sabitle (yoksa Alloy container'ının rastgele
