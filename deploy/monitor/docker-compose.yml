@@ -29,6 +29,12 @@ services:
       - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      # Öz-telemetri (Tur 3): Traefik metrikleri. Port publish YOK — Prometheus iç ağdan
+      # traefik:8082 üzerinden kazır (plain-compose, dışa açılmaz).
+      - --entrypoints.metrics.address=:8082
+      - --metrics.prometheus=true
+      - --metrics.prometheus.entrypoint=metrics
+      - --metrics.prometheus.addrouterslabels=true
     ports:
       - "80:80"
       - "443:443"
@@ -94,15 +100,27 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.33.1   # Step 1 çıktısı
     restart: unless-stopped
+    environment:
+      # alertmanager.yml.tmpl'deki __TELEGRAM_CHAT_ID__ yer tutucusu, container başlangıcında
+      # bu env ile değiştirilir (Alertmanager native env-var genişletmeyi desteklemiyor —
+      # upstream prometheus/alertmanager#2917). Değer sunucu /opt/monitor/.env'de.
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    entrypoint: ["/bin/sh", "-c"]
     command:
-      - --config.file=/etc/alertmanager/alertmanager.yml
-      - --storage.path=/alertmanager
+      - >-
+        sed "s/__TELEGRAM_CHAT_ID__/$TELEGRAM_CHAT_ID/" /etc/alertmanager/alertmanager.yml.tmpl > /tmp/alertmanager.yml &&
+        exec /bin/alertmanager --config.file=/tmp/alertmanager.yml --storage.path=/alertmanager
     volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml.tmpl:ro
       - ./secrets/alertmanager:/etc/alertmanager/secrets:ro
       - am-data:/alertmanager
     networks:
       - monitor-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   loki:
     image: grafana/loki:3.7.3

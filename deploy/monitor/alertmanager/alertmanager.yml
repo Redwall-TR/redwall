@@ -35,7 +35,13 @@ receivers:
   - name: urgent
     telegram_configs:
       - bot_token_file: /etc/alertmanager/secrets/telegram_bot_token
-        chat_id: 7620610929   # Step 2 (tamsayı, tırnaksız)
+        # __TELEGRAM_CHAT_ID__: Alertmanager config'i native env-var genişletmeyi
+        # DESTEKLEMEZ (upstream prometheus/alertmanager#2917 hâlâ açık) — bu yüzden
+        # ${VAR} değil, container başlangıcında sed ile enjekte edilen dolar-işaretsiz
+        # bir yer tutucu (docker-compose.yml alertmanager servisi; değer sunucu .env
+        # TELEGRAM_CHAT_ID'sinden). Bu dosya /etc/alertmanager/alertmanager.yml.tmpl
+        # olarak salt-okunur mount edilir, render edilmiş hali /tmp'e yazılır.
+        chat_id: __TELEGRAM_CHAT_ID__
         send_resolved: true
     email_configs:
       - to: admin@redwall.tr
