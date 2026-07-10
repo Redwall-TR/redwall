@@ -313,9 +313,10 @@ def _write_json_atomic(path: str, obj: dict):
     out_dir = os.path.dirname(path)
     os.makedirs(out_dir, exist_ok=True)
     tmp_path = f"{path}.tmp.{os.getpid()}"
-    with open(tmp_path, "w", encoding="utf-8") as f:
+    # 0600 ile AÇILIR (sonradan chmod değil) — secret içerik umask penceresine hiç düşmez.
+    fd = os.open(tmp_path, os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
         json.dump(obj, f, ensure_ascii=False, indent=2)
-    os.chmod(tmp_path, 0o600)  # içinde webhook/telegram-token/smtp-parola olabilir
     os.replace(tmp_path, path)
 
 

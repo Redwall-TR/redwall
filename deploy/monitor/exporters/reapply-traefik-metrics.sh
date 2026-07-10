@@ -99,7 +99,7 @@ BEGIN { n = split(joined, flags, "\x01") }
 ' "$COMPOSE_FILE" > "$TMP"
 
 echo "Sözdizimi doğrulanıyor (docker compose config -q)..."
-if ! docker compose -f "$TMP" config -q 2>"$CONFIG_ERR"; then
+if ! docker compose --project-directory "$(dirname "$COMPOSE_FILE")" -f "$TMP" config -q 2>"$CONFIG_ERR"; then
   echo "HATA: Değişiklik sonrası compose sözdizimi geçersiz — HİÇBİR ŞEY UYGULANMADI." >&2
   cat "$CONFIG_ERR" >&2
   exit 3

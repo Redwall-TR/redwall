@@ -45,7 +45,7 @@ Bunlar elle/parola-yöneticisinden yeniden girilir:
 
 | Dosya | Kaynak |
 |---|---|
-| `/opt/monitor/.env` | `.env.example`'dan kopya. `GF_ADMIN_PASSWORD` yeni güçlü parola. `LOKI_BASICAUTH`/`PROM_BASICAUTH` → `htpasswd -nbB agent 'PAROLA'` (her `$`→`$$`, bkz. README). `SMTP_*` gmail app-password. `GF_OAUTH_CLIENT_ID/SECRET` → Authentik'te "grafana" provider'ı YENİDEN kurulduktan SONRA doldurulur (Adım 4). |
+| `/opt/monitor/.env` | `.env.example`'dan kopya. `GF_ADMIN_PASSWORD` yeni güçlü parola. `LOKI_BASICAUTH`/`PROM_BASICAUTH` → `htpasswd -nbB agent 'PAROLA'` (her `$`→`$$`, bkz. README). `SMTP_*` gmail app-password. `GF_OAUTH_CLIENT_ID/SECRET` → Authentik'te "grafana" provider'ı YENİDEN kurulduktan SONRA doldurulur (Adım 4). `TELEGRAM_BOT_TOKEN`/`TELEGRAM_CHAT_ID` → Alertmanager page-kanalı; **`docker compose up` ÖNCESİ dolu olmalı** (boş kalırsa Telegram bildirimleri sessizce kırık başlar). |
 | `/opt/monitor/secrets/alertmanager/smtp_password` | Gmail app-password (tek satır, newline yok). |
 | `/opt/monitor/secrets/alertmanager/telegram_bot_token` | Telegram bot token (BotFather). |
 | `/opt/monitor/secrets/prometheus/kuma_api_key` | Kuma ayağa kalktıktan SONRA panelden (Settings→API Keys) yeni key üret, buraya yaz (Adım 5 sonrası). |
