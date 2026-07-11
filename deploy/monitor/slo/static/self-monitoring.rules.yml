@@ -90,6 +90,16 @@ groups:
         annotations:
           summary: "Kutu yedeği 26 saatten eski — gece job'ı başarısız olabilir"
           description: "redwall_backup_last_success_timestamp (set=monitor-box) son 26 saatte güncellenmedi (Task 4 gece yedek job'ı). box-backup.sh loglarını kontrol et: /opt/monitor-backups/."
+      - alert: OffsiteBackupStale
+        expr: (time() - redwall_offsite_backup_last_success_timestamp) > 93600
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Off-site (Drive) yedeği 26 saatten eski — yükleme fazı başarısız olabilir"
+          description: "redwall_offsite_backup_last_success_timestamp (target=gdrive) son 26 saatte güncellenmedi. Yerel yedek sağlam olabilir (BackupStale ayrı) — box-backup.sh'nin off-site fazını (age+rclone) ve Drive erişimini kontrol et."
       - alert: DiskDolu
         expr: 100*(1 - node_filesystem_avail_bytes{mountpoint="/",fstype="ext4"} / node_filesystem_size_bytes{mountpoint="/",fstype="ext4"}) > 85
         for: 5m

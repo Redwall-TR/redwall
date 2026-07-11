@@ -119,4 +119,46 @@ TMP_METRIC="$(mktemp "$TEXTFILE_DIR/.backup.prom.XXXXXX")"
 chmod 644 "$TMP_METRIC"
 mv -f "$TMP_METRIC" "$TEXTFILE"
 
-log "Yedek tamamlandı: $DEST"
+log "Yerel yedek tamamlandı: $DEST"
+
+# ── 8) OFF-SITE: age-şifrele + Google Drive'a (Ortak Drive: redwall-yedek) yükle ──
+# Geçici çözüm (kalıcısı: TR/AB VDS+MinIO). Drive üçüncü-taraf olduğundan HER dosya
+# age ile şifrelenir (dump'larda kullanıcı verisi + kuma-config.json'da bildirim
+# token'ları var). Özel anahtar: /opt/monitor/secrets/age/backup.key (600) + kopyası
+# kullanıcının parola yöneticisinde — kutu ölse de yedekler açılabilir.
+# Bu faz YEREL metrikten SONRA koşar: off-site başarısızlığı yerel yedeği geçersiz
+# kılmaz; yalnız offsite-metriği güncellenmez → OffsiteBackupStale (ticket) tetiklenir.
+AGE_KEY="/opt/monitor/secrets/age/backup.key"
+OFFSITE_REMOTE="gdrive:"          # rclone.conf: service-account + team_drive (redwall-yedek)
+OFFSITE_RETENTION_DAYS=14
+
+log "off-site: şifreleme başlıyor..."
+AGE_RECIPIENT="$(age-keygen -y "$AGE_KEY")"
+ENC_DIR="$(mktemp -d /tmp/offsite.XXXXXX)"
+trap 'rm -rf "$ENC_DIR"' EXIT
+for f in "$DEST"/*; do
+  age -r "$AGE_RECIPIENT" -o "$ENC_DIR/$(basename "$f").age" "$f"
+done
+LOCAL_N=$(ls -1 "$DEST" | wc -l); ENC_N=$(ls -1 "$ENC_DIR" | wc -l)
+[[ "$LOCAL_N" -eq "$ENC_N" ]] || { log "HATA: şifreli dosya sayısı tutmuyor ($ENC_N/$LOCAL_N)"; exit 1; }
+
+log "off-site: Drive'a yükleme başlıyor ($ENC_N dosya)..."
+rclone copy "$ENC_DIR" "$OFFSITE_REMOTE$TS" --transfers 4 --checksum
+REMOTE_N=$(rclone lsf "$OFFSITE_REMOTE$TS" | wc -l)
+[[ "$REMOTE_N" -eq "$ENC_N" ]] || { log "HATA: Drive'daki dosya sayısı tutmuyor ($REMOTE_N/$ENC_N)"; exit 1; }
+
+log "off-site: ${OFFSITE_RETENTION_DAYS} günden eski setler siliniyor..."
+rclone delete "$OFFSITE_REMOTE" --min-age "${OFFSITE_RETENTION_DAYS}d" --rmdirs 2>/dev/null || \
+  { rclone delete "$OFFSITE_REMOTE" --min-age "${OFFSITE_RETENTION_DAYS}d" && rclone rmdirs "$OFFSITE_REMOTE" --leave-root; }
+
+# Off-site tazelik metriği (ayrı metrik — ayrı alarm: OffsiteBackupStale)
+TMP_METRIC="$(mktemp "$TEXTFILE_DIR/.backup-offsite.prom.XXXXXX")"
+{
+  echo "# HELP redwall_offsite_backup_last_success_timestamp Son başarılı off-site (Drive) yedeğin unix zaman damgası."
+  echo "# TYPE redwall_offsite_backup_last_success_timestamp gauge"
+  echo "redwall_offsite_backup_last_success_timestamp{set=\"monitor-box\",target=\"gdrive\"} $(date +%s)"
+} > "$TMP_METRIC"
+chmod 644 "$TMP_METRIC"
+mv -f "$TMP_METRIC" "$TEXTFILE_DIR/backup-offsite.prom"
+
+log "Yedek tamamlandı (yerel + off-site): $DEST → $OFFSITE_REMOTE$TS"

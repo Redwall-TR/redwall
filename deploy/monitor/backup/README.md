@@ -70,3 +70,14 @@ curl -s 'http://localhost:9090/api/v1/query?query=redwall_backup_last_success_ti
   koy (önce container'ı durdur, dosyayı değiştir, tekrar başlat).
 - Config: `tar xzf config.tar.gz -C /opt` (not: `.env`/`secrets` yedekte YOK, elle yeniden
   girilmeli).
+
+## Off-site yedek (Google Drive — geçici, kalıcısı TR/AB VDS+MinIO)
+- box-backup.sh Adım 8: her yedek dosyası **age** ile şifrelenir → rclone ile Ortak Drive
+  `redwall-yedek`e (`gdrive:<TS>/`) yüklenir; 14 gün döngü. Drive üçüncü-taraf olduğundan
+  ŞİFRESİZ hiçbir şey çıkmaz (dump'larda kullanıcı verisi + kuma-config'te bildirim token'ları).
+- Anahtarlar: `/opt/monitor/secrets/age/backup.key` (600) — özel anahtarın kopyası kullanıcının
+  parola yöneticisinde (kutu ölürse yedek AÇILABİLİR olmalı). rclone: `rclone.conf.example`.
+- Metrik/alarm: `redwall_offsite_backup_last_success_timestamp` → `OffsiteBackupStale` (26h, ticket).
+  Off-site fazı YEREL metrikten sonra koşar: Drive arızası yerel yedeği geçersiz kılmaz.
+- Restore: `rclone copy gdrive:<TS>/<dosya>.age . && age -d -i backup.key -o <dosya> <dosya>.age`
+  (tatbikat 2026-07-11: checksum birebir doğrulandı).
