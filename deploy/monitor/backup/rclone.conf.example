@@ -1,0 +1,8 @@
+# /root/.config/rclone/rclone.conf — monitör kutusu (secret İÇERMEZ; sa.json sunucuda 600)
+# Service-account key: /opt/monitor/secrets/gdrive/sa.json (GCP redwall-ops projesi,
+# redwall-yedek-bot@redwall-ops.iam.gserviceaccount.com — Ortak Drive "redwall-yedek"te İçerik Yöneticisi)
+[gdrive]
+type = drive
+scope = drive
+service_account_file = /opt/monitor/secrets/gdrive/sa.json
+team_drive = 0AIo-AiN566hJUk9PVA

@@ -4,6 +4,9 @@
 
 // ════════ METRİKLER ════════
 // Host: CPU/RAM/disk/ağ (node_exporter eşdeğeri, Alloy içi)
+// NOT: yanginpro-test'te unix bloğuna HOST-ÖZEL textfile-collector eklidir
+// (yedek-tazelik metrikleri — bkz. backup/yp-test-db-backup.sh). Bu şablonu
+// oraya basarken insertion-only kuralı geçerli (canlı config host-özel!).
 prometheus.exporter.unix "node" {
   rootfs_path = "/host/root"
   procfs_path = "/host/proc"
