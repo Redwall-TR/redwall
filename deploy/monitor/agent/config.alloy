@@ -121,6 +121,9 @@ discovery.relabel "containers" {
 // 1) fpm self-healthcheck yankısı: container kendi kendine 127.0.0.1 GET /index.php 200
 //    — sıfır bilgi değeri. DİKKAT: yalnız " 200" düşer; healthcheck BAŞARISIZLIĞI (5xx) Loki'ye gider.
 // 2) Frappe rq worker gevezeliği (ERP): "Result is kept for N seconds".
+// 3) Traefik access-log'unda Alloy'un kendi /metrics scrape yankısı (prometheus@internal,
+//    30s'de bir 200) — scrape sağlığı zaten Prometheus `up` metriğinde; yalnız 200 düşer,
+//    scrape HATASI (4xx/5xx) Loki'ye gider.
 loki.process "gurultu" {
   forward_to = [loki.write.monitor.receiver]
   stage.drop {
@@ -128,6 +131,9 @@ loki.process "gurultu" {
   }
   stage.drop {
     expression = "Result is kept for [0-9]+ seconds"
+  }
+  stage.drop {
+    expression = "\"GET /metrics HTTP/[0-9.]+\" 200 .*\"prometheus@internal\""
   }
 }
 
