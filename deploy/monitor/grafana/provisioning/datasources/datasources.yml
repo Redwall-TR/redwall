@@ -20,3 +20,10 @@ datasources:
     type: tempo
     access: proxy
     url: http://tempo:3200
+    jsonData:
+      # Servis haritası (T7) — Prometheus'un GERÇEK auto-uid'i (canlıdan /api/datasources ile
+      # doğrulandı: PBFA97CFB590B2093). Sabit-uid YAZMA dersi burada da geçerli — bu satır
+      # datasourceUid alanı Tempo'ya değil hedef Prometheus'a işaret ettiği için elle
+      # doğrulanmış gerçek değer kullanılıyor (provizyon kendisi hâlâ uid'siz kalıyor).
+      serviceMap:
+        datasourceUid: PBFA97CFB590B2093

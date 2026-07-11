@@ -1,0 +1,88 @@
+# Traefik file provider — middleware TANIMLARI (Tur 3 Task 9).
+#
+# Neden: label-tanımlı (docker-provider) middleware'ler o middleware'i barındıran container
+# restart/recreate olduğunda GEÇİCİ OLARAK KAYBOLUR — çünkü Traefik'in docker provider'ı tek
+# host genelinde TÜM container label'larını TEK bir "docker" sağlayıcı isim alanında birleştirir
+# (compose projesi ayrımı yapmaz). Bir container kaybolunca onun tanımladığı middleware de
+# birleşik yapılandırmadan silinir; buna referans veren TÜM router'lar (BAŞKA compose
+# projelerinde olsalar bile) o pencerede düşer. cloudflare-ips (kuma container'ında tanımlı)
+# ve authentik-fa (authentik-server container'ında tanımlı) tam bu paterne uyuyordu — bkz. Tur 1
+# kırılganlık notu + T8 break-glass tatbikat raporu (.superpowers/sdd/task-8-report.md).
+#
+# file-provider'daki tanımlar container yaşam döngüsünden TAMAMEN BAĞIMSIZ — yalnız bu dosya
+# (veya Traefik'in kendisi) değişirse güncellenir. Router label'ları artık `<ad>@file` ile
+# referans verir (docker-provider bir router'dan file-provider bir middleware'e çapraz referans).
+#
+# Desen: deploy/license/traefik/dynamic.yml (LicenseServer, Traefik ingress migration, 2026-07-06)
+# — bu dosya aynı yapıyı ve aynı değerleri (cloudflare-ips) izler.
+#
+# BİLİNÇLİ KAPSAM DIŞI (Tur 3 Task 9 keşfi): promwrite-auth (monitor/prometheus),
+# loki-auth (monitor/loki), tempo-auth (tempo/tempo) basic-auth middleware'leri BURAYA
+# TAŞINMADI — her biri KENDİ container'ının label'ında hem TANIMLI hem KULLANILIYOR (aynı
+# container, aynı restart döngüsü). Container restart olunca tanım ve referans BİRLİKTE
+# kaybolup BİRLİKTE geri gelir — cross-container kırılganlık YOK, bu task'ın kapsamı
+# (cloudflare-ips + authentik-fa, birden çok projeye yayılan referanslar) dışında kalır.
+# Ayrıca hash'lerini (bcrypt) repoya taşımamak için de ayrı bir sebep var: sunucu .env'inde
+# kalmaları gizliliği repoya sızdırmadan koruyor.
+http:
+  middlewares:
+    # Cloudflare edge IP aralıkları — yalnız Cloudflare'den gelen istekler kabul edilir,
+    # doğrudan-IP erişimi 403 döner. Değerler CANLI kuma label'ından (monitor/docker-compose.yml,
+    # Tur 1) birebir taşındı — hiçbir aralık değiştirilmedi.
+    # Referans veren router'lar (Tur 3 Task 9 sonrası, hepsi `cloudflare-ips@file`): kuma, grafana
+    # (monitor); authentik (authentik); umami, umami-public (umami); glitchtip (glitchtip).
+    cloudflare-ips:
+      ipAllowList:
+        sourceRange:
+          - "173.245.48.0/20"
+          - "103.21.244.0/22"
+          - "103.22.200.0/22"
+          - "103.31.4.0/22"
+          - "141.101.64.0/18"
+          - "108.162.192.0/18"
+          - "190.93.240.0/20"
+          - "188.114.96.0/20"
+          - "197.234.240.0/22"
+          - "198.41.128.0/17"
+          - "162.158.0.0/15"
+          - "104.16.0.0/13"
+          - "104.24.0.0/14"
+          - "172.64.0.0/13"
+          - "131.0.72.0/22"
+          - "2400:cb00::/32"
+          - "2606:4700::/32"
+          - "2803:f800::/32"
+          - "2405:b500::/32"
+          - "2405:8100::/32"
+          - "2a06:98c0::/29"
+          - "2c0f:f248::/32"
+
+    # Authentik forward-auth (SSO kapısı — Kuma/Umami için). Değerler CANLI authentik-server
+    # label'ından (authentik/docker-compose.yml, Tur 2-C) birebir taşındı. authentik-server
+    # container'ı zaten monitor-net (monitor_monitor-net) ağında olduğu için Traefik'in bu
+    # adrese erişimi değişmedi (docker provider'da da aynı ağ üzerinden çalışıyordu).
+    # Referans veren router'lar (Tur 3 Task 9 sonrası): kuma (monitor), umami (umami).
+    # NOT: authentik-server'ın KENDİ router'ı (auth.redwall.tr) bunu KULLANMAZ — yalnız
+    # cloudflare-ips@file (SSO kapısının kendisi kendi kendini forward-auth'a sokmaz).
+    authentik-fa:
+      forwardAuth:
+        address: "http://authentik-server:9000/outpost.goauthentik.io/auth/traefik"
+        trustForwardHeader: true
+        authResponseHeaders:
+          - X-authentik-username
+          - X-authentik-groups
+          - X-authentik-email
+          - X-authentik-name
+          - X-authentik-uid
+
+    # Şu an HİÇBİR router tarafından kullanılmıyor (keşifte referans bulunmadı) — license
+    # dynamic.yml deseniyle tutarlılık için burada tanımlandı; ileride bir panele güvenlik
+    # başlığı eklenmek istenirse `security-headers@file` olarak hazır. Canlı davranışta
+    # sıfır etki (referans yoksa Traefik hiçbir router'a uygulamaz).
+    security-headers:
+      headers:
+        frameDeny: true
+        contentTypeNosniff: true
+        referrerPolicy: "strict-origin-when-cross-origin"
+        stsSeconds: 31536000
+        stsIncludeSubdomains: true

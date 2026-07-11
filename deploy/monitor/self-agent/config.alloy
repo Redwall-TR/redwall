@@ -1,0 +1,145 @@
+// Redwall monitör kutusunun ÖZ-ajanı (Grafana Alloy) — monitör sunucusunun (194.62.52.22)
+// kendi container loglarını + container metriklerini izler. Hedef-ajan deseninin
+// (deploy/monitor/agent/) kutuya uyarlanmış kopyası.
+//
+// FARK (hedef-ajanlardan): bu ajan İÇ ağdan (monitor_monitor-net) yazar — Loki push
+// http://loki:3100 ve Prometheus remote-write http://prometheus:9090 servis-DNS'iyle,
+// basic-auth GEREKMEZ, dış https uçlar (loki.redwall.tr / push.redwall.tr) KULLANILMAZ.
+//
+// prometheus.exporter.unix YOK: kutuda node-exporter zaten ayrı container olarak çalışıyor
+// (deploy/monitor/docker-compose.yml → node-exporter, job=node, instance=redwall-monitor).
+// Aynı host metriğini iki kaynaktan (node-exporter + Alloy unix exporter) göndermek
+// çift-seri/çift-metrik yaratır — bu yüzden unix exporter + ilgili relabel/scrape blokları
+// bilinçli olarak bu dosyada YOK. Uygulama/DB exporter blokları da (traefik/postgres/
+// redis/mysql) YOK: monitör kutusundaki Traefik/Loki/Tempo/Grafana/Alertmanager zaten
+// Prometheus'un kendi statik scrape config'inden (prometheus/prometheus.yml) doğrudan
+// kazınıyor — Alloy üzerinden ikinci kez scrape etmek aynı çift-metrik riskini taşır.
+
+// ════════ METRİKLER (yalnız container — cadvisor) ════════
+// disabled_metrics: Alloy varsayılanına (advtcp/cpu_topology/cpuset/hugetlb/memory_numa/
+// process/referenced_memory/resctrl/tcp/udp) "disk"+"diskIO" EKLENDİ (2026-07-11, T3-11b
+// kök-çözüm). Sebep: cadvisor'un per-container inode/disk kullanımı için stat ettiği
+// /var/lib/docker/rootfs/overlayfs/<id> yolu, kısa-ömürlü `docker run --rm` konteynerleri
+// (ör. doğrulama/backup script'leri) taranırken konteyner zaten kaldırılmış oluyor →
+// dakikada ~1 "rootDiskErr: could not stat ... no such file or directory" (zararsız ama
+// kalıcı gürültü, Loki'ye akıyor). disk/diskIO metrik ailesi repo'daki HİÇBİR
+// dashboard/SLO/alert tarafından kullanılmıyor (grep ile doğrulandı) — container CPU/RAM/ağ
+// metrikleri etkilenmez. Süzgeç değil, kaynağı KAPATMA (kök-çözüm).
+prometheus.exporter.cadvisor "cadvisor" {
+  docker_host      = "unix:///var/run/docker.sock"
+  storage_duration = "5m"
+  disabled_metrics = [
+    "advtcp", "cpu_topology", "cpuset", "disk", "diskIO", "hugetlb",
+    "memory_numa", "process", "referenced_memory", "resctrl", "tcp", "udp",
+  ]
+}
+
+// instance etiketini okunur sunucu adına sabitle (yoksa Alloy container'ının rastgele
+// hostname'i gelir → dashboard'larda "jq1w9fmlvf" gibi görünür).
+discovery.relabel "cadvisor" {
+  targets = prometheus.exporter.cadvisor.cadvisor.targets
+  rule {
+    target_label = "instance"
+    replacement  = sys.env("AGENT_HOSTNAME")
+  }
+}
+
+prometheus.scrape "cadvisor" {
+  targets         = discovery.relabel.cadvisor.output
+  forward_to      = [prometheus.remote_write.monitor.receiver]
+  scrape_interval = "30s"
+  job_name        = "cadvisor"
+}
+
+// İç ağ remote-write: monitör kutusunun kendi Prometheus'u, basic-auth gerekmez
+// (aynı docker ağı içinde, dışa açık değil).
+prometheus.remote_write "monitor" {
+  endpoint {
+    url = sys.env("PROM_URL")
+  }
+  external_labels = {
+    host = sys.env("AGENT_HOSTNAME"),
+  }
+}
+
+// ════════ ALLOY ÖZ-METRİKLERİ (T6b: LogAkisiKesildi alarmı için loki_write_* şart) ════════
+// Alloy kendi iç metriklerini (component sağlığı, loki.write yazma durumu) varsayılan olarak
+// Prometheus'a GÖNDERMEZ — yalnız kendi :12345/metrics ucunda durur. prometheus.exporter.self
+// bu ucu bir "target" olarak açar; yerel prometheus.scrape ile kazınıp mevcut remote-write
+// zincirine katılır. KARDİNALİTE: yalnız loki_write_* ailesi + alloy_build_info tutulur
+// (prometheus.relabel keep) — Alloy'un tüm dahili metrikleri (go_*, process_*, vb.) atılır.
+prometheus.exporter.self "alloy" { }
+
+discovery.relabel "alloy_self" {
+  targets = prometheus.exporter.self.alloy.targets
+  rule {
+    target_label = "instance"
+    replacement  = sys.env("AGENT_HOSTNAME")
+  }
+}
+
+prometheus.scrape "alloy_self" {
+  targets         = discovery.relabel.alloy_self.output
+  forward_to      = [prometheus.relabel.alloy_self.receiver]
+  scrape_interval = "30s"
+  job_name        = "alloy"
+}
+
+prometheus.relabel "alloy_self" {
+  forward_to = [prometheus.remote_write.monitor.receiver]
+  rule {
+    source_labels = ["__name__"]
+    regex         = "loki_write_.*|alloy_build_info"
+    action        = "keep"
+  }
+}
+
+// ════════ LOGLAR ════════
+// Tüm docker container loglarını keşfet + tail → monitör Loki (aynı kutu, iç ağ)
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    regex         = "/(.*)"
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_log_stream"]
+    target_label  = "stream"
+  }
+}
+
+// ════════ GÜRÜLTÜ SÜZGECİ (hedef-ajan deseniyle AYNI, 2026-07-10 kullanıcı ilkesi) ════════
+// 1) fpm self-healthcheck yankısı: container kendi kendine 127.0.0.1 GET /index.php 200
+//    — sıfır bilgi değeri. DİKKAT: yalnız " 200" düşer; healthcheck BAŞARISIZLIĞI (5xx) Loki'ye gider.
+// 2) Frappe rq worker gevezeliği (ERP): "Result is kept for N seconds".
+loki.process "gurultu" {
+  forward_to = [loki.write.monitor.receiver]
+  stage.drop {
+    expression = "^127\\.0\\.0\\.1 .*\"GET /index\\.php\" 200"
+  }
+  stage.drop {
+    expression = "Result is kept for [0-9]+ seconds"
+  }
+}
+
+loki.source.docker "containers" {
+  host       = "unix:///var/run/docker.sock"
+  targets    = discovery.relabel.containers.output
+  forward_to = [loki.process.gurultu.receiver]
+  labels     = {
+    host = sys.env("AGENT_HOSTNAME"),
+    job  = "docker",
+  }
+}
+
+// İç ağ log push: monitör kutusunun kendi Loki'si, basic-auth gerekmez.
+loki.write "monitor" {
+  endpoint {
+    url = sys.env("LOKI_URL")
+  }
+}

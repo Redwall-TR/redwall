@@ -25,15 +25,27 @@ services:
     command:
       - --providers.docker=true
       - --providers.docker.exposedByDefault=false
+      # Tur 3 Task 9: file provider — cross-container paylaşılan middleware'ler (cloudflare-ips,
+      # authentik-fa) artık burada tanımlı (deploy/monitor/traefik/dynamic.yml), container
+      # restart'larından bağımsız. Router label'ları `<ad>@file` ile referans verir.
+      - --providers.file.filename=/etc/traefik/dynamic.yml
+      - --providers.file.watch=true
       - --entrypoints.web.address=:80
       - --entrypoints.websecure.address=:443
       - --entrypoints.web.http.redirections.entrypoint.to=websecure
       - --entrypoints.web.http.redirections.entrypoint.scheme=https
+      # Öz-telemetri (Tur 3): Traefik metrikleri. Port publish YOK — Prometheus iç ağdan
+      # traefik:8082 üzerinden kazır (plain-compose, dışa açılmaz).
+      - --entrypoints.metrics.address=:8082
+      - --metrics.prometheus=true
+      - --metrics.prometheus.entrypoint=metrics
+      - --metrics.prometheus.addrouterslabels=true
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
     networks:
       - monitor-net
 
@@ -50,15 +62,12 @@ services:
       - traefik.http.routers.kuma.rule=Host(`durum.${MONITOR_BASE_DOMAIN}`)
       - traefik.http.routers.kuma.entrypoints=websecure
       - traefik.http.routers.kuma.tls=true
-      - traefik.http.routers.kuma.middlewares=cloudflare-ips,authentik-fa
-      # authentik-fa: deploy/authentik/docker-compose.yml içinde tanımlı (cross-container,
-      # plain docker provider — Tur 1'de cloudflare-ips ile aynı desen doğrulandı).
+      # Tur 3 Task 9: cloudflare-ips + authentik-fa artık file-provider'da tanımlı
+      # (deploy/monitor/traefik/dynamic.yml) — container restart'tan bağımsız. `@file` şart
+      # (aksi halde Traefik bunları docker-provider'da arar ve bulamaz → router düşer).
       # Sıra ÖNEMLİ: cloudflare-ips önce (doğrudan-IP hâlâ 403), authentik-fa sonra (SSO kapısı).
+      - traefik.http.routers.kuma.middlewares=cloudflare-ips@file,authentik-fa@file
       - traefik.http.services.kuma.loadbalancer.server.port=3001
-      # cloudflare-ips allowlist (global — plain docker provider, cross-container çalışır):
-      # origin'e yalnız Cloudflare ulaşır; doğrudan-IP erişimi 403. İnsan panellerine uygulanır.
-      # NOT: loki/push (ajan uçları) EKLENMEZ — ajanların CF'den geçtiği ayrıca doğrulanmalı.
-      - "traefik.http.middlewares.cloudflare-ips.ipallowlist.sourcerange=173.245.48.0/20,103.21.244.0/22,103.22.200.0/22,103.31.4.0/22,141.101.64.0/18,108.162.192.0/18,190.93.240.0/20,188.114.96.0/20,197.234.240.0/22,198.41.128.0/17,162.158.0.0/15,104.16.0.0/13,104.24.0.0/14,172.64.0.0/13,131.0.72.0/22,2400:cb00::/32,2606:4700::/32,2803:f800::/32,2405:b500::/32,2405:8100::/32,2a06:98c0::/29,2c0f:f248::/32"
 
   prometheus:
     image: prom/prometheus:v3.13.0
@@ -94,15 +103,27 @@ services:
   alertmanager:
     image: prom/alertmanager:v0.33.1   # Step 1 çıktısı
     restart: unless-stopped
+    environment:
+      # alertmanager.yml.tmpl'deki __TELEGRAM_CHAT_ID__ yer tutucusu, container başlangıcında
+      # bu env ile değiştirilir (Alertmanager native env-var genişletmeyi desteklemiyor —
+      # upstream prometheus/alertmanager#2917). Değer sunucu /opt/monitor/.env'de.
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+    entrypoint: ["/bin/sh", "-c"]
     command:
-      - --config.file=/etc/alertmanager/alertmanager.yml
-      - --storage.path=/alertmanager
+      - >-
+        sed "s/__TELEGRAM_CHAT_ID__/$$TELEGRAM_CHAT_ID/" /etc/alertmanager/alertmanager.yml.tmpl > /tmp/alertmanager.yml &&
+        exec /bin/alertmanager --config.file=/tmp/alertmanager.yml --storage.path=/alertmanager
     volumes:
-      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+      - ./alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml.tmpl:ro
       - ./secrets/alertmanager:/etc/alertmanager/secrets:ro
       - am-data:/alertmanager
     networks:
       - monitor-net
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "localhost:9093/-/healthy"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
 
   loki:
     image: grafana/loki:3.7.3
@@ -110,6 +131,7 @@ services:
     command: -config.file=/etc/loki/loki-config.yml
     volumes:
       - ./loki/loki-config.yml:/etc/loki/loki-config.yml:ro
+      - ./loki/rules:/etc/loki/rules:ro
       - loki-data:/loki
     networks:
       - monitor-net
@@ -161,7 +183,8 @@ services:
       - traefik.http.routers.grafana.rule=Host(`monitor.${MONITOR_BASE_DOMAIN}`)
       - traefik.http.routers.grafana.entrypoints=websecure
       - traefik.http.routers.grafana.tls=true
-      - traefik.http.routers.grafana.middlewares=cloudflare-ips
+      # Tur 3 Task 9: cloudflare-ips artık file-provider'da (deploy/monitor/traefik/dynamic.yml).
+      - traefik.http.routers.grafana.middlewares=cloudflare-ips@file
       - traefik.http.services.grafana.loadbalancer.server.port=3000
 
   # Monitör kutusunun KENDİ host metrikleri (Tur 1 ajanları 5 hedefe kuruldu; kutunun
@@ -173,7 +196,11 @@ services:
     pid: host
     volumes:
       - /:/host:ro,rslave
+      # Tur 3 Task 4: kutu-içi gece yedeği tazelik metriği (backup.prom) buraya yazılır.
+      # ro mount: node-exporter yalnız okur, yazan box-backup.sh (host'ta root, systemd timer).
+      - /var/lib/node_exporter/textfile:/var/lib/node_exporter/textfile:ro
     command:
       - --path.rootfs=/host
+      - --collector.textfile.directory=/var/lib/node_exporter/textfile
     networks:
       - monitor-net

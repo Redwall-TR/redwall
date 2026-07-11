@@ -90,6 +90,41 @@
       ],
       "options": {},
       "fieldConfig": { "defaults": { "unit": "s" }, "overrides": [] }
+    },
+    {
+      "type": "stat", "title": "Öz-Telemetri — İzleme Zinciri Sağlığı (loki/tempo/grafana/alertmanager/traefik-monitor)",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 36 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "up{job=~\"loki|tempo|grafana|alertmanager|traefik-monitor\"}", "legendFormat": "{{job}}", "refId": "A" }],
+      "options": { "colorMode": "background", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "mappings": [{ "type": "value", "options": {
+        "0": { "text": "DOWN", "color": "red" }, "1": { "text": "UP", "color": "green" } } }],
+        "thresholds": { "mode": "absolute", "steps": [{ "color": "green", "value": null }] } }, "overrides": [] }
+    },
+    {
+      "type": "stat", "title": "Son Yedek (kutu) — kaç saat önce",
+      "gridPos": { "h": 6, "w": 8, "x": 0, "y": 42 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "time() - redwall_backup_last_success_timestamp{set=\"monitor-box\"}", "legendFormat": "kutu-yedeği", "refId": "A" }],
+      "options": { "colorMode": "background", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "dtdurations",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "orange", "value": 86400 }, { "color": "red", "value": 93600 } ] } }, "overrides": [] }
+    },
+    {
+      "type": "stat", "title": "Ajan Akışı — Loki Yazma Tazeliği (6 host, eşik LogAkisiKesildi ile aynı: 900sn)",
+      "gridPos": { "h": 6, "w": 16, "x": 8, "y": 42 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "time() - max by(instance) (max_over_time(timestamp(loki_write_sent_entries_total)[4h:1m]))", "legendFormat": "{{instance}}", "refId": "A" }],
+      "options": { "colorMode": "background", "orientation": "horizontal", "reduceOptions": { "calcs": ["lastNotNull"] } },
+      "fieldConfig": { "defaults": { "unit": "dtdurations",
+        "thresholds": { "mode": "absolute", "steps": [
+          { "color": "green", "value": null }, { "color": "red", "value": 900 } ] } }, "overrides": [] }
+    },
+    {
+      "type": "text", "title": "Servis Haritası (Tempo)",
+      "gridPos": { "h": 4, "w": 24, "x": 0, "y": 48 },
+      "options": { "mode": "markdown", "content": "**Tempo Servis Haritası:** [Explore'u aç](/explore) → sağ üstten **Tempo** veri kaynağını seç → sorgu tipini **Service Graph** yap. Beslenen metrikler: `traces_service_graph_*` / `traces_spanmetrics_*` (bkz. `.superpowers/sdd/task-7-report.md`)." }
     }
   ]
 }

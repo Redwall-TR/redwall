@@ -35,3 +35,15 @@ compactor:
   working_directory: /loki/compactor
   retention_enabled: true
   delete_request_store: filesystem
+
+# Tur 3 Task 6: ruler ilk kez açılıyor — log-tabanlı alarm kuralları (app-log-alerts.yml)
+# buradan Alertmanager'a gider. Tek-tenant (auth_enabled=false) → kurallar rules/fake/ altında
+# ("fake" = Loki'nin single-tenant modunda kullandığı sabit tenant-id).
+ruler:
+  storage:
+    type: local
+    local:
+      directory: /etc/loki/rules
+  rule_path: /tmp/loki-rules
+  alertmanager_url: http://alertmanager:9093
+  enable_alertmanager_v2: true

@@ -1,0 +1,136 @@
+# Öz-telemetri: izleme zincirinin kendi bileşenleri (Task 1'de eklenen up{} serilerine dayanır).
+# Sloth ÜRETMEZ — elle, kasıtlı (meta-monitoring.rules.yml ile aynı desen).
+# AM hariç hepsi severity=ticket: kanal sağlam, sadece o bileşen kör/sağır.
+# AM ise severity=page — ama AM ölüyse bu alarmı GÖNDEREMEZ; o boşluğu dead-man
+# script'i (check-and-ping.sh) yakalar (bkz. AM sağlık kapısı).
+groups:
+  - name: self-monitoring
+    rules:
+      - alert: LokiDown
+        expr: up{job="loki"} == 0
+        for: 5m
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Loki down — log toplama durdu"
+          description: "Prometheus loki:3100'ü 5dk kazıyamıyor."
+      - alert: TempoDown
+        expr: up{job="tempo"} == 0
+        for: 5m
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Tempo down — iz toplama durdu"
+          description: "Prometheus tempo ucunu 5dk kazıyamıyor."
+      - alert: GrafanaDown
+        expr: up{job="grafana"} == 0
+        for: 5m
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Grafana down — dashboard erişimi yok"
+          description: "Prometheus grafana ucunu 5dk kazıyamıyor."
+      - alert: AlertmanagerDown
+        expr: up{job="alertmanager"} == 0
+        for: 5m
+        labels:
+          severity: page
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "🔴 Alertmanager down — ALARM KANALI ÖLÜ (dead-man devrede)"
+          description: "Prometheus alertmanager:9093'ü 5dk kazıyamıyor. AM ölüyse bu alarmı kendisi gönderemez — dead-man script'inin AM sağlık kapısı bu boşluğu yakalar (healthchecks.io ping kesilir)."
+      # T6b: her ajanın loki.write öz-metriği (Alloy prometheus.exporter.self → remote-write,
+      # keep-filtre: yalnız loki_write_* + alloy_build_info). Ajan ölünce/log akışı kesilince
+      # seri de KESİLİR — remote-write'ta staleness marker yazılmaz, seri ~5dk lookback sonrası
+      # instant sorgudan düşer. Bu yüzden rate(...)==0 ASLA ateşlenmez (canlıda test edildi,
+      # 2026-07-10: t+8dk'da instant boş, rate hâlâ >0 — pencere boşalınca seri komple yok
+      # oluyor, hiçbir zaman ==0 olmuyor). ÇALIŞAN desen (canlı kanıtlı): timestamp() alt
+      # sorgusuyla "son görülme yaşı" — timestamp() sample'ın KENDİ zaman damgasını döner,
+      # max_over_time [4h:1m] alt-sorgusu son gerçek sample'ı pencerede tutar.
+      # SINIR: ajan 4 saatten uzun ölü kalırsa seri [4h] penceresinden de düşer → alarm
+      # kendiliğinden resolve olur (ticket zaten açılmış olur; solo-ops için kabul edildi).
+      - alert: LogAkisiKesildi
+        expr: (time() - max by(instance) (max_over_time(timestamp(loki_write_sent_entries_total)[4h:1m]))) > 900
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: log
+          tier: "1"
+        annotations:
+          summary: "{{ $labels.instance }} 15dk'dır Loki'ye log yazmıyor — ajan/akış ölmüş olabilir"
+          description: "Alloy ajanının loki.write öz-metriği (loki_write_sent_entries_total) 15 dakikadır güncellenmiyor: ya ajan container'ı öldü ya da log-push zinciri koptu. Sunucuda /opt/redwall-agent (monitör kutusunda /opt/monitor/self-agent) altında `docker compose ps` + `docker compose logs alloy` kontrol et. NOT: 4 saatten uzun kesintide alarm kendiliğinden resolve olur (seri pencereden düşer)."
+
+  # Tur 3 Task 5: alarm tek-çatı. Aşağıdaki 4 kaynak alarmı Tur 1'de Grafana-managed
+  # alerting'de kuruluydu (folder redwall-alerts, ruleGroup "kaynak", contact point
+  # e-posta); expr+eşik+for buradan BİREBİR taşındı (kaynak: 2026-07-10
+  # /api/v1/provisioning/alert-rules çıktısı, task-5-report.md'de ham JSON).
+  # Grafana'daki kural artık YOK (silindi) — tek çatı Alertmanager. `instance` etiketi
+  # korunur (hangi host şişti/sürekli-CPU'da görünsün diye) — Grafana'nın kullandığı
+  # `host` etiketiyle aynı değeri taşır (node_exporter scrape'inde ikisi de yazılır).
+  - name: kaynak-ve-tazelik
+    rules:
+      - alert: BackupStale
+        expr: (time() - redwall_backup_last_success_timestamp) > 93600
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Kutu yedeği 26 saatten eski — gece job'ı başarısız olabilir"
+          description: "redwall_backup_last_success_timestamp (set=monitor-box) son 26 saatte güncellenmedi (Task 4 gece yedek job'ı). box-backup.sh loglarını kontrol et: /opt/monitor-backups/."
+      - alert: DiskDolu
+        expr: 100*(1 - node_filesystem_avail_bytes{mountpoint="/",fstype="ext4"} / node_filesystem_size_bytes{mountpoint="/",fstype="ext4"}) > 85
+        for: 5m
+        labels:
+          severity: ticket
+          service: infra
+          category: resource
+          tier: "1"
+        annotations:
+          summary: "{{ $labels.instance }}: disk %85 üstü"
+          description: "Kök dosya sistemi (/) doluluğu 5dk boyunca %85'in üzerinde. Eski Grafana kuralı: 'Disk %85 ustu'."
+      - alert: BellekYuksek
+        expr: 100*(1 - node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes) > 90
+        for: 5m
+        labels:
+          severity: ticket
+          service: infra
+          category: resource
+          tier: "1"
+        annotations:
+          summary: "{{ $labels.instance }}: bellek %90 üstü"
+          description: "Kullanılabilir RAM 5dk boyunca %90'ın üzerinde tüketiliyor. Eski Grafana kuralı: 'Bellek %90 ustu'."
+      - alert: CPUYuksek
+        expr: 100 - (avg by (instance)(rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 90
+        for: 10m
+        labels:
+          severity: ticket
+          service: infra
+          category: resource
+          tier: "1"
+        annotations:
+          summary: "{{ $labels.instance }}: CPU %90 üstü (10dk sürekli)"
+          description: "Ortalama CPU kullanımı 10dk boyunca %90'ın üzerinde. Eski Grafana kuralı: 'CPU %90 ustu (surekli)'."
+      - alert: DiskPredict
+        expr: predict_linear(node_filesystem_avail_bytes{mountpoint="/",fstype="ext4"}[6h], 4*3600) < 0
+        for: 15m
+        labels:
+          severity: ticket
+          service: infra
+          category: resource
+          tier: "1"
+        annotations:
+          summary: "{{ $labels.instance }}: disk ~4 saat içinde dolacak (predict_linear)"
+          description: "Son 6 saatlik eğilimle 4 saat içinde kök dosya sistemi dolacak. Eski Grafana kuralı: 'Disk ~4 saat icinde dolacak (predict)'."

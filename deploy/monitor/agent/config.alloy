@@ -15,9 +15,22 @@ prometheus.exporter.unix "node" {
 }
 
 // Container: docker/swarm container başına kaynak (cadvisor, Alloy içi)
+// disabled_metrics: Alloy varsayılanına (advtcp/cpu_topology/cpuset/hugetlb/memory_numa/
+// process/referenced_memory/resctrl/tcp/udp) "disk"+"diskIO" EKLENDİ (2026-07-11, T3-11b
+// kök-çözüm — bkz. self-agent/config.alloy). Sebep: cadvisor'un per-container inode/disk
+// kullanımı için stat ettiği /var/lib/docker/rootfs/overlayfs/<id> yolu, kısa-ömürlü
+// `docker run --rm` konteynerleri taranırken konteyner zaten kaldırılmış oluyor →
+// kalıcı "rootDiskErr" gürültüsü (monitör kutusunda gözlendi). disk/diskIO ailesi repo'daki
+// hiçbir dashboard/SLO/alert tarafından kullanılmıyor — container CPU/RAM/ağ metrikleri
+// etkilenmez. Bu değişiklik ŞABLONDA; canlı 5 hedef ajanda sorun GÖZLENMEDİĞİ için (2026-07-11
+// kontrol) canlı config'lere dokunulmadı — bir sonraki redeploy'da otomatik gelir.
 prometheus.exporter.cadvisor "cadvisor" {
   docker_host      = "unix:///var/run/docker.sock"
   storage_duration = "5m"
+  disabled_metrics = [
+    "advtcp", "cpu_topology", "cpuset", "disk", "diskIO", "hugetlb",
+    "memory_numa", "process", "referenced_memory", "resctrl", "tcp", "udp",
+  ]
 }
 
 // instance etiketini okunur sunucu adına sabitle (yoksa Alloy container'ının rastgele
@@ -62,6 +75,38 @@ prometheus.remote_write "monitor" {
   }
   external_labels = {
     host = sys.env("AGENT_HOSTNAME"),
+  }
+}
+
+// ════════ ALLOY ÖZ-METRİKLERİ (T6b: LogAkisiKesildi alarmı için loki_write_* şart) ════════
+// Alloy kendi iç metriklerini (component sağlığı, loki.write yazma durumu) varsayılan olarak
+// Prometheus'a GÖNDERMEZ — yalnız kendi :12345/metrics ucunda durur. prometheus.exporter.self
+// bu ucu bir "target" olarak açar; yerel prometheus.scrape ile kazınıp mevcut remote-write
+// zincirine katılır. KARDİNALİTE: yalnız loki_write_* ailesi + alloy_build_info tutulur
+// (prometheus.relabel keep) — Alloy'un tüm dahili metrikleri (go_*, process_*, vb.) atılır.
+prometheus.exporter.self "alloy" { }
+
+discovery.relabel "alloy_self" {
+  targets = prometheus.exporter.self.alloy.targets
+  rule {
+    target_label = "instance"
+    replacement  = sys.env("AGENT_HOSTNAME")
+  }
+}
+
+prometheus.scrape "alloy_self" {
+  targets         = discovery.relabel.alloy_self.output
+  forward_to      = [prometheus.relabel.alloy_self.receiver]
+  scrape_interval = "30s"
+  job_name        = "alloy"
+}
+
+prometheus.relabel "alloy_self" {
+  forward_to = [prometheus.remote_write.monitor.receiver]
+  rule {
+    source_labels = ["__name__"]
+    regex         = "loki_write_.*|alloy_build_info"
+    action        = "keep"
   }
 }
 

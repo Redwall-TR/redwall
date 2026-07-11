@@ -1,0 +1,7 @@
+[Unit]
+Description=Redwall monitör kutusu gece yedeği (pg+sqlite+config)
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+ExecStart=/opt/monitor/backup/box-backup.sh

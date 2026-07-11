@@ -42,3 +42,15 @@ scrape_configs:
       password_file: /etc/prometheus/secrets/kuma_api_key
     static_configs:
       - targets: ['uptime-kuma:3001']
+
+  # Öz-telemetri (Tur 3): izleme yığınının kendisi. Yalnız iç ağ (monitor-net), dışa açılmaz.
+  - job_name: loki
+    static_configs: [{targets: ['loki:3100'], labels: {instance: redwall-monitor}}]
+  - job_name: tempo
+    static_configs: [{targets: ['tempo:3200'], labels: {instance: redwall-monitor}}]
+  - job_name: grafana
+    static_configs: [{targets: ['grafana:3000'], labels: {instance: redwall-monitor}}]
+  - job_name: alertmanager
+    static_configs: [{targets: ['alertmanager:9093'], labels: {instance: redwall-monitor}}]
+  - job_name: traefik-monitor
+    static_configs: [{targets: ['traefik:8082'], labels: {instance: redwall-monitor}}]
