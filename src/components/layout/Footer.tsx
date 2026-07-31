@@ -10,6 +10,7 @@ type Social = 'linkedin' | 'instagram' | 'youtube' | 'x' | 'facebook' | 'whatsap
 interface SiteSettings {
   sirketAdi?: string;
   iletisim?: { tel?: string; email?: string; adres?: { tr: string; en: string } };
+  calismaSaatleri?: { tr: string; en: string };
   sosyal?: Partial<Record<Social, string>>;
 }
 
@@ -108,6 +109,9 @@ export default async function Footer({
   const tel = settings?.iletisim?.tel ?? '+90 (XXX) XXX XX XX';
   const adres =
     (settings?.iletisim?.adres ? pick(settings.iletisim.adres, loc) : undefined) ?? 'İstanbul, Türkiye';
+  const calismaSaatleri =
+    (settings?.calismaSaatleri ? pick(settings.calismaSaatleri, loc) : undefined) ??
+    (isTr ? 'Pazartesi–Cuma: 09:00–18:00' : 'Monday–Friday: 09:00–18:00');
 
   const social = SOCIAL_ORDER.map((name) => ({ name, url: settings?.sosyal?.[name] })).filter(
     (s): s is { name: Social; url: string } => !!s.url,
@@ -129,7 +133,8 @@ export default async function Footer({
     { href: '/sss', label: t('sss') },
     { href: '/blog', label: t('blog') },
     { href: '/kariyer', label: t('kariyer') },
-    { href: '/dokumanlar', label: t('dokumanlar') },
+    { href: '/iletisim', label: t('iletisim') },
+    { href: '/teklif', label: isTr ? 'Teklif Al' : 'Get a Quote' },
   ];
 
   return (
@@ -221,7 +226,18 @@ export default async function Footer({
                 <span className="mt-0.5 flex-shrink-0" style={{ color: ACCENT }} aria-hidden>⌖</span>
                 <span className="text-white/65">{adres}</span>
               </li>
+              <li className="flex items-start gap-2.5">
+                <span className="mt-0.5 flex-shrink-0" style={{ color: ACCENT }} aria-hidden>🕑</span>
+                <span className="text-white/65">{calismaSaatleri}</span>
+              </li>
             </ul>
+            <Link
+              href="/iletisim"
+              className="mt-4 inline-flex items-center gap-1.5 text-sm font-medium text-white/80 transition-colors hover:text-white"
+            >
+              {isTr ? 'İletişim sayfası' : 'Contact page'}
+              <span aria-hidden>→</span>
+            </Link>
           </div>
         </div>
       </div>

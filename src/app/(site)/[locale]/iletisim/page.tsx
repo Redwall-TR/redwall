@@ -3,7 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 import { isLocale, pick, type Locale } from '@/lib/locales';
-import { buildMetadata } from '@/lib/metadata';
+import { buildMetadata, coreKeywords } from '@/lib/metadata';
 import { getSiteSettings } from '@/lib/cms/queries';
 import { Section } from '@/components/ui';
 import ContactForm from '@/components/sections/ContactForm';
@@ -40,7 +40,7 @@ export async function generateMetadata({
     ? 'Redwall ile iletişime geçin. Yangın güvenliği danışmanlığı, mühendislik ve yazılım hizmetlerimizle ilgili sorularınız için buradayız.'
     : 'Get in touch with Redwall. We are here to answer your questions about our fire-safety consulting, engineering, and software services.';
 
-  return buildMetadata({ baslik, aciklama, locale: loc, path: '/iletisim' });
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/iletisim', keywords: coreKeywords(loc) });
 }
 
 // ── Static params ─────────────────────────────────────────────────────────────

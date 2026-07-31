@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { pick, type Locale } from '@/lib/locales';
 import { Button } from '@/components/ui';
 import { cn } from '@/lib/utils';
@@ -75,6 +76,21 @@ export default function Hero({ data, locale }: HeroProps) {
         'py-24 sm:py-32',
       )}
     >
+      {/* Arka plan fotoğrafı — endüstriyel tesiste tabletli mühendis */}
+      <div className="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <Image
+          src="/images/hero-muh-3.jpg"
+          alt=""
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-[70%_20%] scale-x-[-1] opacity-90"
+        />
+        {/* Okunabilirlik için gradyan karartmalar */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#141416] via-[#141416]/80 to-[#141416]/10" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#141416]/80 via-transparent to-[#141416]/40" />
+      </div>
+
       {/* Blueprint grid overlay */}
       <div
         className="blueprint-grid absolute inset-0 opacity-[0.06] pointer-events-none"

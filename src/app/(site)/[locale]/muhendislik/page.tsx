@@ -2,7 +2,7 @@ import { notFound } from 'next/navigation';
 import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 import { isLocale } from '@/lib/locales';
-import { buildMetadata } from '@/lib/metadata';
+import { buildMetadata, coreKeywords } from '@/lib/metadata';
 import ServiceDetail from '@/components/sections/ServiceDetail';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
@@ -16,12 +16,12 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'Yangın Mühendisliği & Söndürme Sistemi Uygulama' : 'Fire Engineering & Suppression System Installation';
+  const baslik = isTr ? 'Yangın Sistemleri & Yangın Mühendisliği Uygulama' : 'Fire Protection Systems & Fire Engineering';
   const aciklama = isTr
-    ? 'Aktif söndürme, pasif önleme, saha uygulaması, sıhhi tesisat ve periyodik bakım alanlarında uçtan uca yangın mühendisliği ve taahhüt hizmetleri sunuyoruz.'
-    : 'End-to-end fire engineering and contracting services covering active suppression, passive prevention, field installation, plumbing, and periodic maintenance.';
+    ? 'Yangın sistemleri kurulumu ve yangın mühendisliği: aktif söndürme, pasif önleme, algılama-alarm, saha uygulaması ve periyodik bakımda uçtan uca taahhüt hizmetleri.'
+    : 'Fire protection systems and fire engineering: active suppression, passive prevention, detection & alarm, field installation, and periodic maintenance — turnkey contracting.';
 
-  return buildMetadata({ baslik, aciklama, locale: loc, path: '/muhendislik' });
+  return buildMetadata({ baslik, aciklama, locale: loc, path: '/muhendislik', keywords: coreKeywords(loc) });
 }
 
 // ── Static params ─────────────────────────────────────────────────────────────
