@@ -1,6 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { getProjects, getPosts, getReferences } from '@/lib/cms/queries';
 import { LOCALES } from '@/lib/locales';
+import { CITY_SLUGS } from '@/lib/city-content';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://redwall.tr';
 
@@ -72,5 +73,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       })),
     );
 
-  return [...staticEntries, ...projectEntries, ...postEntries, ...referenceEntries];
+  // Şehir-özel hizmet landing sayfaları — yalnızca TR (tr locale'de üretilir).
+  const cityEntries: MetadataRoute.Sitemap = CITY_SLUGS.flatMap((il) =>
+    ['yangin-danismanligi', 'yangin-sistemleri'].map((svc) => ({
+      url: `${SITE_URL}/tr/${svc}/${il}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    })),
+  );
+
+  return [...staticEntries, ...projectEntries, ...postEntries, ...referenceEntries, ...cityEntries];
 }

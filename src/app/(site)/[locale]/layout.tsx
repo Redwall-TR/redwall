@@ -8,7 +8,8 @@ import CookieConsent from '@/components/layout/CookieConsent';
 import { getSiteSettings } from '@/lib/cms/queries';
 import { mediaUrl } from '@/lib/cms/image';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { organizationJsonLd, websiteJsonLd } from '@/lib/jsonLd';
+import { organizationJsonLd, websiteJsonLd, localBusinessJsonLd } from '@/lib/jsonLd';
+import { TR_PROVINCES, SERVICE_PROVINCES } from '@/lib/tr-cities';
 import { Analytics } from '@/components/analytics/Analytics';
 
 export function generateStaticParams() {
@@ -61,12 +62,31 @@ export default async function LocaleLayout({
   });
   const siteLd = websiteJsonLd({ name: orgName, url: SITE_URL });
 
+  // Yerel-işletme yapısal verisi — yalnızca arama motorları / AI ajanları okur.
+  // Şehir + hizmet türü sinyali burada; görünür metinde tekrarlanmaz.
+  const localLd = localBusinessJsonLd({
+    name: orgName,
+    url: SITE_URL,
+    logoUrl,
+    phone: siteInfo?.iletisim?.tel ?? undefined,
+    email: siteInfo?.iletisim?.email ?? undefined,
+    sameAs: sameAs.length ? sameAs : undefined,
+    description:
+      locale === 'en'
+        ? 'Fire safety consulting, fire protection systems, and fire engineering services based in Sakarya (Adapazarı) — fire detection and suppression systems, fire-department compliance and code consulting. Serving all 81 provinces of Turkey, with dedicated coverage in Sakarya, Kocaeli, Düzce and Bolu.'
+        : 'Sakarya (Adapazarı) merkezli yangın danışmanlığı, yangın sistemleri ve yangın güvenliği mühendisliği hizmetleri; yangın algılama ve söndürme sistemleri, itfaiye uyumu ve mevzuat danışmanlığı ile Sakarya, Kocaeli, Düzce ve Bolu başta olmak üzere Türkiye’nin 81 iline hizmet.',
+    // 81 il geniş kapsam + 4 çekirdek şehir öncelikli — makine-okur kapsam sinyali.
+    areaServed: [...SERVICE_PROVINCES, ...TR_PROVINCES.filter((p) => !SERVICE_PROVINCES.includes(p as (typeof SERVICE_PROVINCES)[number])), 'Türkiye'],
+    priceRange: '₺₺',
+  });
+
   return (
     <NextIntlClientProvider>
       <div className="flex min-h-screen flex-col">
         <Analytics />
         <JsonLd data={orgLd} />
         <JsonLd data={siteLd} />
+        <JsonLd data={localLd} />
         <Header locale={locale} logoAcik={navbarLogoAcik} logoKoyu={navbarLogoKoyu} />
         <main className="flex-1">{children}</main>
         <Footer locale={locale} logoAcik={footerLogoAcik} logoKoyu={footerLogoKoyu} />
