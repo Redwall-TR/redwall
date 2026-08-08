@@ -32,6 +32,7 @@ export async function generateMetadata({
     locale: 'tr',
     path: `/yangin-sistemleri/${city.slug}`,
     keywords,
+    locales: ['tr'], // sayfa yalnızca TR'de var — /en hreflang'i üretme
   });
 }
 
