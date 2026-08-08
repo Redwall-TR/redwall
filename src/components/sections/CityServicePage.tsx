@@ -2,7 +2,7 @@ import { Link } from '@/i18n/navigation';
 import { Section, Button } from '@/components/ui';
 import { PageHero } from '@/components/sections/PageHero';
 import { JsonLd } from '@/components/seo/JsonLd';
-import { localBusinessJsonLd, breadcrumbJsonLd } from '@/lib/jsonLd';
+import { localBusinessJsonLd, breadcrumbJsonLd, faqPageJsonLd } from '@/lib/jsonLd';
 import { ACCENT } from '@/lib/theme';
 import type { CityBase, CityService } from '@/lib/city-content';
 import { SERVICES } from '@/lib/city-content';
@@ -55,10 +55,17 @@ export default function CityServicePage({
     { name: city.il, url: pageUrl },
   ]);
 
+  // Bu hizmet sayfasına özgü şehir SSS'leri — sayfalar arası benzerliği düşürür.
+  const sssListesi = city.sss.filter((s) => s.hizmet === service);
+  const faqLd = sssListesi.length
+    ? faqPageJsonLd(sssListesi.map((s) => ({ question: s.soru, answer: s.cevap })))
+    : null;
+
   return (
     <>
       <JsonLd data={localLd} />
       <JsonLd data={crumbLd} />
+      {faqLd && <JsonLd data={faqLd} />}
 
       <PageHero
         eyebrow={`${city.il} · ${svc.hizmetEtiketi}`}
@@ -138,6 +145,25 @@ export default function CityServicePage({
           </ul>
         </div>
       </Section>
+
+      {/* Şehre özgü SSS — özgün içerik + FAQPage JSON-LD kaynağı */}
+      {sssListesi.length > 0 && (
+        <Section tone="muted">
+          <div className="mx-auto max-w-3xl">
+            <h2 className="font-display text-2xl font-bold text-foreground sm:text-3xl">
+              {city.il}{city.ekDe} {svc.adKisa} — Sık Sorulan Sorular
+            </h2>
+            <div className="mt-8 space-y-6">
+              {sssListesi.map((s) => (
+                <div key={s.soru} className="rounded-xl border border-black/10 bg-background p-6">
+                  <h3 className="font-display text-base font-semibold text-foreground">{s.soru}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted">{s.cevap}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </Section>
+      )}
 
       {/* Çapraz linkler + CTA */}
       <Section tone="dark">

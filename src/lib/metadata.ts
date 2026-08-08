@@ -40,6 +40,7 @@ export function buildMetadata({
   gorselUrl,
   type,
   keywords,
+  locales,
 }: {
   baslik: string;
   aciklama: string;
@@ -48,11 +49,17 @@ export function buildMetadata({
   gorselUrl?: string;
   type?: 'website' | 'article';
   keywords?: string[];
+  /** Sayfanın gerçekten var olduğu diller. TR-only sayfalar (şehir landing'leri)
+   *  ['tr'] geçmeli — yoksa hreflang olmayan /en sürümünü işaret eder (kopya sinyali). */
+  locales?: Locale[];
 }): Metadata {
   const languages: Record<string, string> = {};
-  for (const l of LOCALES) {
+  for (const l of locales ?? LOCALES) {
     languages[l] = `${SITE_URL}/${l}${path}`;
   }
+  // x-default: dil seçimini yapan prefixsiz kök URL (middleware /tr'ye yönlendirir).
+  // Google'ın kök `/` ile `/tr` arasında kararsız kalıp farklı canonical seçmesini önler.
+  languages['x-default'] = `${SITE_URL}${path || '/'}`;
 
   const ogImage = gorselUrl ?? `${SITE_URL}/og-default.png`;
 
