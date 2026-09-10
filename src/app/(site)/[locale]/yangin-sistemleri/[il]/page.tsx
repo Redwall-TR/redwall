@@ -3,7 +3,7 @@ import { setRequestLocale } from 'next-intl/server';
 import type { Metadata } from 'next';
 
 import { buildMetadata, coreKeywords } from '@/lib/metadata';
-import { getCity, CITY_SLUGS, SERVICES } from '@/lib/city-content';
+import { getCity, SERVICES } from '@/lib/city-content';
 import CityServicePage from '@/components/sections/CityServicePage';
 
 // ── Metadata ──────────────────────────────────────────────────────────────────
@@ -36,12 +36,10 @@ export async function generateMetadata({
   });
 }
 
-// ── Static params (yalnızca TR) ─────────────────────────────────────────────────
-
-export function generateStaticParams({ params }: { params: { locale: string } }) {
-  if (params.locale !== 'tr') return [];
-  return CITY_SLUGS.map((il) => ({ il }));
-}
+// ── Rendering ───────────────────────────────────────────────────────────────
+// Layout'taki Payload Local API headers() okur → statik üretim prod'da
+// DYNAMIC_SERVER_USAGE ile 500 veriyordu. Detay rotalarıyla aynı desen.
+export const dynamic = 'force-dynamic';
 
 // ── Page ────────────────────────────────────────────────────────────────────────
 

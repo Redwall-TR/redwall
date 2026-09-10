@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getProjects, getPosts, getReferences } from '@/lib/cms/queries';
+import { getProjects, getPosts, getReferences, getProducts } from '@/lib/cms/queries';
 import { LOCALES } from '@/lib/locales';
 import { CITY_SLUGS } from '@/lib/city-content';
 
@@ -14,8 +14,6 @@ export const dynamic = 'force-dynamic';
 const STATIC_PATHS: string[] = [
   '',
   '/yazilim',
-  '/yazilim/yanginpro',
-  '/yazilim/mekanikpro',
   '/danismanlik',
   '/muhendislik',
   '/projeler',
@@ -31,10 +29,11 @@ const STATIC_PATHS: string[] = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const [projects, posts, references] = await Promise.all([
+  const [projects, posts, references, products] = await Promise.all([
     getProjects(),
     getPosts(),
     getReferences(),
+    getProducts(),
   ]);
 
   const staticEntries: MetadataRoute.Sitemap = STATIC_PATHS.flatMap((path) =>
@@ -44,6 +43,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         | 'weekly'
         | 'monthly',
       priority: path === '' ? 1.0 : 0.7,
+    })),
+  );
+
+  // Ürün detayları CMS'ten (yalnız yayinda==true) — hard-code slug yayından
+  // kaldırılan ürünü (ör. mekanikpro) sitemap'te 404 olarak bırakıyordu.
+  const productEntries: MetadataRoute.Sitemap = products.flatMap((product) =>
+    LOCALES.map((locale) => ({
+      url: `${SITE_URL}/${locale}/yazilim/${product.slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
     })),
   );
 
@@ -82,5 +91,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   );
 
-  return [...staticEntries, ...projectEntries, ...postEntries, ...referenceEntries, ...cityEntries];
+  return [
+    ...staticEntries,
+    ...productEntries,
+    ...projectEntries,
+    ...postEntries,
+    ...referenceEntries,
+    ...cityEntries,
+  ];
 }
