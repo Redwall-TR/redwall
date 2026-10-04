@@ -12,7 +12,7 @@ services:
     ports: ["5433:5432"]   # host 5433 — 5432 native Postgres ile çakışıyor
     volumes: ["redwall_pg_dev:/var/lib/postgresql/data"]
   minio:
-    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z   # minio/minio Hub'dan kaldırıldı — stack.yml ile aynı
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372   # minio/minio Hub'dan kaldırıldı — stack.yml ile aynı
     container_name: kurumsal-local-minio
     command: server /data --console-address ":9001"
     environment:
