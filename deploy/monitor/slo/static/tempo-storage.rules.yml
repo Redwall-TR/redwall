@@ -1,0 +1,31 @@
+# Tempo depolama sağlığı — 2026-10-04 olayı: Tempo 2 ay boyunca 142 bin bloğu ne sıkıştırdı ne de
+# 7g saklamayla sildi (22 GB) → izleme VDS diski %100 → Prometheus/Loki de düştü. DiskDolu yalnız
+# sonucu görür; bu kurallar sebebi haftalar önce yakalar. Elle, kasıtlı (Sloth üretmez).
+groups:
+  - name: tempo-storage
+    rules:
+      # Normal: sıkıştırma sonrası ~150 blok. Binlercesi = compaction geride kalıyor.
+      - alert: TempoBlokBirikiyor
+        expr: tempodb_blocklist_length{job="tempo"} > 5000
+        for: 1h
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Tempo {{ $value }} blok biriktirdi — compaction geride"
+          description: "tempodb_blocklist_length 1 saattir 5000 üstünde (normal ~150). tempo_backend_scheduler_* metriklerine ve /var/lib/docker/volumes/tempo_tempo-data boyutuna bak."
+      # Saklama döngüsü saatte bir (backend_scheduler.provider.retention.interval=1h).
+      # for: 2h — Tempo yeniden başlayınca ilk döngü 1 saat sonra gelir; o pencerede yanlış alarm olmasın.
+      - alert: TempoSaklamaCalismiyor
+        expr: increase(tempodb_retention_duration_seconds_count{job="tempo"}[3h]) == 0
+        for: 2h
+        labels:
+          severity: ticket
+          service: monitoring-chain
+          category: meta
+          tier: "1"
+        annotations:
+          summary: "Tempo saklama (7g retention) döngüsü 3+ saattir çalışmadı"
+          description: "tempodb_retention_duration_seconds_count artmıyor — eski izler silinmiyor, disk dolacak. tempo.yaml backend_scheduler/backend_worker retention ayarlarını ve tempo loglarını kontrol et."
