@@ -156,7 +156,9 @@ services:
     # minio/minio Docker Hub/Quay'den kaldırıldı (pull access denied) — 2026-10-04 deploy'unda
     # Swarm imajı çözemedi, minio 0/1 kaldı, medya aralıklı 500. Silo = Pigsty'nin MinIO çatalı,
     # disk formatı + S3 API birebir uyumlu (aynı env/volume/command). Floating tag YOK — sabit sürüm.
-    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z
+    # Üçüncü taraf çatal + MINIO_ROOT_* görür → digest'le sabit (etiket yeniden push edilse de değişmez).
+    # Sürüm yükseltirken: yeni digest'i Docker Hub ile karşılaştır, Silo sürüm notlarını oku.
+    image: pgsty/minio:RELEASE.2026-08-04T00-00-00Z@sha256:b6bfe7239bfc83fb90d31612d9704d86039dd714f7904b3f1ad68f211e602372
     command: server /data --console-address ":9001"
     environment:
       MINIO_ROOT_USER: ${MINIO_ROOT_USER}
