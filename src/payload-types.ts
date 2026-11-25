@@ -395,6 +395,61 @@ export interface Product {
       }[]
     | null;
   sira?: number | null;
+  /**
+   * Yalnızca özel tanıtım sayfası olan ürünlerde kullanılır (şu an: Redwall Cut). Boş bırakılan alan sayfada gösterilmez.
+   */
+  landing?: {
+    /**
+     * Logonun yanındaki kısa not. Örn: Ön sürüm. Pilot aşamasına hazırlanıyor.
+     */
+    durum?: string | null;
+    baslik?: string | null;
+    giris?: string | null;
+    /**
+     * Açılışta ve sayfa sonunda kullanılır; demo formuna gider.
+     */
+    cta?: string | null;
+    sureHedef?: number | null;
+    sureEnAz?: number | null;
+    sureEnCok?: number | null;
+    /**
+     * Sayfada bu sırayla gösterilir. Sürükleyerek sıralayın.
+     */
+    bolumler?:
+      | {
+          tur: 'adimlar' | 'sure' | 'teslim' | 'ozellikler' | 'paketler' | 'platformlar' | 'gizlilik' | 'kapanis';
+          baslik?: string | null;
+          giris?: string | null;
+          /**
+           * Adımlar bölümünde ekran görüntüsünün alt yazısıdır.
+           */
+          not?: string | null;
+          maddeler?:
+            | {
+                ad?: string | null;
+                /**
+                 * Adımlarda ekran adı (Giriş, Onay…), teslim klasöründe dosya adı. Diğer türlerde boş bırakın.
+                 */
+                etiket?: string | null;
+                metin?: string | null;
+                id?: string | null;
+              }[]
+            | null;
+          id?: string | null;
+        }[]
+      | null;
+    /**
+     * Starter ve Studio sütunlarına "var", "yok" ya da kısa bir metin yazın (örn: İlk beş tema).
+     */
+    paketSatirlari?:
+      | {
+          ozellik?: string | null;
+          starter?: string | null;
+          studio?: string | null;
+          id?: string | null;
+        }[]
+      | null;
+  };
   updatedAt: string;
   createdAt: string;
 }
@@ -1061,6 +1116,42 @@ export interface ProductSelect<T extends boolean = true> {
         id?: T;
       };
   sira?: T;
+  landing?:
+    | T
+    | {
+        durum?: T;
+        baslik?: T;
+        giris?: T;
+        cta?: T;
+        sureHedef?: T;
+        sureEnAz?: T;
+        sureEnCok?: T;
+        bolumler?:
+          | T
+          | {
+              tur?: T;
+              baslik?: T;
+              giris?: T;
+              not?: T;
+              maddeler?:
+                | T
+                | {
+                    ad?: T;
+                    etiket?: T;
+                    metin?: T;
+                    id?: T;
+                  };
+              id?: T;
+            };
+        paketSatirlari?:
+          | T
+          | {
+              ozellik?: T;
+              starter?: T;
+              studio?: T;
+              id?: T;
+            };
+      };
   updatedAt?: T;
   createdAt?: T;
 }

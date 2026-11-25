@@ -17,6 +17,7 @@ import * as migration_20260701_193609_service_richtext from './20260701_193609_s
 import * as migration_20260701_210926_sitesettings_marka from './20260701_210926_sitesettings_marka';
 import * as migration_20260702_194453_page_richtext from './20260702_194453_page_richtext';
 import * as migration_20260704_194830_form_rate_limit from './20260704_194830_form_rate_limit';
+import * as migration_20261125_212914_product_landing from './20261125_212914_product_landing';
 import * as migration_20261126_090000_product_redwall_cut from './20261126_090000_product_redwall_cut';
 
 export const migrations = [
@@ -113,11 +114,16 @@ export const migrations = [
   {
     up: migration_20260704_194830_form_rate_limit.up,
     down: migration_20260704_194830_form_rate_limit.down,
-    name: '20260704_194830_form_rate_limit'
+    name: '20260704_194830_form_rate_limit',
+  },
+  {
+    up: migration_20261125_212914_product_landing.up,
+    down: migration_20261125_212914_product_landing.down,
+    name: '20261125_212914_product_landing',
   },
   {
     up: migration_20261126_090000_product_redwall_cut.up,
     down: migration_20261126_090000_product_redwall_cut.down,
-    name: '20261126_090000_product_redwall_cut',
+    name: '20261126_090000_product_redwall_cut'
   },
 ];
