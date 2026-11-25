@@ -41,8 +41,8 @@ export async function generateMetadata({
 
   const baslik = isTr ? 'YangınPro & MekanikPro Yangın Güvenliği Yazılımı' : 'YangınPro & MekanikPro Fire Safety Software';
   const aciklama = isTr
-    ? 'Fikri mülkiyeti Redwall\'a ait YangınPro ve MekanikPro yazılımlarıyla yangın ve mekanik mühendislik süreçlerinizi dijitalleştirin, mevzuat uyumunu kolaylaştırın.'
-    : 'Digitise your fire and mechanical engineering workflows with YangınPro and MekanikPro — proprietary software developed and owned by Redwall for full compliance.';
+    ? 'Fikri mülkiyeti Redwall\'a ait yazılımlar: yangın ve mekanik mühendislik için YangınPro ve MekanikPro, fotoğrafçılar için otomatik video ve fotoğraf stüdyosu Redwall Cut.'
+    : 'Proprietary software developed and owned by Redwall: YangınPro and MekanikPro for fire and mechanical engineering, and Redwall Cut, an automatic video and photo studio for photographers.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/yazilim' });
 }
@@ -80,8 +80,8 @@ export default async function YazilimPage({
     service?.ozet
       ? (pick(service.ozet, locale) ?? undefined)
       : isTr
-        ? 'Fikri mülkiyeti bize ait YangınPro ve MekanikPro — yangın ve mekanik mühendislik süreçlerini dijitalleştiren özgün yazılım çözümleri.'
-        : 'YangınPro and MekanikPro — proprietary software solutions owned by Redwall that digitise fire and mechanical engineering workflows.';
+        ? 'Fikri mülkiyeti bize ait özgün yazılımlar: yangın ve mekanik mühendislik için YangınPro ve MekanikPro, fotoğrafçılar için otomatik video ve fotoğraf stüdyosu Redwall Cut.'
+        : 'Proprietary software owned by Redwall: YangınPro and MekanikPro for fire and mechanical engineering, and Redwall Cut, an automatic video and photo studio for photographers.';
 
   // Chips — CMS'ten (service.chips); yoksa varsayılan
   const heroChips =
@@ -90,26 +90,26 @@ export default async function YazilimPage({
           .map((c) => pick(c, locale))
           .filter((v): v is string => typeof v === 'string' && v.length > 0)
       : isTr
-        ? ['YangınPro', 'MekanikPro', 'Bulut Tabanlı', 'Ar-Ge']
-        : ['YangınPro', 'MekanikPro', 'Cloud-Based', 'R&D'];
+        ? ['YangınPro', 'MekanikPro', 'Redwall Cut', 'Bulut Tabanlı', 'Ar-Ge']
+        : ['YangınPro', 'MekanikPro', 'Redwall Cut', 'Cloud-Based', 'R&D'];
 
   // Intro (giriş) — CMS'ten (service.girisLead / girisParagraflar, richText); yoksa
   // varsayılan metin. RichContent hem Lexical'i hem düz string fallback'i render eder.
   const introLead: unknown =
     (service?.girisLead ? pick(service.girisLead, locale) : undefined) ??
     (isTr
-      ? 'Redwall Yazılım iş kolu, yangın ve mekanik mühendislik alanlarında kullanılan ve fikri mülkiyeti tamamen bize ait yazılım ürünleri geliştirmektedir.'
-      : "Redwall's Software arm develops engineering software products — fully owned intellectual property — for the fire-safety and mechanical engineering sectors.");
+      ? 'Redwall Yazılım iş kolu, yangın ve mekanik mühendislik alanlarının yanında fotoğraf ve video üretimi için de fikri mülkiyeti tamamen bize ait yazılım ürünleri geliştirmektedir.'
+      : "Redwall's Software arm develops fully owned software products for the fire-safety and mechanical engineering sectors, and for photo and video production.");
   const introBody: unknown[] =
     service?.girisParagraflar && service.girisParagraflar.length > 0
       ? service.girisParagraflar.map((p) => pick(p, locale))
       : isTr
         ? [
-            'YangınPro ve MekanikPro, sektörün ihtiyaçlarından yola çıkılarak Ar-Ge süreçlerimizle tasarlanmış ve yerli mühendislik zekâsının ürünüdür.',
+            'YangınPro, MekanikPro ve Redwall Cut; sektörün ihtiyaçlarından yola çıkılarak Ar-Ge süreçlerimizle tasarlanmış, yerli mühendislik zekâsının ürünleridir.',
             'Bu ürünleri geliştiriyor, markalaştırıyor ve pazarlıyoruz. Kullanıcılarımız; rutin hesaplamalardan mevzuat uyumu kontrolüne kadar her aşamada dijital desteğe kavuşurken, firmamız yazılım gelirleriyle sürdürülebilir Ar-Ge döngüsünü finanse etmektedir.',
           ]
         : [
-            'YangınPro and MekanikPro were conceived through our R&D process, built around real-world engineering needs, and represent homegrown engineering intelligence.',
+            'YangınPro, MekanikPro and Redwall Cut were conceived through our R&D process, built around real-world needs, and represent homegrown engineering intelligence.',
             'We develop, brand, and market these products ourselves. While users gain digital support at every stage — from routine calculations to regulatory compliance checks — the software revenue finances our sustainable R&D cycle.',
           ];
 
@@ -120,8 +120,8 @@ export default async function YazilimPage({
   // CTA content
   const ctaBaslik = isTr ? 'Demo Talep Edin' : 'Request a Demo';
   const ctaAciklama = isTr
-    ? 'YangınPro veya MekanikPro hakkında ücretsiz demo almak için bize ulaşın.'
-    : 'Contact us for a free demo of YangınPro or MekanikPro.';
+    ? 'YangınPro, MekanikPro veya Redwall Cut için ücretsiz demo ve tanıtım almak üzere bize ulaşın.'
+    : 'Contact us for a free demo of YangınPro, MekanikPro or Redwall Cut.';
   const ctaButonEtiket = isTr ? 'Demo Talep Et' : 'Request a Demo';
 
   return (

@@ -21,10 +21,10 @@ export async function generateMetadata({
   const isTr = !isLocale(locale) || locale === 'tr';
   const loc = isTr ? ('tr' as const) : ('en' as const);
 
-  const baslik = isTr ? 'YangınPro & MekanikPro için Ücretsiz Demo Talebi' : 'Request a Free YangınPro & MekanikPro Demo';
+  const baslik = isTr ? 'YangınPro, MekanikPro ve Redwall Cut için Ücretsiz Demo Talebi' : 'Request a Free YangınPro, MekanikPro or Redwall Cut Demo';
   const aciklama = isTr
-    ? 'YangınPro ve MekanikPro yazılımlarını yakından tanımak için ücretsiz demo talep edin; ekibimiz kısa sürede sizinle iletişime geçsin.'
-    : 'Request a free demo of YangınPro and MekanikPro software to see them in action — our team will reach out shortly to schedule your session.';
+    ? 'YangınPro, MekanikPro ve Redwall Cut yazılımlarını yakından tanımak için ücretsiz demo talep edin; ekibimiz kısa sürede sizinle iletişime geçsin.'
+    : 'Request a free demo of YangınPro, MekanikPro or Redwall Cut to see them in action — our team will reach out shortly to schedule your session.';
 
   return buildMetadata({ baslik, aciklama, locale: loc, path: '/yazilim/demo' });
 }
@@ -51,8 +51,8 @@ export default async function DemoPage({
 
   const pageBaslik = isTr ? 'Demo Talep Et' : 'Request a Demo';
   const pageAciklama = isTr
-    ? 'YangınPro ve MekanikPro yazılımlarını yakından görmek için aşağıdaki formu doldurun.'
-    : 'Fill in the form below to see our YangınPro and MekanikPro software in action.';
+    ? 'YangınPro, MekanikPro ve Redwall Cut yazılımlarını yakından görmek için aşağıdaki formu doldurun.'
+    : 'Fill in the form below to see YangınPro, MekanikPro or Redwall Cut in action.';
 
   return (
     <>
@@ -61,7 +61,7 @@ export default async function DemoPage({
         title={pageBaslik}
         description={pageAciklama}
         accent={ACCENT}
-        chips={isTr ? ['YangınPro', 'MekanikPro'] : ['YangınPro', 'MekanikPro']}
+        chips={['YangınPro', 'MekanikPro', 'Redwall Cut']}
         glyph={<ServiceIcon name="code" className="h-[26rem] w-[26rem]" />}
       />
 
