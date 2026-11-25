@@ -19,6 +19,7 @@ import * as migration_20260702_194453_page_richtext from './20260702_194453_page
 import * as migration_20260704_194830_form_rate_limit from './20260704_194830_form_rate_limit';
 import * as migration_20261125_212914_product_landing from './20261125_212914_product_landing';
 import * as migration_20261126_090000_product_redwall_cut from './20261126_090000_product_redwall_cut';
+import * as migration_20261126_100000_yazilim_metinleri_redwall_cut from './20261126_100000_yazilim_metinleri_redwall_cut';
 
 export const migrations = [
   {
@@ -124,6 +125,11 @@ export const migrations = [
   {
     up: migration_20261126_090000_product_redwall_cut.up,
     down: migration_20261126_090000_product_redwall_cut.down,
-    name: '20261126_090000_product_redwall_cut'
+    name: '20261126_090000_product_redwall_cut',
+  },
+  {
+    up: migration_20261126_100000_yazilim_metinleri_redwall_cut.up,
+    down: migration_20261126_100000_yazilim_metinleri_redwall_cut.down,
+    name: '20261126_100000_yazilim_metinleri_redwall_cut',
   },
 ];

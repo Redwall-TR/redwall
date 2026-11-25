@@ -31,8 +31,8 @@ const FALLBACK_CARDS: ServiceCard[] = [
     isKolu: 'yazilim',
     baslik: { tr: 'Yazılım', en: 'Software' },
     ozet: {
-      tr: 'YangınPro & MekanikPro — fikri mülkiyeti bize ait yangın ve mekanik mühendislik yazılımları.',
-      en: 'Fire & mechanical engineering software we own end-to-end — YangınPro & MekanikPro.',
+      tr: 'YangınPro, MekanikPro ve Redwall Cut: fikri mülkiyeti bize ait mühendislik ve medya yazılımları.',
+      en: 'Engineering and media software we own end-to-end: YangınPro, MekanikPro and Redwall Cut.',
     },
     imzaRengi: 'primary',
   },

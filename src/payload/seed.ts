@@ -297,12 +297,12 @@ async function main() {
       tr: {
         baslik: 'Yazılım',
         ozet:
-          'YangınPro & MekanikPro — fikri mülkiyeti Redwall\'a ait, bulut tabanlı mühendislik yazılımları.',
+          "YangınPro, MekanikPro ve Redwall Cut: fikri mülkiyeti Redwall'a ait mühendislik ve medya yazılımları.",
       },
       en: {
         baslik: 'Software',
         ozet:
-          'YangınPro & MekanikPro — cloud-based engineering software owned by Redwall.',
+          'YangınPro, MekanikPro and Redwall Cut: engineering and media software owned by Redwall.',
       },
       sira: 1,
     },
