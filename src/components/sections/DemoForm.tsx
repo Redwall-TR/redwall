@@ -21,7 +21,8 @@ const INITIAL: FormValues = { urun: '', ad: '', kurum: '', email: '', mesaj: '',
 const URUN_OPTIONS = [
   { value: 'yanginpro', label: 'YangınPro' },
   { value: 'mekanikpro', label: 'MekanikPro' },
-  { value: 'her-ikisi', tr: 'Her ikisi', en: 'Both' },
+  { value: 'redwall-cut', label: 'Redwall Cut' },
+  { value: 'her-ikisi', tr: 'Birden fazla ürün', en: 'More than one' },
 ] as const;
 
 export default function DemoForm({ locale }: { locale: Locale }) {

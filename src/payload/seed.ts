@@ -19,6 +19,7 @@ import { config as dotenvConfig } from 'dotenv'
 import { resolve, dirname } from 'path'
 import { fileURLToPath } from 'url'
 import { plainToLexical } from '../lib/lexical/plainToLexical'
+import { REDWALL_CUT_KART } from '../data/redwall-cut'
 import type { Referan, Faq, Product, Page } from '../payload-types'
 
 const __filename = fileURLToPath(import.meta.url)
@@ -406,6 +407,13 @@ async function main() {
           'Hydraulic balancing and pipe sizing software for mechanical installation engineers.',
       },
       sira: 2,
+    },
+    {
+      slug: REDWALL_CUT_KART.slug,
+      ad: REDWALL_CUT_KART.ad,
+      tr: { slogan: REDWALL_CUT_KART.slogan.tr, aciklama: REDWALL_CUT_KART.aciklama.tr },
+      en: { slogan: REDWALL_CUT_KART.slogan.en, aciklama: REDWALL_CUT_KART.aciklama.en },
+      sira: REDWALL_CUT_KART.sira,
     },
   ]
 
