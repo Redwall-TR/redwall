@@ -1,0 +1,43 @@
+/* Redwall Cut landing — ürünün kendi renkleri (RedwallCut/src/redwall_cut/ui/theme.py).
+   Sayfa sitenin açık/koyu temasını izler; .rwc-dark bandları (açılış, kapanış) her zaman koyudur. */
+.rwc {
+  --rwc-ink: #f4f2ee; --rwc-panel: #ffffff; --rwc-raised: #e9e6e0; --rwc-line: #d6d2ca;
+  --rwc-paper: #111115; --rwc-muted: #63616b; --rwc-red: #cc2f2f; --rwc-on-red: #ffffff;
+  --rwc-blush: #ebcfcd; --rwc-good: #157a55;
+  background: var(--rwc-ink);
+  color: var(--rwc-paper);
+}
+.dark .rwc,
+.rwc .rwc-dark {
+  --rwc-ink: #111115; --rwc-panel: #1b1b21; --rwc-raised: #26262e; --rwc-line: #34343e;
+  --rwc-paper: #f2efea; --rwc-muted: #9c9ca8; --rwc-red: #ff5757; --rwc-on-red: #111115;
+  --rwc-blush: #ffe3dc; --rwc-good: #7fd6b2;
+}
+.rwc .rwc-dark { background: var(--rwc-ink); color: var(--rwc-paper); }
+
+/* Başlık yazısı: programdaki DIN benzeri dar yazının web karşılığı. */
+.rwc-display {
+  font-family: var(--font-rwc), "DIN Alternate", "Bahnschrift", "Arial Narrow", sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+.rwc-file { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; }
+
+/* Logonun zeminindeki nokta dokusu. */
+.rwc-dots {
+  background-image: radial-gradient(circle, color-mix(in srgb, var(--rwc-paper) 9%, transparent) 1.5px, transparent 1.5px);
+  background-size: 32px 32px;
+}
+
+.rwc a:focus-visible { outline: 2px solid var(--rwc-red); outline-offset: 3px; border-radius: 4px; }
+
+/* Açılış şeması: seçilen sahneler kırmızıya döner, sonra klip şeridine yerleşir. Tek seferlik. */
+.rwc-scene { background: var(--rwc-raised); border-radius: 3px; }
+.rwc-pick { animation: rwc-pick 0.5s ease-out both; animation-delay: calc(var(--i) * 130ms + 350ms); }
+.rwc-drop { animation: rwc-drop 0.45s ease-out both; animation-delay: calc(var(--i) * 130ms + 520ms); }
+@keyframes rwc-pick { from { background: var(--rwc-raised); } to { background: var(--rwc-red); } }
+@keyframes rwc-drop { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) {
+  .rwc-pick { animation: none; background: var(--rwc-red); }
+  .rwc-drop { animation: none; }
+}

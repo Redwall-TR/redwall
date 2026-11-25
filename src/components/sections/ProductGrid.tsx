@@ -1,4 +1,6 @@
+import Image from 'next/image';
 import { pick, type Locale } from '@/lib/locales';
+import { REDWALL_CUT_KART, REDWALL_CUT_LOGO } from '@/data/redwall-cut';
 import { Link } from '@/i18n/navigation';
 import { Badge } from '@/components/ui';
 import { RichContent } from '@/components/ui/RichContent';
@@ -54,7 +56,18 @@ const FALLBACK_PRODUCTS: ProductCard[] = [
       en: 'Software that automates mechanical installation and HVAC engineering calculations.',
     },
   },
+  {
+    slug: REDWALL_CUT_KART.slug,
+    ad: REDWALL_CUT_KART.ad,
+    slogan: REDWALL_CUT_KART.slogan,
+    aciklama: REDWALL_CUT_KART.aciklama,
+  },
 ];
+
+// Kendi logosu olan ürünler; olmayanlar genel kod ikonunu gösterir.
+const PRODUCT_LOGOS: Record<string, string> = {
+  [REDWALL_CUT_KART.slug]: REDWALL_CUT_LOGO,
+};
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
@@ -101,9 +114,20 @@ export default function ProductGrid({ products, locale }: ProductGridProps) {
             )}
           >
             {/* Icon */}
-            <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <CodeIcon className="h-5 w-5" />
-            </div>
+            {PRODUCT_LOGOS[product.slug] ? (
+              <Image
+                src={PRODUCT_LOGOS[product.slug]}
+                alt=""
+                width={44}
+                height={44}
+                unoptimized
+                className="mb-5 h-11 w-11"
+              />
+            ) : (
+              <div className="mb-5 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <CodeIcon className="h-5 w-5" />
+              </div>
+            )}
 
             {/* Badge */}
             <div className="mb-3">

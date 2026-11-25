@@ -184,6 +184,7 @@ export async function getProduct(slug: string) {
       ozellikler: r.ozellikler,
       hedefKitle: unwrap(r.hedefKitle, 'madde'),
       ekranGorselleri: unwrap(r.ekranGorselleri, 'gorsel'),
+      landing: r.landing,
     }
   }, null)
 }
